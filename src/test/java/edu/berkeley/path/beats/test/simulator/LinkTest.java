@@ -179,14 +179,14 @@ public class LinkTest {
 
 	@Test
 	public void test_getTotalInlowInVeh() {
-		double x = link.getTotalInlowInVeh(0); 
+		double x = link.getTotalInflowInVeh(0); 
 		double exp = 0.41666666666666663;
 		
 		assertEquals(x,exp,1e-4);
 
 		// edge cases
-		assertTrue(Double.isNaN(link.getTotalInlowInVeh(-1)));
-        assertTrue(Double.isNaN(link.getTotalInlowInVeh(100)));
+		assertTrue(Double.isNaN(link.getTotalInflowInVeh(-1)));
+        assertTrue(Double.isNaN(link.getTotalInflowInVeh(100)));
 	}
 
 	@Test

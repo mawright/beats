@@ -98,6 +98,29 @@ public abstract class NEMA {
         }
     }
 
+    public static int nema_to_int(ID x){
+        switch(x){
+            case _1:
+                return 1;
+            case _2:
+                return 2;
+            case _3:
+                return 3;
+            case _4:
+                return 4;
+            case _5:
+                return 5;
+            case _6:
+                return 6;
+            case _7:
+                return 7;
+            case _8:
+                return 8;
+            default:
+                return 0;
+        }    }
+
+
     public static int get_ring(ID nema){
 
         switch(nema){

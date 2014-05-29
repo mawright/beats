@@ -14,14 +14,13 @@
 
 	<xs:element name="simulation_output">
 		<xs:complexType>
-			<xs:attribute name="performance" use="required">
+			<xs:attribute name="quantity" use="required">
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:pattern value="veh_time|veh_distance|delay|speed_contour"/>
+						<xs:pattern value="veh_time|veh_distance|delay|speed_contour|signal_events"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-
 			<xs:attribute name="file"				type="xs:string" use="required" />
 			<xs:attribute name="dt" 				type="xs:double" use="optional" />
 			<xs:attribute name="agg_time" 			type="xs:boolean" use="optional"  default="false"/>
@@ -30,9 +29,7 @@
 			<xs:attribute name="agg_vehicle_type" 	type="xs:boolean" use="optional"  default="false"/>
 			<xs:attribute name="vehicle_type_id" 	type="xs:long"    use="optional"  default="-1"/>
 			<xs:attribute name="route_id" 			type="xs:long"    use="optional"  default="-1"/>
-
 		</xs:complexType>
-
 	</xs:element>
 
 </xs:schema>

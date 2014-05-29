@@ -175,7 +175,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         // behavior for all source links
         if(issource && myDemandProfile!=null)
             for(int e=0;e<myScenario.getNumEnsemble();e++)
-                inflow[e] = myDemandProfile.getCurrentValue();
+                inflow[e] = myDemandProfile.getCurrentValue(e);
 
 
         link_behavior.update_state(inflow,outflow);
@@ -483,7 +483,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         }
     }
 
-    public double getTotalInlowInVeh(int ensemble) {
+    public double getTotalInflowInVeh(int ensemble) {
         try{
             return BeatsMath.sum(inflow[ensemble]);
         } catch(Exception e){
