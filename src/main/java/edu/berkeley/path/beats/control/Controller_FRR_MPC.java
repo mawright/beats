@@ -183,8 +183,8 @@ public class Controller_FRR_MPC extends Controller {
                 ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
                 if(act!=null){
                     int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
-                    act.set_split(  rrprofile.in_link_id,
-                            rrprofile.out_link_id,
+                    // this needs to be modified to account for change in rrprofile // 
+                    act.set_split(  rrprofile.route_id, rrprofile.route_id, 
                             rrprofile.vehicle_type_id,
                             rrprofile.reroutePolicy.get(clipped_time_index) );
                 }
