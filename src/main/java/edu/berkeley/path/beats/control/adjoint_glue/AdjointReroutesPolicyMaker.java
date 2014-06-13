@@ -278,7 +278,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 while (routeLink_iterator.hasNext()) {
                     routeList.add((int) BeATS_link_to_Mutable_link.get((int) routeLink_iterator.next().getLinkId()).getUnique_id());
                 }
-                Path newpath = new Path((int) tmpRoute.getId(), routeList);
+                Path newpath = new Path((int) BeATS_routeSet.getId(), (int) tmpRoute.getId(), routeList);
                 mutable_graph.addPath(newpath);
                 Iterator<Integer> pathList_iterator = mutable_graph.getPaths().get((int) tmpRoute.getId()).iterator();
                 System.out.print(tmpRoute.getId() + ": ");
