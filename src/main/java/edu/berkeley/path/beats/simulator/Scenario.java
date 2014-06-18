@@ -1514,8 +1514,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return fd_set;
     }
 
-    public DemandSet predict_demands(double time_current,double sample_dt,double horizon){
-
+    public DemandSet predict_demands(double time_current,double sample_dt,double horizon,boolean hold_last){
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1540,8 +1539,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     dp.getDemand().add(dem);
 
                     // set values
-                    dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
-                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps), ","));
+                    long type_id = getVehicleTypeIdForIndex(v);
+                    dem.setVehicleTypeId(type_id);
+                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(type_id, time_current, dp_sample_dt, horizon_steps,hold_last), ","));
                 }
             }
         }

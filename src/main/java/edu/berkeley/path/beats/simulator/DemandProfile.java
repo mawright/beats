@@ -318,28 +318,40 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 		return current_sample[e];
 	}
 
-    public double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps){
+    public double [] predict_in_VPS(long vt_id, double begin_time, double time_step, int num_steps,boolean hold_last){
 
         double [] val = BeatsMath.zeros(num_steps);
 
         if(demand_nominal==null || demand_nominal.length==0)
             return val;
 
-        for(int i=0;i<num_steps;i++){
+        int vt_index = myScenario.getVehicleTypeIndexForId(vt_id);
 
-            // time in seconds after midnight
-            double time = begin_time + i*time_step + 0.5*time_step;
+        for(int i=0;i<vehicle_type_index.length;i++){
+            if(vehicle_type_index[i]==vt_index){
+                for(int k=0;k<num_steps;k++){
 
-            // corresponding profile step
-            int profile_step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );
-            if(profile_step>=0){
-                profile_step = Math.min(profile_step,demand_nominal[0].getNumTime()-1);
-                val[i] =  demand_nominal[vehicle_type_index].get(profile_step);
-                val[i] = applyKnob(val[i]);
-                val[i] /= myScenario.getSimdtinseconds();
+                    // time in seconds after midnight
+                    double time = begin_time + k*time_step + 0.5*time_step;
+
+                    // corresponding profile step
+                    int profile_step = BeatsMath.floor( (time-getStartTime())/getDt().floatValue() );
+                    if(profile_step>=0){
+                        if(hold_last) {
+                            profile_step = Math.min(profile_step, demand_nominal[0].getNumTime() - 1);
+                            val[k] =  demand_nominal[i].get(profile_step);
+                        }
+                        else
+                            val[k] = profile_step>demand_nominal[0].getNumTime()-1 ?
+                                     0d : demand_nominal[i].get(profile_step);
+                        val[k] = applyKnob(val[k]);
+                        val[k] /= myScenario.getSimdtinseconds();
+                    }
+                }
+                break;
             }
-
         }
+
         return val;
     }
 

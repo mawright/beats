@@ -37,42 +37,45 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                                        edu.berkeley.path.beats.jaxb.InitialDensitySet ics,
                                        edu.berkeley.path.beats.jaxb.RouteSet routes,
                                        Double dt,
+                                       Double horizon_length,
                                        Properties properties) {
 
-        double[] policy = computePolicy(net,
+        return computePolicy(net,
                 fd,
                 demand,
                 splitRatios,
                 ics,
                 routes,
                 dt,
+                horizon_length,
                 properties);
 
-        ReroutePolicySet reroutePolicySet = new ReroutePolicySet();
-        Double[] policyDouble = ArrayUtils.toObject(policy);
-        ReroutePolicyProfile reroutePolicyProfile = new ReroutePolicyProfile();
-        reroutePolicyProfile.reroutePolicy = Arrays.asList(policyDouble);
-        reroutePolicySet.profiles.add(reroutePolicyProfile);
-
-        return reroutePolicySet;
+//        ReroutePolicySet reroutePolicySet = new ReroutePolicySet();
+//        Double[] policyDouble = ArrayUtils.toObject(policy);
+//        ReroutePolicyProfile reroutePolicyProfile = new ReroutePolicyProfile();
+//        reroutePolicyProfile.reroutePolicy = Arrays.asList(policyDouble);
+//        reroutePolicySet.profiles.add(reroutePolicyProfile);
+//
+//        return reroutePolicySet;
     }
 
-    public static double[] computePolicy(Network netBeATS,
+    public static ReroutePolicySet computePolicy(Network netBeATS,
                                          FundamentalDiagramSet fdBeATS,
                                          DemandSet demandSetBeATS,
                                          SplitRatioSet splitRatiosBeATS,
                                          InitialDensitySet idsBeATS,
                                          RouteSet rsBeATS,
                                          Double dtBeATS ,
+                                         Double horizon_length,
                                          Properties properties ) {
 
 	    /* This needs to NOT be hard coded */
         int delta_t = dtBeATS.intValue();
-        int time_steps = 800;
+        int time_steps = (int) (horizon_length/dtBeATS);
 
         boolean debug_on = properties.getProperty("DEBUG").compareToIgnoreCase("ON")==0;
+        ReroutePolicySet reroutePolicySet = null;
 
-        double[] result = null;
         try {
 
             print(debug_on, "Converting BeATS network to a DTAPC network...");
@@ -279,6 +282,8 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 
             print(debug_on,"Mutable graph paths ");
             // Add paths
+            // The Route ID's for a given OD should be contiguous values starting from zero.
+            int NumCompliantCommodities = 0;
             RouteSet BeATS_routeSet = rsBeATS;
             Iterator<Route> BeATS_routes_iterator = BeATS_routeSet.getRoute().iterator();
             while (BeATS_routes_iterator.hasNext()) {
@@ -290,6 +295,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                 }
                 Path newpath = new Path((int) BeATS_routeSet.getId(), (int) tmpRoute.getId(), routeList);
                 mutable_graph.addPath(newpath);
+                NumCompliantCommodities ++;
                 Iterator<Integer> pathList_iterator = mutable_graph.getPaths().get((int) tmpRoute.getId()).iterator();
                 print(debug_on,tmpRoute.getId() + ": ");
                 while (pathList_iterator.hasNext()) {
@@ -314,8 +320,8 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     .get(0).getDt();
             print(debug_on,"dt =" + split_ratios_dt);
 
-            LinkedList<HashMapPairCellsDouble> SR_list =
-                    new LinkedList<HashMapPairCellsDouble>();
+//            LinkedList<HashMapPairCellsDouble> SR_list =
+//                    new LinkedList<HashMapPairCellsDouble>();
 
             Iterator<Splitratio> non_compliant_SR_iterator =
                     splitRatiosBeATS
@@ -325,50 +331,44 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
 
             Splitratio tmp_SR;
             JsonJunctionSplitRatios[] NC_split_ratios;
-            JsonSplitRatios[] Json_SR = new JsonSplitRatios[1];
+            JsonSplitRatios[] Json_SR = new JsonSplitRatios[
+                    splitRatiosBeATS.getSplitRatioProfile()
+                    .get(0).getSplitratio().size()];
+
+            int iteratorCount=0;
             while (non_compliant_SR_iterator.hasNext()) {
                 tmp_SR = non_compliant_SR_iterator.next();
                 if (tmp_SR.getVehicleTypeId() == 0) {
                     print(debug_on,"Non-compliant split ratios:");
-                    HashMapPairCellsDouble non_compliant_split_ratios;
                     List<String> history =
                             new ArrayList<String>(Arrays.asList(tmp_SR.getContent().split(",")));
                     double[] history_table = new double[history.size()];
                     for (int i = 0; i < history_table.length; i++) {
                         history_table[i] = Double.parseDouble(history.get(i));
                     }
-                    NC_split_ratios = new JsonJunctionSplitRatios[history_table.length];
+                    NC_split_ratios = new JsonJunctionSplitRatios[history_table.length*(int)split_ratios_dt/delta_t];
                     for (int k = 0; k < history_table.length; k++) {
-                        if (k < SR_list.size()) {
-                            non_compliant_split_ratios = SR_list.get(k);
+                        int curidx;
+                        for (int kdt = 0; kdt < split_ratios_dt/delta_t; kdt++) {
+                            curidx = k*(int)split_ratios_dt/delta_t + kdt;
+                            NC_split_ratios[curidx] = new JsonJunctionSplitRatios(curidx, (int) BeATS_link_to_Mutable_link.get((int) tmp_SR.getLinkIn()).getUnique_id(),
+                                    (int) BeATS_link_to_Mutable_link.get((int) tmp_SR.getLinkOut()).getUnique_id(), (int) tmp_SR.getVehicleTypeId(), history_table[k]);
+                            print(debug_on,"beta: " + NC_split_ratios[curidx].beta + " ");
+                            print(debug_on,"c: " + NC_split_ratios[curidx].c + " ");
+                            print(debug_on,"in_id: " + NC_split_ratios[curidx].in_id + " ");
+                            print(debug_on,"out_id: " + NC_split_ratios[curidx].out_id + " ");
+                            print(debug_on,"k: " + NC_split_ratios[curidx].k + " ");
+                            print(debug_on,"");
                         }
-                        else {
-                            non_compliant_split_ratios = new HashMapPairCellsDouble();
-                            SR_list.addLast(non_compliant_split_ratios);
-                        }
-                        NC_split_ratios[k] = new JsonJunctionSplitRatios(k, (int) BeATS_link_to_Mutable_link.get((int) tmp_SR.getLinkIn()).getUnique_id(),
-                                (int) BeATS_link_to_Mutable_link.get((int) tmp_SR.getLinkOut()).getUnique_id(), (int) tmp_SR.getVehicleTypeId(), history_table[k]);
-
-                        non_compliant_split_ratios.put(
-                                new PairCells((int) BeATS_link_to_Mutable_link.get( (int)tmp_SR.getLinkIn()).getUnique_id(), BeATS_link_to_Mutable_link.get( (int) tmp_SR.getLinkOut()).getUnique_id()),
-                                history_table[k]);
-                        print(debug_on,"beta: " + NC_split_ratios[k].beta + " ");
-                        print(debug_on,"c: " + NC_split_ratios[k].c + " ");
-                        print(debug_on,"in_id: " + NC_split_ratios[k].in_id + " ");
-                        print(debug_on,"out_id: " + NC_split_ratios[k].out_id + " ");
-                        print(debug_on,"k: " + NC_split_ratios[k].k + " ");
-                        print(debug_on,"");
                     }
                     print(debug_on,"");
-                    Json_SR[0] = new JsonSplitRatios((int) BeATS_node_to_Mutable_node.get((int) splitRatiosBeATS
-                            .getSplitRatioProfile().get(0).getNodeId()).getUnique_id(), NC_split_ratios);
+                    Json_SR[iteratorCount] = new JsonSplitRatios((int) BeATS_node_to_Mutable_node.get((int)
+                            splitRatiosBeATS.getSplitRatioProfile().get(0).getNodeId()).getUnique_id(), NC_split_ratios);
                     print(debug_on,"Non-compliant split ratio node id:" + Json_SR[0].node_id);
                 }
+                iteratorCount++;
             }
             print(debug_on,"");
-            HashMapPairCellsDouble[] SR_array =
-                    new HashMapPairCellsDouble[SR_list.size()];
-            SR_list.toArray(SR_array);
 
             IntertemporalSplitRatios intTempSR = discretized_graph.split_ratios;
             intTempSR.addNonCompliantSplitRatios(discretized_graph, Json_SR);
@@ -458,7 +458,24 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     properties.getProperty("DESCENT_METHOD"));
             descentMethod.setGradient_condition(
                     Double.parseDouble(properties.getProperty("STOPPING_CRITERIA")) );
-            result = descentMethod.solve(optimizer);
+            double [] result = descentMethod.solve(optimizer);
+
+            // Converting the control to a reroutePolicyProfile.
+            // Currently assumes a single origin
+            reroutePolicySet = new ReroutePolicySet();
+            for (int j = 0; j < NumCompliantCommodities; j++) {
+                reroutePolicySet.profiles.add(new ReroutePolicyProfile((long)j, (long)0));
+//		    	  reroutePolicySet.profiles.add(new ReroutePolicyProfile());
+                reroutePolicySet.profiles.get(j).actuatorNode = new Node();
+            }
+            for (int i = 0; i < result.length/NumCompliantCommodities; i++) {
+                for (int j = 0; j < NumCompliantCommodities; j++) {
+                    reroutePolicySet.profiles.get(j).reroutePolicy.add(i, result[i*NumCompliantCommodities + j]);
+                }
+            }
+            reroutePolicySet.print();
+
+
 
             print(debug_on,"Final control");
             for (int i = 0; i < result.length; i++)
@@ -470,7 +487,7 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return result;
+        return reroutePolicySet;
     }
 
     private static void print(boolean debug,Object x){

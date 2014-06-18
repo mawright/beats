@@ -56,4 +56,19 @@ public class Route extends edu.berkeley.path.beats.jaxb.Route {
     }
 
 
+    /////////////////////////////////////////////////////////////////////
+    // public
+    /////////////////////////////////////////////////////////////////////
+
+    public Link get_link_number(int i){
+        if(ordered_links==null)
+            return null;
+        if(i>=0 & i<ordered_links.size())
+            return ordered_links.get(i);
+        else
+            return null;
+    }
+
+
+
 }
