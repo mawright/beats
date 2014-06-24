@@ -72,7 +72,8 @@ public final class Clock {
     }
 
     public boolean is_time_to_sample_abs(int dt_steps,int step_initial_abs){
-        if(rel_step<=1)
+        //if(rel_step<=1)
+        if(rel_step==0)
             return true;
         int abs_step = rel_step + step_o;
         if(abs_step<step_initial_abs)

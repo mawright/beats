@@ -20,6 +20,9 @@ public class Controller_FRR_MPC extends Controller {
     private ReroutePolicySet policy;
     private HashMap<Long,Actuator> node_actuator_map;
 
+    private long non_compliant_vehicle_type_id = 0;
+    private long compliant_vehicle_type_id = 1;
+
     private edu.berkeley.path.beats.simulator.Network network;
 
     // parameters
@@ -165,12 +168,14 @@ public class Controller_FRR_MPC extends Controller {
             policy = policy_maker.givePolicy( network,
                                               myScenario.gather_current_fds(time_current),
                                               myScenario.predict_demands(time_current,Double.NaN,pm_horizon,false),
-                                              myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
+                                              myScenario.predict_split_ratios_for_vtid(non_compliant_vehicle_type_id,time_current,Double.NaN,pm_horizon),
                                               myScenario.gather_current_densities(),
                                               myScenario.getRouteSet(),
                                               pm_dt,
                                               pm_horizon,
                                               policy_maker_properties );
+
+
 
             // update time keeper
 			time_last_opt = time_current;
@@ -206,7 +211,7 @@ public class Controller_FRR_MPC extends Controller {
                         act.set_split(
                                 first_link.getId(),
                                 second_link.getId(),
-                                rrprofile.compliant_vehicle_type_id,
+                                compliant_vehicle_type_id,
                                 rrprofile.reroutePolicy.get(clipped_time_index) );
                     }
 

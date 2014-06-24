@@ -460,6 +460,9 @@ public class AdjointReroutesPolicyMaker implements ReroutePolicyMaker {
                     Double.parseDouble(properties.getProperty("STOPPING_CRITERIA")) );
             double [] result = descentMethod.solve(optimizer);
 
+
+            optimizer.printProperties(optimizer.forwardSimulate(result,true));
+
             // Converting the control to a reroutePolicyProfile.
             // Currently assumes a single origin
             reroutePolicySet = new ReroutePolicySet();
