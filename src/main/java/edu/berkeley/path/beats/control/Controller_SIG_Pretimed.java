@@ -77,7 +77,7 @@ public class Controller_SIG_Pretimed extends Controller {
         for(Table.Row row : getTables().get("Cycle Length").getRows()){
             int plan_id = Integer.parseInt(row.get_value_for_column_name("Plan ID"));
             double cycle = Double.parseDouble(row.get_value_for_column_name("Cycle Length"));
-            PretimedPlan pp = new PretimedPlan(plan_id,cycle);
+            PretimedPlan pp = new PretimedPlan(plan_id,cycle,this);
             plan_map.put(plan_id,pp);
         }
 
@@ -85,23 +85,23 @@ public class Controller_SIG_Pretimed extends Controller {
         for(Table.Row row : getTables().get("Offsets").getRows()){
             int plan_id = Integer.parseInt(row.get_value_for_column_name("Plan ID"));
             PretimedPlan pp = plan_map.get(plan_id);
-            int intersection_id = Integer.parseInt(row.get_value_for_column_name("Intersection"));
-            ActuatorSignal signal = myScenario.get_signal_for_node(intersection_id);
+            int signal_id = Integer.parseInt(row.get_value_for_column_name("Signal"));
+            ActuatorSignal signal = (ActuatorSignal) myScenario.getActuatorWithId(signal_id);
             double offset = Double.parseDouble(row.get_value_for_column_name("Offset"));
-            pp.add_intersection_with_offset(intersection_id,signal,offset);
+            pp.add_signal_with_offset(signal_id, signal, offset);
         }
 
         // read phases/green times
         for(Table.Row row : getTables().get("Plan List").getRows()){
             int plan_id = Integer.parseInt(row.get_value_for_column_name("Plan ID"));
             PretimedPlan pp = plan_map.get(plan_id);
-            int intersection_id = Integer.parseInt(row.get_value_for_column_name("Intersection"));
+            int signal_id = Integer.parseInt(row.get_value_for_column_name("Signal"));
             String str_movA = row.get_value_for_column_name("Movement A");
             int movA = str_movA!=null ? Integer.parseInt(str_movA) : -1;
             String str_movB = row.get_value_for_column_name("Movement B");
             int movB = str_movB!=null ? Integer.parseInt(str_movB) : -1;
             double green_time = Integer.parseInt(row.get_value_for_column_name("Green Time"));
-            pp.add_intersection_stage(intersection_id,movA,movB,green_time);
+            pp.add_signal_stage(signal_id, movA, movB, green_time);
         }
 
         // process stage information, generate command lists
@@ -187,7 +187,7 @@ public class Controller_SIG_Pretimed extends Controller {
 //		else
 //			plans.get(plansequence[cperiod]).send_commands_to_signal(simtime,coordmode);
 
-        // send commands to intersection actuators
+        // send commands to signals
         plan_schedule.get(cplan_index).plan.send_commands_to_signal(sim_time, false);
 
     }
@@ -210,18 +210,21 @@ public class Controller_SIG_Pretimed extends Controller {
         protected int id;
         protected double cycle;
         protected HashMap<Integer,IntersectionPlan> intersection_plans;
-        public PretimedPlan(int id,double cycle){
+        protected Controller_SIG_Pretimed my_controller;
+
+        public PretimedPlan(int id,double cycle,Controller_SIG_Pretimed my_controller){
+            this.my_controller = my_controller;
             this.cycle = cycle;
             this.id = id;
             this.intersection_plans = new HashMap<Integer,IntersectionPlan>();
         }
 
-        public void add_intersection_with_offset(int intersection_id,ActuatorSignal signal,double offset){
-            intersection_plans.put(intersection_id, new IntersectionPlan(this,signal,intersection_id,offset));
+        public void add_signal_with_offset(int signal_id,ActuatorSignal signal,double offset){
+            intersection_plans.put(signal_id, new IntersectionPlan(this,signal,signal_id,offset));
         }
 
-        public void add_intersection_stage(int intersection_id,int movA,int movB,double green_time){
-            IntersectionPlan ip = intersection_plans.get(intersection_id);
+        public void add_signal_stage(int signal_id,int movA,int movB,double green_time){
+            IntersectionPlan ip = intersection_plans.get(signal_id);
             if(ip==null)
                 return;
             ip.add_stage(movA,movB,green_time);
@@ -301,7 +304,7 @@ public class Controller_SIG_Pretimed extends Controller {
         protected ActuatorSignal my_signal;
 
         // data
-        protected int intersection_id;
+        protected int signal_id;
         protected double offset;
         protected CircularList<Stage> stages;
 
@@ -310,10 +313,10 @@ public class Controller_SIG_Pretimed extends Controller {
         protected CircularList<SignalCommand> command_sequence;
         protected double last_command_time;
 
-        public IntersectionPlan(PretimedPlan my_plan,ActuatorSignal my_signal,int intersection_id,double offset){
+        public IntersectionPlan(PretimedPlan my_plan,ActuatorSignal my_signal,int signal_id,double offset){
             this.my_plan = my_plan;
             this.my_signal = my_signal;
-            this.intersection_id = intersection_id;
+            this.signal_id = signal_id;
             this.offset = offset;
             this.stages = new CircularList<Stage>();
         }
@@ -333,8 +336,11 @@ public class Controller_SIG_Pretimed extends Controller {
             double total_length = 0d;
             for(Stage stage : stages)
                 total_length += stage.get_length();
-            if(!BeatsMath.equals(total_length,my_plan.cycle))
-                BeatsErrorLog.addError("Total length of stages must equal cycle.");
+            if(!BeatsMath.equals(total_length,my_plan.cycle)){
+                BeatsErrorLog.addError(
+                    String.format("For signal %d in plan %d of controller %d, the sum of stages (%.1f) does not equal the cycle time (%.1f).",
+                            my_signal.getId(),my_plan.id,my_plan.my_controller.getId(),total_length,my_plan.cycle));
+            }
         }
 
         public void add_stage(int movA,int movB,double green_time){
@@ -348,7 +354,7 @@ public class Controller_SIG_Pretimed extends Controller {
             double yellow_time;
             double red_clear_time;
 
-            double intersection_time = 0;
+            double signal_time = 0;
 
             for(Stage stage : stages){
 
@@ -372,11 +378,11 @@ public class Controller_SIG_Pretimed extends Controller {
 
                 stage.yellow_time = yellow_time;
                 stage.red_time = red_clear_time;
-                stage.start_hold_time = intersection_time % my_plan.cycle;
-                stage.start_forceoff_time = (intersection_time + stage.green_time) % my_plan.cycle;
+                stage.start_hold_time = signal_time % my_plan.cycle;
+                stage.start_forceoff_time = (signal_time + stage.green_time) % my_plan.cycle;
 
-                intersection_time += stage.green_time + yellow_time + red_clear_time;
-                intersection_time %= my_plan.cycle;
+                signal_time += stage.green_time + yellow_time + red_clear_time;
+                signal_time %= my_plan.cycle;
             }
         }
 

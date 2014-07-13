@@ -123,7 +123,7 @@ public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor 
 		if(getMyLink()==null)
 			return;
 		for(int i=0;i<this.getMyScenario().getNumEnsemble();i++){
-			cumulative_inflow[i] += getMyLink().getTotalInlowInVeh(i);
+			cumulative_inflow[i] += getMyLink().getTotalInflowInVeh(i);
 			cumulative_outflow[i] += getMyLink().getTotalOutflowInVeh(i);
 		}
 		return;

@@ -25,5 +25,6 @@ public interface ReroutePolicyMaker {
                                      InitialDensitySet ics,
                                      RouteSet routes,
                                      Double dt ,
+                                     Double horizon_length,
                                      Properties properties);
 }

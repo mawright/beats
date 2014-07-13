@@ -40,8 +40,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
             if(phase.getLinkReferences()!=null && phase.getLinkReferences().getLinkReference()!=null)
                 for(LinkReference linkref : phase.getLinkReferences().getLinkReference())
                     linklist.add(scenario.getLinkWithId(linkref.getId()));
-            if(!linklist.isEmpty())
-                targ.put( NEMA.int_to_nema(phase.getNema().intValue()) , linklist );
+            targ.put( NEMA.int_to_nema(phase.getNema().intValue()) , linklist );
         }
         target = targ;
     }

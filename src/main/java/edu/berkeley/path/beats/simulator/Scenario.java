@@ -958,6 +958,17 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
         return null;
     }
+
+    public List<Actuator> get_signal_actuators(){
+        List<Actuator> x = new ArrayList<Actuator>();
+        if(actuatorset==null)
+            return x;
+        for(Actuator actuator : actuatorset.getActuators()){
+            if(actuator.myType==Actuator.Type.signal)
+                x.add(actuator);
+        }
+        return x;
+    }
 		
 	/** Get a reference to a controller by its ID.
 	 * @param id Id of the controller.
@@ -1181,6 +1192,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	}
 
 	private boolean advanceNSteps_internal(int n,boolean writefiles,OutputWriterBase outputwriter) throws BeatsException{
+
+        //if(getCurrentTimeInSeconds()%300 == 0)
+            System.out.println(getCurrentTimeInSeconds());
 
 		// advance n steps
 		for(int k=0;k<n;k++){
@@ -1443,10 +1457,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 continue;
 
             SplitRatioProfile sr_profile = N.getSplitRatioProfile();
-
             SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
             split_ratio_set.getSplitRatioProfile().add(srp);
-
 
             double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
             int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);
@@ -1480,6 +1492,50 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return split_ratio_set;
     }
 
+    public SplitRatioSet predict_split_ratios_for_vtid(long vtid,double time_current,double sample_dt,double horizon){
+
+        int v = getVehicleTypeIndexForId(vtid);
+
+        if(v<0)
+            return null;
+
+        Network network = (Network) getNetworkSet().getNetwork().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        SplitRatioSet split_ratio_set = (SplitRatioSet) factory.createSplitRatioSet();
+        for(edu.berkeley.path.beats.jaxb.Node jaxbN : network.getListOfNodes()){
+            Node N = (Node) jaxbN;
+            if(N.istrivialsplit())
+                continue;
+            SplitRatioProfile sr_profile = N.getSplitRatioProfile();
+            SplitRatioProfile srp = (SplitRatioProfile) factory.createSplitRatioProfile();
+            split_ratio_set.getSplitRatioProfile().add(srp);
+
+            double srp_sample_dt = Double.isNaN(sample_dt) ? sr_profile.getDt() : sample_dt;
+            int horizon_steps = BeatsMath.round(horizon/srp_sample_dt);
+
+            srp.setDt(srp_sample_dt);
+            srp.setNodeId(N.getId());
+            for(Input in : N.getInputs().getInput()){
+                for(Output out : N.getOutputs().getOutput()){
+                    Splitratio splitratio = factory.createSplitratio();
+                    // set values
+                    splitratio.setLinkIn(in.getLinkId());
+                    splitratio.setLinkOut(out.getLinkId());
+                    splitratio.setVehicleTypeId(getVehicleTypeIdForIndex(v));
+                    double [] sr = sr_profile.predict(
+                            in.getLinkId(),
+                            out.getLinkId(),
+                            v,time_current, srp_sample_dt, horizon_steps);
+                    if(sr==null)
+                        continue;
+                    srp.getSplitratio().add(splitratio);
+                    splitratio.setContent(BeatsFormatter.csv(sr, ","));
+                }
+            }
+        }
+        return split_ratio_set;
+    }
+
     public FundamentalDiagramSet gather_current_fds(double time_current){
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1500,8 +1556,8 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         return fd_set;
     }
 
-    public DemandSet predict_demands(double time_current,double sample_dt,double horizon){
-
+    /* in vps */
+    public DemandSet predict_demands(double time_current,double sample_dt,double horizon,boolean hold_last){
 
         Network network = (Network) getNetworkSet().getNetwork().get(0);
         JaxbObjectFactory factory = new JaxbObjectFactory();
@@ -1526,8 +1582,9 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                     dp.getDemand().add(dem);
 
                     // set values
-                    dem.setVehicleTypeId(getVehicleTypeIdForIndex(v));
-                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(v, time_current, dp_sample_dt, horizon_steps), ","));
+                    long type_id = getVehicleTypeIdForIndex(v);
+                    dem.setVehicleTypeId(type_id);
+                    dem.setContent(BeatsFormatter.csv(dem_profile.predict_in_VPS(type_id, time_current, dp_sample_dt, horizon_steps,hold_last), ","));
                 }
             }
         }

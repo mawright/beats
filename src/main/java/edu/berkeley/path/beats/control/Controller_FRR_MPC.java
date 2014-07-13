@@ -20,6 +20,9 @@ public class Controller_FRR_MPC extends Controller {
     private ReroutePolicySet policy;
     private HashMap<Long,Actuator> node_actuator_map;
 
+    private long non_compliant_vehicle_type_id = 0;
+    private long compliant_vehicle_type_id = 1;
+
     private edu.berkeley.path.beats.simulator.Network network;
 
     // parameters
@@ -164,12 +167,15 @@ public class Controller_FRR_MPC extends Controller {
 			// call policy maker (everything in SI units)
             policy = policy_maker.givePolicy( network,
                                               myScenario.gather_current_fds(time_current),
-                                              myScenario.predict_demands(time_current,Double.NaN,pm_horizon),
-                                              myScenario.predict_split_ratios(time_current,Double.NaN,pm_horizon),
+                                              myScenario.predict_demands(time_current,Double.NaN,pm_horizon,false),
+                                              myScenario.predict_split_ratios_for_vtid(non_compliant_vehicle_type_id,time_current,Double.NaN,pm_horizon),
                                               myScenario.gather_current_densities(),
                                               myScenario.getRouteSet(),
                                               pm_dt,
+                                              pm_horizon,
                                               policy_maker_properties );
+
+
 
             // update time keeper
 			time_last_opt = time_current;
@@ -180,13 +186,35 @@ public class Controller_FRR_MPC extends Controller {
             double time_since_last_pm_call = time_current-time_last_opt;
             int time_index = (int) (time_since_last_pm_call/pm_dt);
             for(ReroutePolicyProfile rrprofile : policy.profiles){
-                ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
+//                ActuatorCMS act = (ActuatorCMS) node_actuator_map.get(rrprofile.actuatorNode.getId());
+
+                // This is a hack. Really the actuator should be passed to and returned by
+                // the policy maker. Idea is to replace RouteSet with Hasmap<actuator id,RouteSet> in
+                // givePolicy parameters.
+                ActuatorCMS act = (ActuatorCMS) actuators.get(0);
+
                 if(act!=null){
-                    int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
-                    act.set_split(  rrprofile.in_link_id,
-                            rrprofile.out_link_id,
-                            rrprofile.vehicle_type_id,
-                            rrprofile.reroutePolicy.get(clipped_time_index) );
+
+                    Link first_link=null;
+                    Link second_link=null;
+
+                    Route route = myScenario.getRouteWithId(rrprofile.route_id);
+
+                    if(route!=null) {
+                        first_link = route.get_link_number(0);
+                        second_link = route.get_link_number(1);
+                    }
+
+                    if(first_link!=null & second_link!=null){
+                        int clipped_time_index = Math.min(time_index,rrprofile.reroutePolicy.size()-1);
+                        // this needs to be modified to account for change in rrprofile //
+                        act.set_split(
+                                first_link.getId(),
+                                second_link.getId(),
+                                compliant_vehicle_type_id,
+                                rrprofile.reroutePolicy.get(clipped_time_index) );
+                    }
+
                 }
             }
         }

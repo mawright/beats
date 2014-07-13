@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.actuator.ActuatorSignal;
+import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.jaxb.OutputRequest;
 import edu.berkeley.path.beats.jaxb.SimulationOutput;
 
@@ -10,9 +12,14 @@ import java.util.List;
 public class PerformanceCalculator {
 
     protected OutputRequest output_request;
-    protected enum PerformanceMeasure {veh_time,veh_distance,delay,travel_time,speed_contour};
+    protected enum Quantity { veh_time,
+                              veh_distance,
+                              delay,
+                              travel_time,
+                              speed_contour,
+                              signal_events };
     protected Scenario myScenario;
-    protected List<CumulativeMeasure> pm_cumulative;
+    protected List<Logger> loggers = new ArrayList<Logger>();
 
     /////////////////////////////////////////////////////////////////////
     // construction
@@ -29,16 +36,14 @@ public class PerformanceCalculator {
     public void populate(Scenario myScenario){
 
         this.myScenario = myScenario;
-        pm_cumulative = new ArrayList<CumulativeMeasure>();
         for(SimulationOutput sim_out : output_request.getSimulationOutput()){
-            PerformanceMeasure cpm = PerformanceMeasure.valueOf(sim_out.getPerformance());
+            Quantity cpm = Quantity.valueOf(sim_out.getQuantity());
             switch(cpm){
                 case delay:
                 case veh_distance:
                 case veh_time:
                 case speed_contour:
-                    pm_cumulative.add(
-                            new CumulativeMeasure(
+                    loggers.add( new CumulativeMeasure(
                                     myScenario,
                                     sim_out.getFile(),
                                     sim_out.getDt(),
@@ -52,42 +57,38 @@ public class PerformanceCalculator {
                     break;
                 case travel_time:
                     break;
+                case signal_events:
+                    loggers.add( new SignalLogger( myScenario,
+                                                   sim_out.getFile(),
+                                                   sim_out.getDt(),
+                                                   sim_out.isAggTime() ) );
             }
         }
-
     }
 
     protected void validate() {
-        for(CumulativeMeasure cm : pm_cumulative)
-            cm.validate();
+        for(Logger log : loggers)
+            log.validate();
     }
 
     public void reset() {
-        if(pm_cumulative==null)
-            return;
-        for(CumulativeMeasure cm : pm_cumulative)
-            cm.reset();
+        for(Logger log : loggers)
+            log.reset();
     }
 
     protected void update(){
-        if(pm_cumulative==null)
-            return;
-        for(CumulativeMeasure cm : pm_cumulative){
-
-            // update values
-            cm.update();
-
-            // write output
-            if(!cm.agg_time && myScenario.getClock().getRelativeTimeStep()%cm.dt_steps==0)
-                cm.write_output(myScenario.getClock().getT());
+        for(Logger log : loggers){
+            log.update();
+            if(!log.agg_time && myScenario.getClock().getRelativeTimeStep()%log.dt_steps==0)
+                log.write_output(myScenario.getClock().getT());
         }
     }
 
     protected void close_output(){
-        for(CumulativeMeasure cm : pm_cumulative){
-            if(cm.agg_time)
-                cm.write_output(myScenario.getClock().getT());
-            cm.close_output_file();
+        for(Logger log : loggers){
+            if(log.agg_time)
+                log.write_output(myScenario.getClock().getT());
+            log.close_output_file();
         }
     }
 
@@ -95,21 +96,88 @@ public class PerformanceCalculator {
     // inner class
     /////////////////////////////////////////////////////////////////////
 
-    protected class CumulativeMeasure{
+    protected abstract class Logger {
 
+        protected boolean agg_time;
         protected int dt_steps;
         protected int num_sample;
         protected double sim_dt;
-
         protected String filename;
         protected Writer filewriter;
+        protected Scenario myScenario;
+
+        public Logger(boolean agg_t,String fname,Scenario myScenario,Double out_dt){
+
+            this.myScenario = myScenario;
+            agg_time = agg_t;
+
+            // file
+            if(fname.contains("."))
+                fname = fname.split("\\.")[0];
+            filename = fname+".txt";
+
+            // dt
+            sim_dt = myScenario.getSimdtinseconds();
+            dt_steps = out_dt==null?1:BeatsMath.round(out_dt/sim_dt);
+        }
+
+        protected final void open_output_file() {
+            if(filewriter!=null)
+                return;
+            try{
+                filewriter = new FileWriter(new File(filename));
+            }
+            catch(IOException e){
+                // DO SOMETHING?
+                filewriter = null;
+            }
+        }
+
+        protected final void close_output_file(){
+            try{
+                filewriter.close();
+            }
+            catch(IOException e){
+                // DO SOMETHING?
+            }
+            finally{
+                filewriter = null;
+            }
+        }
+
+        protected final void write_output(double time){
+            try{
+                for(String str : make_output_string(time))
+                    filewriter.write(str+"\n");
+            }
+            catch(IOException e)
+            {
+                System.out.println("Unable to write");
+            }
+            reset_value();
+        }
+
+        protected final void reset(){
+            open_output_file();
+            reset_value();
+        }
+
+        protected abstract ArrayList<String> make_output_string(double time);
+
+        protected abstract void reset_value();
+
+        protected abstract void validate();
+
+        protected abstract void update();
+    }
+
+    protected class CumulativeMeasure extends Logger {
 
         // value.get(k)[e][l][v] is pm for time k, link l, vehicle type v,ensemble e.
         protected double [][] value;
-        protected PerformanceMeasure pm;
+        protected Quantity pm;
 
         // flags for aggregating the various dimensions
-        protected boolean agg_time;
         protected boolean agg_links;
         protected boolean agg_ensemble;
         protected boolean agg_vehicle_type;
@@ -127,9 +195,10 @@ public class PerformanceCalculator {
         protected List<Link> link_list;
         protected boolean isroute;
 
-        public CumulativeMeasure(Scenario scenario,String fname,Double out_dt,boolean agg_t,boolean agg_l,boolean agg_e,boolean agg_vt,Route route,int vehicle_type_index,PerformanceMeasure pmname){
+        public CumulativeMeasure(Scenario scenario,String fname,Double out_dt,boolean agg_t,boolean agg_l,boolean agg_e,boolean agg_vt,Route route,int vehicle_type_index,Quantity pmname){
 
-            agg_time = agg_t;
+            super(agg_t,fname,scenario,out_dt);
+
             agg_links = agg_l;
             agg_ensemble = agg_e;
             agg_vehicle_type = agg_vt;
@@ -138,21 +207,12 @@ public class PerformanceCalculator {
             vt_index = vehicle_type_index;
 
             // special for speed contour
-            if(pm==PerformanceMeasure.speed_contour){
+            if(pm== Quantity.speed_contour){
                 agg_time = false;
                 agg_links = false;
                 agg_ensemble = false;
                 agg_vehicle_type = true;
             }
-
-            // file
-            if(fname.contains("."))
-                fname = fname.split("\\.")[0];
-            filename = fname+".txt";
-
-            // dt
-            sim_dt = scenario.getSimdtinseconds();
-            dt_steps = out_dt==null?1:BeatsMath.round(out_dt/sim_dt);
 
             // links to consider
             link_list = new ArrayList<Link>();
@@ -169,27 +229,54 @@ public class PerformanceCalculator {
             nL = agg_links ? 1 : link_list.size();
         }
 
-        protected void reset(){
-            open_output_file();
-            reset_value();
+        @Override
+        protected ArrayList<String> make_output_string(double time){
+            int ee,ii;
+            switch(pm){
+                case veh_time:
+                case delay:
+                    for(ee=0;ee<value.length;ee++)
+                        for(ii=0;ii<value[ee].length;ii++)
+                            value[ee][ii] *= sim_dt;
+                    break;
+                case speed_contour:
+                    for(ee=0;ee<value.length;ee++)
+                        for(ii=0;ii<value[ee].length;ii++)
+                            value[ee][ii] /= num_sample;
+                    break;
+            }
+
+            ArrayList<String> strlist = new ArrayList<String>();
+            for(ee=0;ee<value.length;ee++){
+                String str = String.format("%f\t%d",time,ee);
+                for(ii=0;ii<value[ee].length;ii++)
+                    str += String.format("\t%f",value[ee][ii]);
+                strlist.add(str);
+            }
+
+            return strlist;
+
         }
 
+        @Override
         protected void reset_value(){
             value = new double [nE][nL];
             num_sample = 0;
         }
 
+        @Override
         protected void validate(){
 
             if(!agg_vehicle_type && vt_index<0)
                 BeatsErrorLog.addError("Performance calculator: Please specify a vehicle type.");
 
             // speed contours require a route
-            if(pm==PerformanceMeasure.speed_contour && !isroute)
+            if(pm== Quantity.speed_contour && !isroute)
                 BeatsErrorLog.addError("Performance calculator: Please specify a route for the speed contour.");
 
         }
 
+        @Override
         protected void update(){
 
             int i,e;
@@ -243,68 +330,60 @@ public class PerformanceCalculator {
             num_sample++;
 
         }
+    }
 
-        protected void open_output_file() {
-            if(filewriter!=null)
-                return;
-            try{
-                filewriter = new FileWriter(new File(filename));
-            }
-            catch(IOException e){
-                // DO SOMETHING?
-                filewriter = null;
-            }
+    public class SignalLogger extends Logger {
+
+        private List<SignalEvent> signal_events = new ArrayList<SignalEvent>();
+
+        public SignalLogger(Scenario scenario,String fname,Double out_dt,boolean agg_t){
+            super(agg_t,fname,scenario,out_dt);
+            for( Actuator actuator : scenario.get_signal_actuators())
+                ((ActuatorSignal) actuator).register_event_logger(this);
         }
 
-        protected void close_output_file(){
-            try{
-                filewriter.close();
-            }
-            catch(IOException e){
-                // DO SOMETHING?
-            }
-            finally{
-                filewriter = null;
-            }
+        public void send_event(long signal_id,NEMA.ID nema, ActuatorSignal.BulbColor bulbcolor){
+            double timestamp = myScenario.getCurrentTimeInSeconds();
+            signal_events.add(new SignalEvent(timestamp,signal_id,nema,bulbcolor));
         }
 
-        protected void write_output(double time){
-            int ii,ee;
+        @Override
+        protected ArrayList<String> make_output_string(double time){
+            ArrayList<String> strlist = new ArrayList<String>();
+            for(SignalEvent signal_event : signal_events)
+                strlist.add(signal_event.toString());
+            return strlist;
+        }
 
-            // if veh_time or delay, multiply by dt
-            // if speed contour, divide by number of samples
-            switch(pm){
-                case veh_time:
-                case delay:
-                    for(ee=0;ee<value.length;ee++)
-                        for(ii=0;ii<value[ee].length;ii++)
-                            value[ee][ii] *= sim_dt;
-                    break;
-                case speed_contour:
-                    for(ee=0;ee<value.length;ee++)
-                        for(ii=0;ii<value[ee].length;ii++)
-                            value[ee][ii] /= num_sample;
-                    break;
+        @Override
+        protected void reset_value(){
+            signal_events.clear();
+        }
 
-            }
+        @Override
+        protected void validate(){};
 
-            // write to file
-            for(ee=0;ee<value.length;ee++){
-                String str = String.format("%f\t%d",time,ee);
-                for(ii=0;ii<value[ee].length;ii++)
-                    str += String.format("\t%f",value[ee][ii]);
-                str += "\n";
-                try{
-                    filewriter.write(str);
-                }
-                catch(IOException e)
-                {
-                    System.out.println("Unable to write");
-                }
-            }
+        @Override
+        protected void update(){};
+    }
 
-            // reset values
-            reset_value();
+    public class SignalEvent {
+        private double timestamp;
+        private long signal_id;
+        private NEMA.ID nema;
+        private ActuatorSignal.BulbColor bulbcolor;
+        public SignalEvent(double timestamp,long signal_id,NEMA.ID nema, ActuatorSignal.BulbColor bulbcolor){
+            this.timestamp = timestamp;
+            this.signal_id = signal_id;
+            this.nema = nema;
+            this.bulbcolor = bulbcolor;
+        }
+        @Override
+        public String toString() {
+            return String.format("%.2f\t%d\t%d\t%d",timestamp,
+                    signal_id,
+                    NEMA.nema_to_int(nema),
+                    ActuatorSignal.color_to_int(bulbcolor));
         }
 
     }

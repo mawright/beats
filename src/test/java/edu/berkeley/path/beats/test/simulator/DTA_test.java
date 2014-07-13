@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.test.simulator;
 
+import edu.berkeley.path.beats.control.ReroutePolicySet;
 import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -35,7 +36,7 @@ public class DTA_test {
         properties.setProperty("OPTIMIZER_TYPE","FINITE_DIFFERENCE");
         properties.setProperty("STOPPING_CRITERIA","10E-9");
 
-        double[] result = AdjointReroutesPolicyMaker.computePolicy(
+        ReroutePolicySet result = AdjointReroutesPolicyMaker.computePolicy(
                 scenario.getNetworkSet().getNetwork().get(0),
                 scenario.getFundamentalDiagramSet(),
                 scenario.getDemandSet(),
@@ -43,6 +44,7 @@ public class DTA_test {
                 scenario.getInitialDensitySet(),
                 scenario.getRouteSet(),
                 5d,
+                720d,
                 properties);
 
         org.junit.Assert.assertNotNull(result);
