@@ -170,7 +170,7 @@ public final class Runner {
                         "\tNUM_REPS : Number of repetitions. (default=1)\n" +
                         "\tUNCERTAINTY_MODEL : Uncertainty model <gaussian,uniform>. (default=gaussian)\n" +
                         "\tNODE_FLOW_SOLVER : Node model <proportional,symmetric>. (default=proportional)\n" +
-                        "\tNODE_SPLIT_RATIO_SOLVER : Algorithm for unknown splits <A,B,C>. (default=A) \n" +
+                        "\tNODE_SPLIT_RATIO_SOLVER : Algorithm for unknown splits <A,B,C,HAMBURGER>. (default=A) \n" +
                         "\tRUN_MODE : run mode <normal,fw_fr_split_output>. (default=normal)\n" +
                         "\tPERFORMANCE : Configuration file for performance output.\n";
         return str;

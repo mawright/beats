@@ -54,7 +54,7 @@ public class Controller {
 	protected double dtinseconds;
 	protected int samplesteps;
 	protected boolean ison;
-	protected ArrayList<ActivationTimes> activationTimes;
+//	protected ArrayList<ActivationTimes> activationTimes;
 	protected java.util.Map<String, Table> tables;
 
 	public static enum Algorithm {
@@ -97,7 +97,7 @@ public class Controller {
 			this.myType = myType;
 			this.jaxbController = jaxbC;
 			this.ison = false;
-			this.activationTimes=new ArrayList<ActivationTimes>();
+//			this.activationTimes=new ArrayList<ActivationTimes>();
 			this.dtinseconds = jaxbC.getDt();		// assume given in seconds
 
 			// Copy tables
@@ -108,12 +108,12 @@ public class Controller {
 				tables.put(table.getName(), new Table(table));
 			}
 			
-			// Get activation times and sort	
-			if (jaxbC.getActivationIntervals()!=null)
-				for (edu.berkeley.path.beats.jaxb.Interval tinterval : jaxbC.getActivationIntervals().getInterval())		
-					if(tinterval!=null)
-						activationTimes.add(new ActivationTimes(tinterval.getStartTime(),tinterval.getEndTime()));
-			Collections.sort(activationTimes);
+//			// Get activation times and sort
+//			if (jaxbC.getActivationIntervals()!=null)
+//				for (edu.berkeley.path.beats.jaxb.Interval tinterval : jaxbC.getActivationIntervals().getInterval())
+//					if(tinterval!=null)
+//						activationTimes.add(new ActivationTimes(tinterval.getStartTime(),tinterval.getEndTime()));
+//			Collections.sort(activationTimes);
 
             // below this does not apply for scenario-less controllers  ..............................
             if(myScenario==null)
@@ -161,7 +161,10 @@ public class Controller {
 	protected void populate(Object jaxbobject) {
 	}
 
-	/** Update the state of the component.
+    protected void initialize_actuators(){
+    }
+
+    /** Update the state of the component.
 	 * 
 	 * <p> Called by {@link Scenario#run} at each simulation time step.
 	 * This function updates the internal state of the component.
@@ -193,12 +196,12 @@ public class Controller {
 		if(!BeatsMath.isintegermultipleof(dtinseconds,myScenario.getSimdtinseconds()))
 			BeatsErrorLog.addError("Time step for controller ID=" +getId() + " is not a multiple of the simulation time step.");
 
-		// check that activation times are valid.
-		for (int i=0; i<activationTimes.size(); i++ ){
-			activationTimes.get(i).validate();
-			if (i<activationTimes.size()-1)
-				activationTimes.get(i).validateWith(activationTimes.get(i+1));
-		}
+//		// check that activation times are valid.
+//		for (int i=0; i<activationTimes.size(); i++ ){
+//			activationTimes.get(i).validate();
+//			if (i<activationTimes.size()-1)
+//				activationTimes.get(i).validateWith(activationTimes.get(i+1));
+//		}
 
 	}
 
@@ -210,8 +213,8 @@ public class Controller {
 	 * implementation of this method, so it need not be implemented by other event classes.
 	 */
 	protected void reset() {
-		//switch on conroller if it is always on by default.
-		if (activationTimes==null || activationTimes.isEmpty())
+//		//switch on conroller if it is always on by default.
+//		if (activationTimes==null || activationTimes.isEmpty())
 			ison = true;
 	}
 		
@@ -251,38 +254,38 @@ public class Controller {
 	
 	// Returns the start and end times of the controller.
 	
-   	/** Returns the first start time of the controller. This is the minimum of the start
-   	 * times of all activation periods of the controller. 
-   	 * @return A double with the start time for the controller. 
-   	 */
-	protected double getFirstStartTime(){
-        // this should not be used if no scenario is defined
-        if(myScenario==null)
-            return Double.NaN;
-		double starttime=myScenario.getTimeStart();
-		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
-			if (ActTimesIndex == 0)
-				starttime=activationTimes.get(ActTimesIndex).getBegintime();
-			else
-				starttime=Math.min(starttime,activationTimes.get(ActTimesIndex).getBegintime());
-		return starttime;
-	}
+//   	/** Returns the first start time of the controller. This is the minimum of the start
+//   	 * times of all activation periods of the controller.
+//   	 * @return A double with the start time for the controller.
+//   	 */
+//	protected double getFirstStartTime(){
+//        // this should not be used if no scenario is defined
+//        if(myScenario==null)
+//            return Double.NaN;
+//		double starttime=myScenario.getTimeStart();
+//		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
+//			if (ActTimesIndex == 0)
+//				starttime=activationTimes.get(ActTimesIndex).getBegintime();
+//			else
+//				starttime=Math.min(starttime,activationTimes.get(ActTimesIndex).getBegintime());
+//		return starttime;
+//	}
 	
-   	/** Returns the last end time of the controller. This is the maximum of the end
-   	 * times of all activation periods of the controller. 
-   	 * @return A double with the end time for the controller. 
-   	 */
-	protected double getlastEndTime(){
-        if(myScenario==null)
-            return Double.NaN;
-		double endtime=myScenario.getTimeEnd();
-		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
-			if (ActTimesIndex == 0)
-				endtime=activationTimes.get(ActTimesIndex).getEndtime();
-			else
-				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
-		return endtime;
-	}
+//   	/** Returns the last end time of the controller. This is the maximum of the end
+//   	 * times of all activation periods of the controller.
+//   	 * @return A double with the end time for the controller.
+//   	 */
+//	protected double getlastEndTime(){
+//        if(myScenario==null)
+//            return Double.NaN;
+//		double endtime=myScenario.getTimeEnd();
+//		for (int ActTimesIndex = 0; ActTimesIndex < activationTimes.size(); ActTimesIndex++ )
+//			if (ActTimesIndex == 0)
+//				endtime=activationTimes.get(ActTimesIndex).getEndtime();
+//			else
+//				endtime=Math.max(endtime,activationTimes.get(ActTimesIndex).getEndtime());
+//		return endtime;
+//	}
 
 	private static Logger logger = Logger.getLogger(Controller.class);
 
@@ -316,9 +319,9 @@ public class Controller {
 		return samplesteps;
 	}
 
-	public ArrayList<ActivationTimes> getActivationTimes() {
-		return activationTimes;
-	}
+//	public ArrayList<ActivationTimes> getActivationTimes() {
+//		return activationTimes;
+//	}
 
 	public java.util.Map<String, Table> getTables() {
 		return tables;

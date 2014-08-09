@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.util.HashMap;
+
 final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
 
 	// does not change ....................................

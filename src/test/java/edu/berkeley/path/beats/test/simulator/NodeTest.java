@@ -2,14 +2,21 @@ package edu.berkeley.path.beats.test.simulator;
 
 import static org.junit.Assert.*;
 
+import java.lang.reflect.Field;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import edu.berkeley.path.beats.simulator.BeatsException;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_A;
+import edu.berkeley.path.beats.simulator.Node_SplitRatioSolver_HAMBURGER;
 import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.BeatsErrorLog.BeatsError;
 
 public class NodeTest {
 
@@ -101,6 +108,57 @@ public class NodeTest {
 		assertTrue(Double.isNaN(node.getSplitRatio(0, 100, 0)));
 		assertTrue(Double.isNaN(node.getSplitRatio(0, 0, -1)));
 		assertTrue(Double.isNaN(node.getSplitRatio(0, 0, 100)));
-	}	
+	}
+	
+	@Test
+	public void test_attatch_Node_SpitRatioSolver_HAMBURGER_node() throws Exception
+	{
+		config_file = "_smalltest_Hamburger_SplitRatioSolver.xml";
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		if(scenario==null)
+			fail("scenario did not load");
+		
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		String uncertaintymodel = "gaussian";
+		String nodeflowsolver = "proportional";
+		String nodesrsolver = "HAMBURGER";
 
+		scenario.initialize(timestep, starttime, endtime, numEnsemble, uncertaintymodel,nodeflowsolver,nodesrsolver);
+		
+		Node node = scenario.getNodeWithId(2);
+		
+		Field node_sr_solver_field = Node.class.getDeclaredField("node_sr_solver");
+		node_sr_solver_field.setAccessible(true);
+		Object node_sr_solver = node_sr_solver_field.get(node);
+		assertEquals("Test of of node_sr_solver", node_sr_solver.getClass(), Node_SplitRatioSolver_HAMBURGER.class);
+	}
+	
+	@Test
+	public void test_attatch_Node_SpitRatioSolver_HAMBURGER_normal_node() throws Exception
+	{
+		config_file = "_smalltest_Hamburger_SplitRatioSolver.xml";
+		Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+		if(scenario==null)
+			fail("scenario did not load");
+		
+		double timestep = Defaults.getTimestepFor(config_file);
+		double starttime = 0;
+		double endtime = 300;
+		int numEnsemble = 1;
+		String uncertaintymodel = "gaussian";
+		String nodeflowsolver = "proportional";
+		String nodesrsolver = "HAMBURGER";
+
+		scenario.initialize(timestep, starttime, endtime, numEnsemble, uncertaintymodel,nodeflowsolver,nodesrsolver);
+		
+		Node node = scenario.getNodeWithId(5);
+		
+		Field node_sr_solver_field = Node.class.getDeclaredField("node_sr_solver");
+		node_sr_solver_field.setAccessible(true);
+		Object node_sr_solver = node_sr_solver_field.get(node);
+		assertEquals("Test of of node_sr_solver", node_sr_solver.getClass(), Node_SplitRatioSolver_A.class);
+	}
 }

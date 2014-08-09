@@ -62,9 +62,6 @@ public final class ActuatorSignal extends Actuator {
 
     public void set_command(ArrayList<SignalCommand> command){
 
-        if(!command.isEmpty())
-            System.out.println(command);
-
         for(SignalCommand c : command){
             SignalPhase p = nema2phase.get(c.nema);
             if(p==null)
@@ -224,6 +221,13 @@ public final class ActuatorSignal extends Actuator {
 
                 phase.bulbcolor = new_bulb_color;
 
+                if(DebugFlags.signal_events)
+                    System.out.println(
+                            myNode.getMyNetwork().getMyScenario().getCurrentTimeInSeconds() + "\t" +
+                            "signal=" + getId() + "\t" +
+                            "phase=" + phase.myNEMA + "\t" +
+                            "color=" + phase.bulbcolor );
+
                 // log
                 if(signal_logger!=null)
                     signal_logger.send_event(getId(),phase.myNEMA,phase.bulbcolor);
@@ -282,11 +286,24 @@ public final class ActuatorSignal extends Actuator {
 	// public methods
 	/////////////////////////////////////////////////////////////////////
 
+    // hack for call to deploy by Controller.initialize_actuators
+    public void deploy(double current_time_in_seconds,Controller caller){
+        if(caller==myController)
+            deploy(current_time_in_seconds);
+    }
+
 	public SignalPhase get_phase_with_nema(NEMA.ID nema){
 		if(nema==null)
 			return null;
 		return nema2phase.get(nema);
 	}
+
+    public void set_phase_state(NEMA.ID nema,BulbColor bulb_color){
+        SignalPhase phase = nema2phase.get(nema);
+        if(phase==null)
+            return;
+        phase.set_bulb_color(bulb_color);
+    }
 
     public Long get_node_id(){
         return myNode==null ? null : myNode.getId();
@@ -442,6 +459,10 @@ public final class ActuatorSignal extends Actuator {
         // protected
         /////////////////////////////////////////////////////////////////////
 
+        protected void set_bulb_color(BulbColor b){
+            this.bulbcolor = b;
+        }
+
 //        protected void updatePermitOpposingHold(){
 //            switch(bulbcolor){
 //                case GREEN:
@@ -467,7 +488,7 @@ public final class ActuatorSignal extends Actuator {
             double bulbt = bulbtimer.getT();
 
             if(!protectd)
-                return permissive ? null : ActuatorSignal.BulbColor.RED;
+                return permissive ? ActuatorSignal.BulbColor.DARK : ActuatorSignal.BulbColor.RED;
 
             // execute this state machine until "done". May be more than once if
             // some state has zero holding time (eg yellowtime=0)
@@ -564,6 +585,10 @@ public final class ActuatorSignal extends Actuator {
 
         public boolean is_red(){
             return bulbcolor==BulbColor.RED;
+        }
+
+        public BulbColor get_bulb_color(){
+            return bulbcolor;
         }
 
         public double getYellowtime() {

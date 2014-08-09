@@ -49,7 +49,7 @@ public class Controller_SIG_Pretimed extends Controller {
 
 	/////////////////////////////////////////////////////////////////////
 	// Construction
-	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////tr////////////////////
 
 	public Controller_SIG_Pretimed(Scenario myScenario,edu.berkeley.path.beats.jaxb.Controller c) {
 		super(myScenario,c,Algorithm.SIG_Pretimed);
@@ -124,6 +124,24 @@ public class Controller_SIG_Pretimed extends Controller {
         cplan_index = 0;
         done = plan_schedule.size()==1;
 	}
+
+    @Override
+    protected void initialize_actuators(){
+
+        PretimedPlan current_plan = plan_schedule.get(cplan_index).plan;
+
+        // mimic a 1 cycle run
+        double init_time = myScenario.getCurrentTimeInSeconds();
+        for(double sim_time=init_time;sim_time<init_time+current_plan.cycle;sim_time+=myScenario.getSimdtinseconds()){
+
+            // controller "update"
+            current_plan.send_commands_to_signal(sim_time, false);
+
+            // actuator "deploy"
+            for (IntersectionPlan int_plan : current_plan.intersection_plans.values())
+                int_plan.my_signal.deploy(sim_time,this);
+        }
+    }
 
 	@Override
 	protected void validate() {
@@ -515,6 +533,9 @@ public class Controller_SIG_Pretimed extends Controller {
         }
         public T prev(){
             return coll.get((cur-1)%coll.size());
+        }
+        public boolean at_end(){
+            return cur==coll.size()-1;
         }
     }
 }

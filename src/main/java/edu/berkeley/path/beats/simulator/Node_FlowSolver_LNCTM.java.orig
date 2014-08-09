@@ -70,6 +70,7 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
         for(i=0;i<nIn;i++)
             applyratio[i] = Double.NEGATIVE_INFINITY;
         
+<<<<<<< HEAD
         for(j=0;j<nOut;j++){
 
             // re-compute known output demands .........................
@@ -82,13 +83,36 @@ public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
             if(BeatsMath.greaterthan(demand_supply.getSupply(j),0d))
                 dsratio[j] = Math.max( outDemandKnown[j] / demand_supply.getSupply(j) , 1d );
             else
-	            dsratio[j] = Double.POSITIVE_INFINITY;
+                dsratio[j] = 1d;
 
             // reflect ratios back on inputs
             for(i=0;i<nIn;i++)
                 if(iscontributor[i][j])
                     applyratio[i] = Math.max(dsratio[j],applyratio[i]);
 
+=======
+        for(e=0;e<numEnsemble;e++){
+	        for(j=0;j<nOut;j++){
+	        	
+	        	// re-compute known output demands .........................
+				outDemandKnown[e][j] = 0d;
+	            for(i=0;i<nIn;i++)
+	            	for(k=0;k<numVehicleTypes;k++)
+	            		outDemandKnown[e][j] += demand_supply.getDemand(e,i,k)*sr.get(i,j,k);
+	            
+	            // compute and sort output demand/supply ratio .............
+	            if(BeatsMath.greaterthan(demand_supply.getSupply(e,j),0d))
+	            	dsratio[e][j] = Math.max( outDemandKnown[e][j] / demand_supply.getSupply(e,j) , 1d );
+	            else
+	            	dsratio[e][j] = Double.POSITIVE_INFINITY;
+	            
+	            // reflect ratios back on inputs
+	            for(i=0;i<nIn;i++)
+	            	if(iscontributor[i][j])
+	            		applyratio[e][i] = Math.max(dsratio[e][j],applyratio[e][i]);
+	            	
+	        }
+>>>>>>> master
         }
 
         

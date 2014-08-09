@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
+
 public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 
     @Override
@@ -48,7 +50,12 @@ public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.Object
 		return new DemandProfile();
 	}
 
-	@Override
+    @Override
+    public DownstreamBoundaryCapacitySet createDownstreamBoundaryCapacitySet() {
+        return new CapacitySet();
+    }
+
+    @Override
 	public edu.berkeley.path.beats.jaxb.DemandSet createDemandSet() {
 		return new DemandSet();
 	}

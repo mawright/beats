@@ -26,7 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
-final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
+public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
 
 	// does not change ....................................
 	private Scenario myScenario;

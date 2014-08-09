@@ -52,8 +52,6 @@ public class Controller_IRM_Alinea extends Controller {
 											// Otherwise it is assigned the critical density, which may change with fd profile.  
 	private double target_vehicles;			// [veh/meter/lane]
 
-    private int logger_id;
-
     /////////////////////////////////////////////////////////////////////
 	// Construction
 	/////////////////////////////////////////////////////////////////////
@@ -134,11 +132,6 @@ public class Controller_IRM_Alinea extends Controller {
 		// normalize the gain
 		if(mainline_link!=null)
 			gain_normalized = gain_in_mps * getMyScenario().getSimdtinseconds() / mainline_link.getLengthInMeters();
-
-
-        // logger
-        logger_id = DebugLogger.add_writer("C:\\Users\\gomes\\Dropbox\\_work_dynamic\\qoverride\\alinea.txt");
-
     }
 	
 	@Override
@@ -172,8 +165,6 @@ public class Controller_IRM_Alinea extends Controller {
         double metering_rate_veh = Math.max(alinea_rate,0);
 
 		ramp_meter.setMeteringRateInVeh(metering_rate_veh);
-
-        DebugLogger.write(logger_id,getMyScenario().getCurrentTimeInSeconds()+"\t"+metering_rate_veh+"\n");
 
     }
 

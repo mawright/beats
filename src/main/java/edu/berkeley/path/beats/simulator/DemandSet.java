@@ -26,7 +26,10 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.Demand;
+
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
@@ -59,34 +62,56 @@ final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
 	}
 
 	protected void reset() {
-		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
-			((DemandProfile) dp).reset();
-	}
-	
-	protected void validate() {
-
-		if(getDemandProfile()==null)
-			return;
-		
-		if(getDemandProfile().isEmpty())
-			return;
-		
-		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
-			((DemandProfile)dp).validate();		
+        Iterator it = link_id_to_demandprofile.entrySet().iterator();
+        while (it.hasNext())
+            ((DemandProfile) ((Map.Entry)it.next()).getValue()).reset();
+//		for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
+//			((DemandProfile) dp).reset();
 	}
 
-	protected void update() {
-    	for(edu.berkeley.path.beats.jaxb.DemandProfile dp : getDemandProfile())
-    		((DemandProfile) dp).update(false);
-	}
-	
-	/////////////////////////////////////////////////////////////////////
+    protected void validate() {
+
+        if(link_id_to_demandprofile==null)
+            return;
+
+        if(link_id_to_demandprofile.isEmpty())
+            return;
+
+        Iterator it = link_id_to_demandprofile.entrySet().iterator();
+        while (it.hasNext())
+            ((DemandProfile) ((Map.Entry)it.next()).getValue()).validate();
+
+    }
+
+    protected void update() {
+        Iterator it = link_id_to_demandprofile.entrySet().iterator();
+        while (it.hasNext())
+            ((DemandProfile) ((Map.Entry)it.next()).getValue()).update(false);
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // protected interface
+    /////////////////////////////////////////////////////////////////////
+
+    public boolean has_profile_for_link(long link_id){
+        return link_id_to_demandprofile==null ? false : link_id_to_demandprofile.containsKey(link_id);
+    }
+
+    protected void add_or_replace_profile(DemandProfile dp){
+        if(link_id_to_demandprofile==null)
+            link_id_to_demandprofile = new HashMap<Long,DemandProfile>();
+        link_id_to_demandprofile.put(dp.getLinkIdOrg(),dp);
+    }
+
+    /////////////////////////////////////////////////////////////////////
 	// public interface
 	/////////////////////////////////////////////////////////////////////
 
     public DemandProfile get_demand_profile_for_link_id(Long id){
         return link_id_to_demandprofile.get(id);
     }
+
+
 //	public double[] getFutureTotalDemandInVeh_NoNoise(long link_id,double dt_in_seconds,int num_steps) throws BeatsException{
 //
 //		if(!BeatsMath.isintegermultipleof(dt_in_seconds,myScenario.getSimdtinseconds()))

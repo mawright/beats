@@ -143,6 +143,37 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 			case C:
 				node_sr_solver = new Node_SplitRatioSolver_C(this);
 				break;
+			case HAMBURGER:
+				boolean does_threshold_exist = false;
+				boolean does_scaling_factor_exist = false;
+				
+				if(this.getNodeType().getParameters() == null)
+				{
+					node_sr_solver = new Node_SplitRatioSolver_A(this);
+				}
+				else
+				{
+					for (int p = 0 ; p < this.getNodeType().getParameters().getParameter().size() ; p++)
+					{
+						if(this.getNodeType().getParameters().getParameter().get(p).getName().equals("threshold"))
+						{
+							does_threshold_exist = true;
+						}
+						if(this.getNodeType().getParameters().getParameter().get(p).getName().equals("scaling_factor"))
+						{
+							does_scaling_factor_exist = true;
+						}
+					}
+				}
+				
+				if(does_threshold_exist && does_scaling_factor_exist)
+				{
+					node_sr_solver = new Node_SplitRatioSolver_HAMBURGER(this);
+				}
+				else
+				{
+					node_sr_solver = new Node_SplitRatioSolver_A(this);
+				}
 		}
 		
 	}
@@ -162,6 +193,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 				if(link==null)
 					BeatsErrorLog.addError("Incorrect input link ID in node ID=" + getId());
 		
+		if(node_sr_solver!=null)
+			node_sr_solver.validate();
+				
+		
 	}
 	
 	protected void reset() {
@@ -180,51 +215,56 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
         
-        // collect input demands and output supplies ...................
-        Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(numEnsemble,nIn,nOut,numVehicleTypes);
-        for(e=0;e<numEnsemble;e++){        
+        for(e=0;e<numEnsemble;e++){
+
+            Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(nIn,nOut,numVehicleTypes);
+
+            // collect input demands and output supplies ...................
     		for(i=0;i<nIn;i++)
-    			demand_supply.setDemand(e,i, input_link[i].get_out_demand_in_veh(e) );
+    			demand_supply.setDemand(i,input_link[i].get_out_demand_in_veh(e) );
     		for(j=0;j<nOut;j++)
-    			demand_supply.setSupply(e,j,output_link[j].get_space_supply_in_veh(e));
-        }
-        
-        // Select a split ratio from profile, event, or controller
-        if(istrivialsplit)
-            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-        else{
-            if(has_profile)
-                splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
-            if(has_controller_split)
-                splitratio_selected.override_splits(this,controller_splits);
+    			demand_supply.setSupply(j,output_link[j].get_space_supply_in_veh(e));
+
+
+            // Select a split ratio from profile, event, or controller
+            if(istrivialsplit)
+                splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+            else{
+                if(has_profile)
+                    splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
+                if(has_controller_split)
+                    splitratio_selected.override_splits(this,controller_splits);
 //            if(has_event_split)
 //                splitratio_selected.override_splits(event_splits);
+            }
+
+
+            // compute applied split ratio matrix
+            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply,e);
+
+            /////////////////////////////////////////////////
+            // write first to logger
+            if(split_ratio_logger!=null && e==0)
+                split_ratio_logger.write(splitratio_applied);
+            /////////////////////////////////////////////////
+
+            // compute node flows ..........................................
+            Node_FlowSolver.IOFlow IOflow = node_flow_solver.computeLinkFlows(splitratio_applied,demand_supply,e);
+
+            if(IOflow==null)
+                return;
+
+            // assign flow to input links ..................................
+            for(i=0;i<nIn;i++)
+                input_link[i].setOutflow(e,IOflow.getIn(i));
+
+            // assign flow to output links .................................
+            for (j=0;j<nOut;j++)
+                output_link[j].setInflow(e,IOflow.getOut(j));
+
         }
 
-        // compute applied split ratio matrix
-        Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply);
 
-        /////////////////////////////////////////////////
-        // write to logger
-        if(split_ratio_logger !=null)
-            split_ratio_logger.write(splitratio_applied);
-        /////////////////////////////////////////////////
-
-        // compute node flows ..........................................
-        Node_FlowSolver.IOFlow IOflow = node_flow_solver.computeLinkFlows(splitratio_applied,demand_supply);
-        
-        if(IOflow==null)
-        	return;
-        	
-        // assign flow to input links ..................................
-		for(e=0;e<numEnsemble;e++)
-	        for(i=0;i<nIn;i++)
-	            input_link[i].setOutflow(e,IOflow.getIn(e,i));
-        
-        // assign flow to output links .................................
-		for(e=0;e<numEnsemble;e++)
-	        for (j=0;j<nOut;j++)
-	            output_link[j].setInflow(e,IOflow.getOut(e,j));
 	}
 
 	/////////////////////////////////////////////////////////////////////

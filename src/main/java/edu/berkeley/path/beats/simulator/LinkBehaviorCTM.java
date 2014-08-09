@@ -34,9 +34,6 @@ public class LinkBehaviorCTM extends LinkBehavior {
         double totaloutflow;
         FundamentalDiagram FD;
 
-if(myLink.getId()==241 && myScenario.getCurrentTimeInSeconds()>41000)
-    System.out.println("asdf");
-
         for(int e=0;e<myScenario.getNumEnsemble();e++){
 
             FD = myLink.currentFD(e);

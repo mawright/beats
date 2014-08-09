@@ -42,10 +42,10 @@ public class PerformanceCalculator {
                 case delay:
                 case veh_distance:
                 case veh_time:
-                case speed_contour:
+                case speed_contour :
                     loggers.add( new CumulativeMeasure(
                                     myScenario,
-                                    sim_out.getFile(),
+                                    myScenario.getOutputPrefix() + "_" + sim_out.getFile(),
                                     sim_out.getDt(),
                                     sim_out.isAggTime(),
                                     sim_out.isAggLinks(),
@@ -59,7 +59,7 @@ public class PerformanceCalculator {
                     break;
                 case signal_events:
                     loggers.add( new SignalLogger( myScenario,
-                                                   sim_out.getFile(),
+                                                   myScenario.getOutputPrefix() + "_" + sim_out.getFile(),
                                                    sim_out.getDt(),
                                                    sim_out.isAggTime() ) );
             }

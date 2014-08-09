@@ -151,6 +151,81 @@
 		</xs:complexType>
 	</xs:element>
 
+<<<<<<< HEAD
+		<xs:element name="node">
+			<xs:complexType>
+        <xs:all>
+          <xs:element ref="roadway_markers" minOccurs="0" maxOccurs="1"/>
+          <xs:element ref="outputs" />
+          <xs:element ref="inputs" />
+          <xs:element ref="position" minOccurs="0" />
+          <xs:element ref="node_type" minOccurs="0" />
+        </xs:all>
+				<xs:attribute name="crudFlag" type="xs:string" use="optional"/>
+				<xs:attribute name="id" type="xs:long" use="required" />
+				<xs:attribute name="node_name" type="xs:string" use="optional" />
+				<xs:attribute name="in_sync" type="xs:boolean" use="optional" default="true" />
+				<xs:attribute name="mod_stamp" type="xs:string" use="optional" />
+			</xs:complexType>
+		</xs:element>
+
+			<xs:element name="roadway_markers">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="marker" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="marker">
+				<xs:complexType>
+					<xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="name" type="xs:string" use="required" />
+					<xs:attribute name="postmile" type="xs:double" use="optional" />
+          <xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="outputs">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="output" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="output">
+				<xs:complexType>
+					<xs:attribute name="link_id" type="xs:long" use="required" />
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="inputs">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="input" minOccurs="0" maxOccurs="unbounded" />
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+
+			<xs:element name="input">
+				<xs:complexType>
+					<xs:attribute name="link_id" type="xs:long" use="required" />
+				</xs:complexType>
+			</xs:element>	
+
+			<xs:element name="node_type">
+				<xs:complexType>
+                    <xs:all>
+                        <xs:element ref="parameters" minOccurs="0" />
+                    </xs:all>
+                    <xs:attribute name="id" type="xs:long" use="required" />
+					<xs:attribute name="name" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element> 
+
+  <!-- LinkList .................................................................. -->
+=======
 	<xs:element name="node">
 		<xs:complexType>
 			<xs:all>
@@ -215,15 +290,13 @@
 
 	<xs:element name="node_type">
 		<xs:complexType>
-                    <xs:all>
-                        <xs:element ref="parameters" minOccurs="0" />
-                    </xs:all>
-                    <xs:attribute name="id" type="xs:long" use="required" />
+			<xs:attribute name="id" type="xs:long" use="required" />
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element> 
 
 	<!-- LinkList .................................................................. -->
+>>>>>>> master
 
 	<xs:element name="LinkList">
 		<xs:complexType>

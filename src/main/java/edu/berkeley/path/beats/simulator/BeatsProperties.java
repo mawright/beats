@@ -58,6 +58,9 @@ public class BeatsProperties extends Properties {
         split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
         split_logger_dt = getProperty("SPLIT_LOGGER_DT")==null ? sim_dt : Double.parseDouble(getProperty("SPLIT_LOGGER_DT","0"));
 
+        DebugFlags.time_print = getProperty("DEBUG.TIME")==null ? 0 : Integer.parseInt(getProperty("DEBUG.TIME", "0"));
+        DebugFlags.signal_events = getProperty("DEBUG.SIGNAL_EVENTS") ==null ? false : Boolean.parseBoolean(getProperty("DEBUG.SIGNAL_EVENTS"));
+
         // validate
         if(scenario_name.isEmpty())
             throw new BeatsException("Scenario name not provided in properties file.");

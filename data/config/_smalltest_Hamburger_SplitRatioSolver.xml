@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="0" name="null" schemaVersion="2.0.2">
+  <settings>
+    <units>SI</units>
+  </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="car" size_factor="1.0"/>					
+   </VehicleTypeSet>  
+   
+  <NetworkSet project_id="-1" id="-1">
+    <network id="-1" name="New Network">
+      <description>Test of a Hamburger network</description>
+      <position>
+        <point lat="37.857985471963" lng="-122.300827883184"/>
+      </position>
+      <NodeList>
+        <node id="1">
+          <outputs>
+            <output link_id="-1"/>
+          </outputs>
+          <inputs/>
+          <position>
+            <point lat="34.152372758908925" lng="-118.10848295688629" elevation="0"/>
+          </position>
+          <node_type id="6" name="Terminal"/>
+        </node>
+        <node id="2">
+          <outputs>
+            <output link_id="-2"/>
+            <output link_id="-4"/>
+          </outputs>
+          <inputs>
+            <input link_id="-1"/>
+          </inputs>
+          <position>
+            <point lat="34.15239944097254" lng="-118.10510605573654" elevation="0"/>
+          </position>
+          <node_type id="4" name="simple">
+			<parameters>
+                     <parameter name="scaling_factor" value="0.2321"/>
+                     <parameter name="threshold" value="0.02321"/>
+			</parameters>
+		  </node_type>
+        </node>
+        <node id="3">
+          <outputs>
+            <output link_id="-3"/>
+          </outputs>
+          <inputs>
+            <input link_id="-2"/>
+          </inputs>
+          <position>
+            <point lat="34.15244652694658" lng="-118.09853732585907" elevation="0"/>
+          </position>
+          <node_type id="4" name="simple"/>
+        </node>
+        <node id="4">
+          <outputs/>
+          <inputs>
+            <input link_id="-3"/>
+          </inputs>
+          <position>
+            <point lat="34.152471639455314" lng="-118.09518456459045" elevation="0"/>
+          </position>
+          <node_type id="6" name="Terminal"/>
+        </node>
+        <node id="5">
+          <outputs>
+            <output link_id="-5"/>
+          </outputs>
+          <inputs>
+            <input link_id="-4"/>
+          </inputs>
+          <position>
+            <point lat="34.152056204944664" lng="-118.10013592243195" elevation="0"/>
+          </position>
+          <node_type id="4" name="simple"/>
+        </node>
+        <node id="6">
+          <outputs>
+            <output link_id="-6"/>
+            <output link_id="-7"/>
+            <output link_id="-8"/>
+          </outputs>
+          <inputs>
+            <input link_id="-5"/>
+          </inputs>
+          <position>
+            <point lat="34.15199503909336" lng="-118.09866338968277" elevation="0"/>
+          </position>
+          <node_type id="4" name="simple"/>
+        </node>
+        <node id="7">
+          <outputs/>
+          <inputs>
+            <input link_id="-6"/>
+          </inputs>
+          <position>
+            <point lat="34.15086756296513" lng="-118.09857621788979" elevation="0"/>
+          </position>
+          <node_type id="6" name="Terminal"/>
+        </node>
+        <node id="8">
+          <outputs/>
+          <inputs>
+            <input link_id="-7"/>
+          </inputs>
+          <position>
+            <point lat="34.15172767821761" lng="-118.09583902359009" elevation="0"/>
+          </position>
+          <node_type id="6" name="Terminal"/>
+        </node>
+        <node id="9">
+          <outputs/>
+          <inputs>
+            <input link_id="-8"/>
+          </inputs>
+          <position>
+            <point lat="34.15309317166754" lng="-118.09853196144104" elevation="0"/>
+          </position>
+          <node_type id="6" name="Terminal"/>
+        </node>
+      </NodeList>
+	  <LinkList>
+        <link lanes="1" lane_offset="0" length="308.6228531521846" id="-1">
+          <begin node_id="1"/>
+          <end node_id="2"/>
+          <position>
+            <point lat="34.152330000000006" lng="-118.10848000000001" elevation="0"/>
+            <point lat="34.152330000000006" lng="-118.10830000000001" elevation="0"/>
+            <point lat="34.152330000000006" lng="-118.10703000000001" elevation="0"/>
+            <point lat="34.15234" lng="-118.10653" elevation="0"/>
+            <point lat="34.15234" lng="-118.10603" elevation="0"/>
+            <point lat="34.15234" lng="-118.10513" elevation="0"/>
+          </position>
+          <link_type id="1" name="Freeway"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="607.1051591642666" id="-2">
+          <begin node_id="2"/>
+          <end node_id="3"/>
+          <position>
+            <point lat="34.15234" lng="-118.10513" elevation="0"/>
+            <point lat="34.15238" lng="-118.09975000000001" elevation="0"/>
+            <point lat="34.15238" lng="-118.09895000000002" elevation="0"/>
+            <point lat="34.15238" lng="-118.09854000000001" elevation="0"/>
+          </position>
+          <link_type id="1" name="Freeway"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="308.630326769058" id="-3">
+          <begin node_id="3"/>
+          <end node_id="4"/>
+          <position>
+            <point lat="34.15238" lng="-118.09854000000001" elevation="0"/>
+            <point lat="34.152390000000004" lng="-118.09816000000001" elevation="0"/>
+            <point lat="34.1524" lng="-118.09621000000001" elevation="0"/>
+            <point lat="34.1524" lng="-118.09537" elevation="0"/>
+            <point lat="34.1524" lng="-118.09523000000002" elevation="0"/>
+            <point lat="34.1524" lng="-118.09519000000002" elevation="0"/>
+          </position>
+          <link_type id="1" name="Freeway"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="462.9810290082771" id="-4">
+          <begin node_id="2"/>
+          <end node_id="5"/>
+          <position>
+            <point lat="34.15234" lng="-118.10513" elevation="0"/>
+            <point lat="34.152260000000005" lng="-118.10497000000001" elevation="0"/>
+            <point lat="34.15225" lng="-118.10492" elevation="0"/>
+            <point lat="34.152240000000006" lng="-118.10485000000001" elevation="0"/>
+            <point lat="34.15218" lng="-118.10374000000002" elevation="0"/>
+            <point lat="34.152170000000005" lng="-118.10361" elevation="0"/>
+            <point lat="34.15214" lng="-118.10300000000001" elevation="0"/>
+            <point lat="34.152120000000004" lng="-118.10276" elevation="0"/>
+            <point lat="34.15211" lng="-118.10231" elevation="0"/>
+            <point lat="34.152100000000004" lng="-118.10208000000002" elevation="0"/>
+            <point lat="34.15209" lng="-118.10154000000001" elevation="0"/>
+            <point lat="34.152080000000005" lng="-118.10113000000001" elevation="0"/>
+            <point lat="34.152060000000006" lng="-118.10014000000001" elevation="0"/>
+          </position>
+          <link_type id="4" name="Off-Ramp"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="136.97278400242158" id="-5">
+          <begin node_id="5"/>
+          <end node_id="6"/>
+          <position>
+            <point lat="34.152060000000006" lng="-118.10014000000001" elevation="0"/>
+            <point lat="34.15205" lng="-118.09999" elevation="0"/>
+            <point lat="34.15205" lng="-118.09998000000002" elevation="0"/>
+            <point lat="34.15205" lng="-118.09997000000001" elevation="0"/>
+            <point lat="34.15202" lng="-118.09987000000001" elevation="0"/>
+            <point lat="34.15202" lng="-118.09925000000001" elevation="0"/>
+            <point lat="34.15202" lng="-118.09866000000001" elevation="0"/>
+          </position>
+          <link_type id="2" name="Highway"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="126.00959493077625" id="-6">
+          <begin node_id="6"/>
+          <end node_id="7"/>
+          <position>
+            <point lat="34.151990000000005" lng="-118.09863000000001" elevation="0"/>
+            <point lat="34.15135" lng="-118.09864" elevation="0"/>
+            <point lat="34.151160000000004" lng="-118.09864" elevation="0"/>
+            <point lat="34.15091" lng="-118.09867000000001" elevation="0"/>
+            <point lat="34.15086" lng="-118.09866000000001" elevation="0"/>
+          </position>
+          <link_type id="2" name="Highway"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="260.1284597346114" id="-7">
+          <begin node_id="6"/>
+          <end node_id="8"/>
+          <position>
+            <point lat="34.15202" lng="-118.09863000000001" elevation="0"/>
+            <point lat="34.151990000000005" lng="-118.09841000000002" elevation="0"/>
+            <point lat="34.15196" lng="-118.09752" elevation="0"/>
+            <point lat="34.15196" lng="-118.09734" elevation="0"/>
+            <point lat="34.15195" lng="-118.09715000000001" elevation="0"/>
+            <point lat="34.15194" lng="-118.09700000000001" elevation="0"/>
+            <point lat="34.15191" lng="-118.09676" elevation="0"/>
+            <point lat="34.15189" lng="-118.09669000000001" elevation="0"/>
+            <point lat="34.151860000000006" lng="-118.09649" elevation="0"/>
+            <point lat="34.15175" lng="-118.09598000000001" elevation="0"/>
+            <point lat="34.15173" lng="-118.09584000000001" elevation="0"/>
+          </position>
+          <link_type id="2" name="Highway"/>
+        </link>
+        <link lanes="1" lane_offset="0" length="150.0086857379756" id="-8">
+          <begin node_id="6"/>
+          <end node_id="9"/>
+          <position>
+            <point lat="34.15202" lng="-118.09863000000001" elevation="0"/>
+            <point lat="34.151990000000005" lng="-118.09841000000002" elevation="0"/>
+            <point lat="34.15225" lng="-118.09842" elevation="0"/>
+            <point lat="34.152370000000005" lng="-118.09842" elevation="0"/>
+            <point lat="34.152710000000006" lng="-118.09842" elevation="0"/>
+            <point lat="34.152840000000005" lng="-118.09842" elevation="0"/>
+            <point lat="34.15307" lng="-118.09843000000001" elevation="0"/>
+            <point lat="34.15307" lng="-118.09853000000001" elevation="0"/>
+          </position>
+          <link_type id="2" name="Highway"/>
+        </link>
+      </LinkList>
+    </network>
+  </NetworkSet>   
+   
+  <DemandSet id="-1" project_id="-1">
+   <demandProfile dt="300" id="1" knob="1" link_id_org="-1">
+      <demand vehicle_type_id="0">0.1</demand>			<!-- veh/sec -->
+   </demandProfile>
+  </DemandSet>
+  
+  <SplitRatioSet project_id="-1" id="-1">
+    <splitRatioProfile id="-1" dt="300" node_id="2">
+      <splitratio vehicle_type_id="0" link_in="-1" link_out="-2">0.75</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-1" link_out="-4">0.25</splitratio>
+    </splitRatioProfile>
+    <splitRatioProfile id="-1" dt="300" node_id="6">
+      <splitratio vehicle_type_id="0" link_in="-5" link_out="-6">0.30</splitratio>
+      <splitratio vehicle_type_id="0" link_in="-5" link_out="-7">0.30</splitratio>
+	  <splitratio vehicle_type_id="0" link_in="-5" link_out="-8">0.40</splitratio>
+    </splitRatioProfile>
+  </SplitRatioSet>
+  
+ <FundamentalDiagramSet id="0" name="I15S" project_id="4">
+      <description/>
+      <fundamentalDiagramProfile dt="86400" id="1" link_id="-1">
+         <fundamentalDiagram capacity="0.4998" congestion_speed="11.1759722222222" free_flow_speed="32.453090976701" id="0" jam_density="0.0601216316988991" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-2">
+         <fundamentalDiagram capacity="0.4998" congestion_speed="11.1759722222222" free_flow_speed="32.453090976701" id="0" jam_density="0.0601216316988991" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-3">
+         <fundamentalDiagram capacity="0.4998" congestion_speed="11.1759722222222" free_flow_speed="32.453090976701" id="0" jam_density="0.0601216316988991" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-4">
+         <fundamentalDiagram capacity="0.669565217391304" congestion_speed="5.6" free_flow_speed="22" id="0" jam_density="0.15" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-5">
+         <fundamentalDiagram capacity="0.669565217391304" congestion_speed="5.6" free_flow_speed="22" id="0" jam_density="0.15" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-6">
+         <fundamentalDiagram capacity="0.669565217391304" congestion_speed="5.6" free_flow_speed="22" id="0" jam_density="0.15" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-7">
+         <fundamentalDiagram capacity="0.669565217391304" congestion_speed="5.6" free_flow_speed="22" id="0" jam_density="0.15" />
+      </fundamentalDiagramProfile>
+	  <fundamentalDiagramProfile dt="86400" id="1" link_id="-8">
+         <fundamentalDiagram capacity="0.669565217391304" congestion_speed="5.6" free_flow_speed="22" id="0" jam_density="0.15" />
+      </fundamentalDiagramProfile>
+  </FundamentalDiagramSet>
+  
+  
+</scenario>
