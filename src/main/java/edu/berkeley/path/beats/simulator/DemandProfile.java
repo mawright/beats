@@ -53,7 +53,9 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	// protected interface
 	/////////////////////////////////////////////////////////////////////
 	
-	protected void set_knob(double _knob) {
+	public void set_knob(double _knob) {
+        if(Double.isNaN(_knob))
+            return;
 		this._knob = Math.max(_knob,0.0);
 		
 		// resample the profile
@@ -223,7 +225,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 			if(forcesample){
                 for(e=0;e<myScenario.getNumEnsemble();e++)
                     for(i=0;i<demand_nominal.length;i++)
-                        current_sample[e][vehicle_type_index[i]] = sample_finalTime_addNoise_applyKnob(i);
+                        current_sample[e][vehicle_type_index[i]] = sample_currentTime_addNoise_applyKnob(i);
 				return;
 			}
 			

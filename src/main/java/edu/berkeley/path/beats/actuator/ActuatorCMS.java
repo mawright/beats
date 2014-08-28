@@ -68,6 +68,11 @@ public class ActuatorCMS extends Actuator {
     }
 
     @Override
+    protected void deploy_off_signal(){
+        implementor.deploy_cms_split(null);
+    };
+
+    @Override
     protected boolean register() {
         return ((Node)implementor.get_target()).register_split_controller();
     }

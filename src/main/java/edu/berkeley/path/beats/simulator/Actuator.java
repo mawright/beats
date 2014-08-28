@@ -6,6 +6,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
     public enum Implementation {beats,aimsun};
     protected ActuatorImplementation implementor;
     protected Actuator.Type myType;
+    protected boolean isOn;
 
 	public static enum Type	{ ramp_meter,signal,vsl,cms };
 
@@ -17,7 +18,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	}
 	
 	public Actuator (Scenario myScenario,edu.berkeley.path.beats.jaxb.Actuator jaxbA,ActuatorImplementation act_implementor){
-
+        this.isOn = false;
         this.implementor = act_implementor;
         this.myType = Actuator.Type.valueOf(jaxbA.getActuatorType().getName());
 
@@ -30,6 +31,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	}
 
     public Actuator (ActuatorImplementation act_implementor,Actuator.Type myType){
+        this.isOn = false;
         this.implementor = act_implementor;
         this.myType = myType;
     }
@@ -52,10 +54,15 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 	}
 
 	protected void reset() throws BeatsException {
-		return;
+        this.isOn = true;
+        return;
 	}
 
 	protected void deploy(double current_time_in_seconds){
+    };
+
+    protected void deploy_off_signal(){
+        return;
     };
 
     public ActuatorImplementation getImplementor(){
@@ -64,5 +71,11 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
 
     public Actuator.Type get_type(){
         return myType;
+    }
+
+    public void setIsOn(boolean xison){
+        this.isOn = xison;
+        if(!isOn)
+            deploy_off_signal();
     }
 }

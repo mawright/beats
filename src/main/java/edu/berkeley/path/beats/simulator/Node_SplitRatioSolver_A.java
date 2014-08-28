@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 
-    protected double [] outDemandKnown;	// [nOut]
+    protected double [] outDemandKnown;	    // [nOut]
 	protected double [] dsratio;			// [nOut]
 
 	public Node_SplitRatioSolver_A(Node myNode) {
@@ -34,7 +34,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
     	Double3DMatrix splitratio_new = new Double3DMatrix(splitratio_selected.getData());
     	double remainingSplit;
     	double num;
-    	
+
         if(myNode.istrivialsplit)
         	return new Double3DMatrix(nIn,nOut,numVehicleTypes,1d);
 
@@ -43,8 +43,6 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
     	ArrayList<Integer> minind_to_nOut= new ArrayList<Integer>();	// [min unknown splits]
     	ArrayList<Integer> minind_to_unknown= new ArrayList<Integer>();	// [min unknown splits]
     	ArrayList<Double> sendtoeach = new ArrayList<Double>();			// [min unknown splits]
-        
-		// solve unknown split ratios if they are non-trivial ..............
 
         // compute known output demands ................................
         for(j=0;j<nOut;j++){
@@ -54,16 +52,10 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                     if(!Double.isNaN(splitratio_selected.get(i,j,k)))
                         outDemandKnown[j] += splitratio_selected.get(i,j,k) * demand_supply.getDemand(i,k);
         }
-        
-        // compute and sort output demand/supply ratio .................
-        for(j=0;j<nOut;j++)
-            dsratio[j] = outDemandKnown[j] / demand_supply.getSupply(j);
-                
+
         // fill in unassigned split ratios .............................
         for(i=0;i<nIn;i++){
             for(k=0;k<numVehicleTypes;k++){
-
-                double [] sr_new = new double[myNode.nOut];
 
                 // number of outputs with unknown split ratio
                 numunknown = 0;
@@ -73,6 +65,12 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
 
                 if(numunknown==0)
                     continue;
+
+                // compute and sort output demand/supply ratio .................
+                for(j=0;j<nOut;j++)
+                    dsratio[j] = outDemandKnown[j] / demand_supply.getSupply(j);
+
+                double [] sr_new = new double[myNode.nOut];
 
                 // initialize sr_new, save location of unknown entries, compute remaining split
                 unknownind.clear();
@@ -100,7 +98,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                     dsmin = Double.POSITIVE_INFINITY;
                     for(Double r : unknown_dsratio){
                         dsmax = Math.max(dsmax,r);
-                        dsmin = Math.min(dsmax,r);
+                        dsmin = Math.min(dsmin,r);
                     }
 
                     if(BeatsMath.equals(dsmax,dsmin))
@@ -111,7 +109,7 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                     minind_to_unknown.clear();
                     sendtoeach.clear();		// flow needed to bring each dsmin up to dsmax
                     double sumsendtoeach = 0f;
-                    for(int z=1;z<numunknown;z++)
+                    for(int z=0;z<numunknown;z++)
                         if( BeatsMath.equals(unknown_dsratio.get(z),dsmin) ){
                             int index = unknownind.get(z);
                             minind_to_nOut.add(index);
@@ -135,29 +133,17 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                             addsplit = send/demand_supply.getDemand(i,k);
                         int ind_nOut = minind_to_nOut.get(z);
                         int ind_unknown = minind_to_unknown.get(z);
-                        double newsplit = Math.min(sr_new[ind_nOut]+addsplit,1d);
-                        sr_new[ind_nOut] = newsplit;
-                        remainingSplit = sr_new[ind_nOut] - newsplit;
-                        outDemandKnown[ind_nOut] += send;
+
+                        addsplit = Math.min(addsplit,1d-sr_new[ind_nOut]);
+                        remainingSplit -= addsplit;
+                        sr_new[ind_nOut] += addsplit;
+                        outDemandKnown[ind_nOut] += addsplit*demand_supply.getDemand(i,k);
                         unknown_dsratio.set( ind_unknown , outDemandKnown[ind_nOut]/demand_supply.getSupply(ind_nOut) );
                     }
-
                 }
 
                 // distribute remaining splits proportionally to supplies
                 if(BeatsMath.greaterthan(remainingSplit,0d)){
-                    /*
-                    double totalcapacity = 0f;
-                    double splitforeach;
-                    for(Integer jj : unknownind)
-                        totalcapacity += output_link[jj].capacity;
-                    for(Integer jj : unknownind){
-                        splitforeach = remainingSplit*output_link[jj].capacity/totalcapacity;
-                        sr_new[jj] += splitforeach;
-                        outDemandKnown[jj] += inDemand[i][k]*splitforeach;
-                    }
-                    remainingSplit = 0;
-                    */
                     double totalsupply = 0f;
                     double splitforeach;
                     for(Integer jj : unknownind)
@@ -165,12 +151,8 @@ public class Node_SplitRatioSolver_A extends Node_SplitRatioSolver {
                     for(Integer jj : unknownind){
                         splitforeach = remainingSplit*demand_supply.getSupply(jj)/totalsupply;
                         sr_new[jj] += splitforeach;
-
-                        if(Double.isNaN(sr_new[jj]))
-
                         outDemandKnown[jj] += demand_supply.getDemand(i,k)*splitforeach;
                     }
-                    remainingSplit = 0;
                 }
 
                 // copy to SR

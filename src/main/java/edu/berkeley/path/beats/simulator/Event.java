@@ -37,18 +37,18 @@ import java.util.ArrayList;
 public class Event implements Comparable {
 
 	/** Scenario that contains this event */
-	private Scenario myScenario;
-	
-	private edu.berkeley.path.beats.jaxb.Event jaxbEvent;
+	protected Scenario myScenario;
+
+    protected edu.berkeley.path.beats.jaxb.Event jaxbEvent;
 	
 	/** Event type. */
-	private Event.Type myType;
+    protected Event.Type myType;
 	
 	/** Activation time of the event, in number of simulation time steps. */
-	private int abs_time_step;
+    protected int abs_time_step;
 	
 	/** List of targets for the event. */
-	private ArrayList<ScenarioElement> targets;
+    protected ArrayList<ScenarioElement> targets;
 	
 	/** Type of event. */
 	public static enum Type	{   fundamental_diagram,
@@ -197,66 +197,6 @@ public class Event implements Comparable {
 			return false;
 		return this.compareTo((Event) obj)==0;
 	}
-
-	/////////////////////////////////////////////////////////////////////
-	// protected interface
-	/////////////////////////////////////////////////////////////////////	
-
-	protected void setGlobalControlIsOn(boolean ison){
-		myScenario.setGlobal_control_on(ison);
-	}
-	
-	protected void setControllerIsOn(Controller c,boolean ison){
-		if(c==null)
-			return;
-		c.setIson(ison);
-	}
-
-    protected void setLinkLanes(Link link,double lanes) throws BeatsException{
-		if(link==null)
-			return;
-    	link.set_Lanes(lanes);
-    }
-    	
-	protected void setLinkFundamentalDiagram(Link link,edu.berkeley.path.beats.jaxb.FundamentalDiagram newFD) throws BeatsException{
-		if(link==null)
-			return;
-		link.activateFDEvent(newFD);
-	}
-	
-    protected void revertLinkFundamentalDiagram(Link link) throws BeatsException{
-    	if(link==null)
-    		return;
-    	link.revertFundamentalDiagramEvent();
-    }    
-
-//	protected void setNodeEventSplitRatio(Node node, java.util.List<SplitRatio> splitratios) {
-//		if(node==null)
-//			return;
-//		Double3DMatrix X = new Double3DMatrix(node.getnIn(),node.getnOut(),myScenario.getNumVehicleTypes(),Double.NaN);
-//		X.copydata(node.getSplitratio());
-//		for (SplitRatio sr : splitratios)
-//			X.set(sr.getInputIndex(), sr.getOutputIndex(), sr.getVehicleTypeIndex(), sr.getValue());
-//		if(!node.validateSplitRatioMatrix(X))
-//			return;
-//		node.applyEventSplitRatio(X);
-//	}
-
-//	protected void revertNodeEventSplitRatio(Node node) {
-//		if(node==null)
-//			return;
-//		if(node.isHasActiveSplitEvent()){
-//			node.removeEventSplitRatio();
-//		}
-//	}
-	
-    protected void setDemandProfileEventKnob(edu.berkeley.path.beats.jaxb.DemandProfile profile,double knob){
-		if(profile==null)
-			return;
-		if(Double.isNaN(knob))
-			return;
-		((DemandProfile) profile).set_knob(knob);
-    }
     
     protected void setGlobalDemandEventKnob(double knob){
     	myScenario.setGlobal_demand_knob(knob);

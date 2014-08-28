@@ -96,6 +96,51 @@ public class ScenarioTest {
 //		assertEquals(static_scenario.getCurrentTimeStep(),0,1e-4);
 //		assertEquals(static_scenario.getTotalTimeStepsToSimulate(),-1,1e-4);
 	}
+	
+	@Test
+	public void test_set_timestep() {
+		try {
+			String config_file = "_smalltest_withdemandprofile.xml";
+			Scenario scenario = ObjectFactory.createAndLoadScenario(config_folder+config_file);
+			if(scenario==null)
+				fail("scenario did not load");
+
+			// initialize
+			double timestep = 5;
+			double starttime = 0d;
+			double endtime = Double.POSITIVE_INFINITY;
+			int numEnsemble = 1;
+			scenario.initialize(timestep,starttime,endtime,numEnsemble);
+
+			assertEquals(scenario.getCurrentTimeInSeconds(),0d,1e-4);
+			scenario.advanceNSeconds(200d);
+			
+			double demand1 = scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
+			
+			double[][] densityAt200 = scenario.getTotalDensity(-1);
+			
+			scenario.advanceNSeconds(300d);
+			double demand2 = scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0];
+			double[][] densityAt500Round1 = scenario.getTotalDensity(-1);
+			
+			assertFalse(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0]==demand1);
+			
+			scenario.setTimeInSeconds(200);
+			scenario.setTotalDensity(densityAt200);
+			assertEquals(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand1,1e-4);
+			
+			scenario.advanceNSeconds(300d);
+			assertEquals(scenario.getLinkWithId(-6).getDemandProfile().getCurrentValue(0)[0],demand2,1e-4);
+			
+			double[][] densityAt500Round2 = scenario.getTotalDensity(-1);
+			
+			for (int i=0;i<densityAt500Round1.length;i++)
+				assertEquals(densityAt500Round1[i][0], densityAt500Round2[i][0],1e-4);
+			
+		} catch (BeatsException e) {
+			fail("initialization failure.");
+		}
+	}
 
 	@Test
 	public void test_getNumVehicleTypes() {

@@ -26,12 +26,7 @@
 
 package edu.berkeley.path.beats.event;
 
-import edu.berkeley.path.beats.simulator.BeatsErrorLog;
-import edu.berkeley.path.beats.simulator.BeatsException;
-import edu.berkeley.path.beats.simulator.Event;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.ScenarioElement;
+import edu.berkeley.path.beats.simulator.*;
 
 public class Event_Link_Demand_Knob extends Event {
 
@@ -95,10 +90,7 @@ public class Event_Link_Demand_Knob extends Event {
 	    	if(getMyScenario().getDemandSet()!=null){
 	        	for(edu.berkeley.path.beats.jaxb.DemandProfile profile : getMyScenario().getDemandSet().getDemandProfile()){
 	        		if(profile.getLinkIdOrg()==s.getId()){
-	        			if(resetToNominal)
-	        				setDemandProfileEventKnob(profile,profile.getKnob());
-	        			else
-	        				setDemandProfileEventKnob(profile,newknob);	        			
+                        ((DemandProfile) profile).set_knob(resetToNominal ? profile.getKnob() : newknob);
 	        			break;
 	        		}
 	        	}

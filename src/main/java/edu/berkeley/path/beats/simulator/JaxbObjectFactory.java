@@ -28,7 +28,7 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 
-public final class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
+public class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
 
     @Override
     public edu.berkeley.path.beats.jaxb.Route createRoute() {

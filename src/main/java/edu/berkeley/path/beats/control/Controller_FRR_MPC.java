@@ -1,7 +1,7 @@
 package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorCMS;
-import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
+//import edu.berkeley.path.beats.control.adjoint_glue.AdjointReroutesPolicyMaker;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Controller;
@@ -67,10 +67,10 @@ public class Controller_FRR_MPC extends Controller {
 			}
 
 			switch(myPMType){
-				case adjoint:
-					policy_maker = new AdjointReroutesPolicyMaker();
-                    policy_maker_properties = myScenario.get_auxiliary_properties("REROUTES_ADJOINT");
-					break;
+//				case adjoint:
+//					policy_maker = new AdjointReroutesPolicyMaker();
+//                    policy_maker_properties = myScenario.get_auxiliary_properties("REROUTES_ADJOINT");
+//					break;
 				case NULL:
 					break;
 			}

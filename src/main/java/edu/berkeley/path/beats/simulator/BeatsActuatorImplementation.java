@@ -47,7 +47,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 	
 	@Override
 	public void deploy_metering_rate_in_veh(Double metering_rate_in_veh) {
-        ((Link)target).set_external_max_flow_in_veh(metering_rate_in_veh);
+        ((Link)target).set_external_max_flow_in_veh( metering_rate_in_veh==null ? Double.POSITIVE_INFINITY : metering_rate_in_veh );
 	}
 
 //	@Override
@@ -90,7 +90,10 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 	public void deploy_cms_split(List<Splitratio> splits) {
 		if(target==null)
             return;
-        ((Node)target).set_controller_split(splits);
+        if(splits==null)
+            ((Node)target).deactivate_split_control();
+        else
+            ((Node)target).set_controller_split(splits);
 	}
 
 	@Override

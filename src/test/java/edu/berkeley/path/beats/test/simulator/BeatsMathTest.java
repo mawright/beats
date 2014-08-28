@@ -10,6 +10,8 @@ import org.junit.Test;
 import edu.berkeley.path.beats.simulator.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.BeatsMath;
 
+import org.apache.commons.math3.stat.descriptive.moment.Mean;
+
 public class BeatsMathTest {
 
 	private String fixture_folder = "data/test/fixture/";
@@ -327,7 +329,49 @@ public class BeatsMathTest {
 		assertEquals(BeatsMath.gcd(-20,11),-1);
 		assertEquals(BeatsMath.gcd(-20,0),-20);
 	}
-
+	
+	@Test
+	public void test_dirichlet() {
+		// tests to see if sample mean is close to mean
+		int num_samples = 1000;
+		double[] params = { 2, 10, 30 };
+		double[][] sample = new double[num_samples][params.length];
+		Mean meancat1 = new Mean();
+		Mean meancat2 = new Mean();
+		Mean meancat3 = new Mean();
+		sample = BeatsMath.sampleDirichlet(params, num_samples);
+		for(int i=0;i<num_samples;i++) {
+			meancat1.increment(sample[i][0]);
+			meancat2.increment(sample[i][1]);
+			meancat3.increment(sample[i][2]);
+		}
+		double eValuecat1 = params[0]/BeatsMath.sum(params);
+		double eValuecat2 = params[1]/BeatsMath.sum(params);
+		double eValuecat3 = params[2]/BeatsMath.sum(params);
+		assertEquals(meancat1.getResult(),eValuecat1,.05);
+		assertEquals(meancat2.getResult(),eValuecat2,.05);
+		assertEquals(meancat3.getResult(),eValuecat3,.05);
+	}
+	
+	@Test
+	public void test_betaparams() {
+		double[] expectedOne = {.12, .48};
+		assertTrue(Arrays.equals(BeatsMath.betaParamsFromRVMeanAndVariance(.2, .1), expectedOne));
+		
+		double[] expectedTwo = {5.75, 5.75};
+		assertTrue(Arrays.equals(BeatsMath.betaParamsFromRVMeanAndVariance(.5, .02), expectedTwo));
+		
+		double[] expectedThree = {.2, .1};
+		double[] actualThree = BeatsMath.betaParamsFromRVMeanAndVariance(.6667, .1709);
+		assertEquals(expectedThree[0], actualThree[0], .01);
+		assertEquals(expectedThree[1], actualThree[1], .01);
+		
+		double[] expectedFour = {5.1193, .89};
+		double[] actualFour = BeatsMath.betaParamsFromRVMeanAndVariance(.8519, .018);
+		assertEquals(expectedFour[0], actualFour[0], .01);
+		assertEquals(expectedFour[1], actualFour[1], .01);
+	}
+	
 //	@Test
 //	public void test_makecopy() {
 //		Double [][] x = {{1d,2d},{3d,4d},{5d,6d}};

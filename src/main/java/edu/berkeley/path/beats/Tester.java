@@ -13,36 +13,38 @@ public class Tester {
 
         try{
 
-            String xml_file = "C:\\Users\\gomes\\Desktop\\final_single_vtype.xml";
-            Scenario scenario = (Scenario) ObjectFactory.createAndLoadScenario(xml_file);
+            //String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/210W/210W_v13_stochastic.xml";
+        	//String xml_file = "/home/matt/workspace_L0/beats/demo.xml";
+        	String xml_file = "/home/matt/workspace_L0/L0-estimation/classes/tests/configs/_smalltest_noisy_splits.xml";
+        	Scenario scenario = (Scenario) ObjectFactory.createAndLoadScenario(xml_file);
 
             double simulation_dt = 5d;
             double start_time = 0d;
-            double end_time = 3600d;
+            double end_time = 86400d;
             int numEnsembles = 10;
 
             scenario.initialize(simulation_dt, start_time, end_time, numEnsembles);
 
-            scenario.reset();
+//            scenario.run();
+            scenario.advanceNSeconds(1200);
+            
+            double [][] X = scenario.getTotalDensity(scenario.getNetworkSet().getNetwork().get(0).getId());
 
-            double [][] density_state = new double [288][10];
-            for(int i=0;i<288;i++)
+            double [][] density_state = new double [7][10];
+            for(int i=0;i<7;i++)
                 for(int j=0;j<numEnsembles;j++)
                     density_state[i][j] = i+j;
 
-            scenario.setTotalDensity(density_state);
+//            scenario.setTotalDensity(density_state);
 
-
-            double [][]  X = scenario.getTotalDensity(-1);
-
-            System.out.println(X);
+//            System.out.println(X);
 
             // scenario.setTotalDensity(3);
 
             // Y = scenario.getTotalDensity(-1);
         }
         catch(Exception e){
-            System.err.print("errpr");
+            System.err.print(e);
         }
 
     }

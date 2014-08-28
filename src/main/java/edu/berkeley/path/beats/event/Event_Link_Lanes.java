@@ -99,8 +99,8 @@ public class Event_Link_Lanes extends Event {
 			else
 				newlanes =  targetlink.get_Lanes();
 			newlanes += deltalanes;
-			setLinkLanes(targetlink,newlanes);
-		}		
+            targetlink.set_Lanes(newlanes);
+		}
 	}
 
 }

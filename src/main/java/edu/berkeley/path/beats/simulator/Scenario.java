@@ -45,7 +45,7 @@ import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
 @SuppressWarnings("restriction")
-public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
+public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     public static enum RunMode { normal , fw_fr_split_output };
 	public static enum UncertaintyType { uniform, gaussian }
@@ -62,7 +62,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     private PerformanceCalculator perf_calc;
 	private Clock clock;
 	private int numVehicleTypes;			// number of vehicle types
-	private boolean global_control_on;	// global control switch
+	//private boolean global_control_on;	// global control switch
 	private double global_demand_knob;	// scale factor for all demands
 	private edu.berkeley.path.beats.simulator.ControllerSet controllerset = new edu.berkeley.path.beats.simulator.ControllerSet();
 	private EventSet eventset = new EventSet();	// holds time sorted list of events
@@ -97,7 +97,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	protected void populate() throws BeatsException {
 
 	    // initialize scenario attributes ..............................................
-		this.global_control_on = true;
 		this.global_demand_knob = 1d;
 		this.has_flow_unceratinty = BeatsMath.greaterthan(getStd_dev_flow(),0.0);
 
@@ -232,7 +231,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 	public void reset() throws BeatsException {
 
 		started_writing = false;
-		global_control_on = true;
 	    global_demand_knob = 1d;
 
 		// reset the clock
@@ -276,7 +274,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	}
 
-	private void update() throws BeatsException {
+	protected void update() throws BeatsException {
 
         // sample profiles .............................
     	if(downstreamBoundaryCapacitySet!=null)
@@ -292,7 +290,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
     	if(fundamentalDiagramSet!=null)
         	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
-        		((FundamentalDiagramProfile) fdProfile).update();
+        		((FundamentalDiagramProfile) fdProfile).update(false);
 
         // update sensor readings .......................
     	sensorset.update();
@@ -310,8 +308,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 ((Network) network).update_supply_demand();
 
         // update controllers
-    	if(global_control_on)
-    		controllerset.update();
+        controllerset.update();
 
     	// update and deploy actuators
     	actuatorset.deploy(getCurrentTimeInSeconds());
@@ -603,11 +600,12 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         this.split_logger_dt = split_logger_dt;
     }
 	
-	protected void setGlobal_control_on(boolean global_control_on) {
-		this.global_control_on = global_control_on;
+	public void setGlobal_control_on(boolean global_control_on) {
+        for(Controller c : controllerset.get_Controllers())
+            c.setIson(global_control_on);
 	}
 
-	protected void setGlobal_demand_knob(double global_demand_knob) {
+	public void setGlobal_demand_knob(double global_demand_knob) {
 		this.global_demand_knob = global_demand_knob;
 	}
 
@@ -680,10 +678,6 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
 	public UncertaintyType getUncertaintyModel() {
 		return uncertaintyModel;
-	}
-
-	public boolean isGlobal_control_on() {
-		return global_control_on;
 	}
 
 	public double getGlobal_demand_knob() {
@@ -864,6 +858,21 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 				density[i][e] = link.getTotalDensityInVeh(e);
 		}
 		return density;           
+	}
+	
+	public double [][] getTotalInflow(long network_id){
+		Network network = getNetworkWithId(network_id);
+		if(network==null)
+			return null;
+		
+		double [][] inflow = new double [network.getLinkList().getLink().size()][getNumEnsemble()];
+		int i,e;
+		for(i=0;i<network.getLinkList().getLink().size();i++){
+			Link link = (Link) network.getLinkList().getLink().get(i);
+			for(e=0;e<getNumEnsemble();e++)
+				inflow[i][e] = link.getTotalInflowInVeh(e);
+		}
+		return inflow;           
 	}
 
 	public Cumulatives getCumulatives() {
@@ -1580,7 +1589,7 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 dp.setLinkIdOrg(L.getId());
                 dp.setDt(dp_sample_dt);
                 for(int v=0;v<getNumVehicleTypes();v++){
-                    edu.berkeley.path.beats.jaxb.Demand dem = factory.createDemand();
+                    Demand dem = factory.createDemand();
                     dp.getDemand().add(dem);
 
                     // set values
@@ -1632,6 +1641,41 @@ public final class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 success &= ((Link)network.getLinkList().getLink().get(i)).set_density_in_veh(e,val);
             }
         return success;
+    }
+    
+    // set the clock to a specific time
+    public void setTimeInSeconds(int timeInSecs) throws BeatsException{
+    	
+    	if(!BeatsMath.isintegermultipleof((double) timeInSecs,runParam.dt_sim))
+			throw new BeatsException("nsec (" + timeInSecs + ") must be an interger multiple of simulation dt (" + runParam.dt_sim + ").");
+		int timestep = BeatsMath.round(timeInSecs/runParam.dt_sim);
+		
+		try{
+			reset();
+			
+			clock.setRelativeTimeStep(timestep);
+			
+			if(downstreamBoundaryCapacitySet!=null)
+	        	for(edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile capacityProfile : downstreamBoundaryCapacitySet.getDownstreamBoundaryCapacityProfile())
+	        		((CapacityProfile) capacityProfile).update(true);
+		
+			if(demandSet!=null){
+				for(edu.berkeley.path.beats.jaxb.DemandProfile dp : ((DemandSet) demandSet).getDemandProfile())
+					((DemandProfile) dp).update(true);
+			
+			if(splitRatioSet!=null)
+	    		for(edu.berkeley.path.beats.jaxb.SplitRatioProfile srp : ((SplitRatioSet) splitRatioSet).getSplitRatioProfile())
+	    			((SplitRatioProfile) srp).update(true);
+
+			if(fundamentalDiagramSet!=null)
+	        	for(edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile fdProfile : fundamentalDiagramSet.getFundamentalDiagramProfile())
+	        		((FundamentalDiagramProfile) fdProfile).update(true);
+				
+			}
+		} catch( BeatsException bex){
+			bex.printStackTrace();
+			throw bex;
+		}
     }
 
     public DemandProfile get_current_demand_for_link(long link_id){

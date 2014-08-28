@@ -6,6 +6,8 @@ import edu.berkeley.path.beats.simulator.InitialDensitySet;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.SplitRatioSet;
 
+import java.util.Properties;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jdr
@@ -21,5 +23,6 @@ public interface RampMeteringPolicyMaker {
                                      SplitRatioSet splitRatios,
                                      InitialDensitySet ics,
                                      RampMeteringControlSet control,
-                                     Double dt);
+                                     Double dt,
+                                     Properties props);
 }

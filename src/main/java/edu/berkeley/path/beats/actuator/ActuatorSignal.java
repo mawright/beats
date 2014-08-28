@@ -273,6 +273,11 @@ public final class ActuatorSignal extends Actuator {
 	}
 
     @Override
+    protected void deploy_off_signal(){
+        System.err.print("Cannot turn signals off");
+    };
+
+    @Override
     protected boolean register() {
         HashMap<NEMA.ID,List<Link>> phase_link_map = (HashMap<NEMA.ID,List<Link>>) implementor.get_target();
         boolean success = true;

@@ -30,6 +30,7 @@ import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.Node_FlowSolver.SupplyDemand;
 
 import java.io.BufferedWriter;
+import java.util.Arrays;
 import java.util.List;
 
 /** Node class.
@@ -72,6 +73,9 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 	// selected split ratio
 	private Double3DMatrix splitratio_selected;
 	
+	// stochasticity
+	protected boolean isdeterministic;
+	
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
 	/////////////////////////////////////////////////////////////////////
@@ -98,18 +102,19 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		}
 
 		nIn = 0;
-		if(getInputs()!=null){
-			nIn = getInputs().getInput().size();
-			input_link = new Link[nIn];
-			for(int i=0;i<nIn;i++){
-				edu.berkeley.path.beats.jaxb.Input input = getInputs().getInput().get(i);
-				input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
-			}
-		}
+        if(getInputs()!=null){
+            nIn = getInputs().getInput().size();
+            input_link = new Link[nIn];
+            for(int i=0;i<nIn;i++){
+                edu.berkeley.path.beats.jaxb.Input input = getInputs().getInput().get(i);
+                input_link[i] = myNetwork.getLinkWithId(input.getLinkId());
+            }
+        }
 		
 		isTerminal = nOut==0 || nIn==0;
         istrivialsplit = nOut<=1;
         has_profile = false;
+        isdeterministic = true;
 
     	if(isTerminal)
     		return;
@@ -215,6 +220,26 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         int numEnsemble = myNetwork.getMyScenario().getNumEnsemble();
         int numVehicleTypes = myNetwork.getMyScenario().getNumVehicleTypes();
         
+        
+        // Select a split ratio from profile, event, or controller
+        if(istrivialsplit)
+            splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
+        else{
+            if(has_profile)
+                splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
+            if(has_controller_split)
+                splitratio_selected.override_splits(this,controller_splits);
+//        if(has_event_split)
+//            splitratio_selected.override_splits(event_splits);
+        }
+        
+     // perturb split ratio
+		Double3DMatrix[] splitratio_selected_perturbed = new Double3DMatrix[numEnsemble];
+		if(!isdeterministic && nOut==2 && nIn==1)
+			splitratio_selected_perturbed = SplitRatioPerturber.perturb2OutputSplit(splitratio_selected, my_profile.getVariance(), numEnsemble);
+		else
+			Arrays.fill(splitratio_selected_perturbed, 0, splitratio_selected_perturbed.length, splitratio_selected);
+        
         for(e=0;e<numEnsemble;e++){
 
             Node_FlowSolver.SupplyDemand demand_supply = new SupplyDemand(nIn,nOut,numVehicleTypes);
@@ -225,22 +250,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
     		for(j=0;j<nOut;j++)
     			demand_supply.setSupply(j,output_link[j].get_space_supply_in_veh(e));
 
-
-            // Select a split ratio from profile, event, or controller
-            if(istrivialsplit)
-                splitratio_selected = new Double3DMatrix(getnIn(),getnOut(),getMyNetwork().getMyScenario().getNumVehicleTypes(),1d);
-            else{
-                if(has_profile)
-                    splitratio_selected = new Double3DMatrix(my_profile.getCurrentSplitRatio());
-                if(has_controller_split)
-                    splitratio_selected.override_splits(this,controller_splits);
-//            if(has_event_split)
-//                splitratio_selected.override_splits(event_splits);
-            }
-
-
-            // compute applied split ratio matrix
-            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected,demand_supply,e);
+			// compute applied split ratio matrix
+            Double3DMatrix splitratio_applied = node_sr_solver.computeAppliedSplitRatio(splitratio_selected_perturbed[e],demand_supply,e);
 
             /////////////////////////////////////////////////
             // write first to logger
@@ -278,6 +289,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
 		this.my_profile = mySplitRatioProfile;
 		if(!istrivialsplit){
 			this.has_profile = true;
+			if (!mySplitRatioProfile.isdeterministic())
+				isdeterministic = false;
 		}
 	}
 
@@ -496,6 +509,11 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node {
         return istrivialsplit;
     }
 
-
+    public static double[][][] perturb2DSplitForTest(double[][][] splitData){
+    	// implemented this way because Double3DMatrix is not public so not viewable in java/test/ package
+    	Double3DMatrix split = new Double3DMatrix(splitData);
+    	Double3DMatrix[] perturbedSplit = SplitRatioPerturber.perturb2OutputSplit(split, .03, 1);
+    	return perturbedSplit[0].cloneData();
+    }
 
 }

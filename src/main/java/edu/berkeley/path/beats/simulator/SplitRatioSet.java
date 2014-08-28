@@ -55,7 +55,7 @@ final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatio
 
 	protected void update() {
     	for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
-    		((SplitRatioProfile) sr).update();	
+    		((SplitRatioProfile) sr).update(false);	
 	}
 	
 }

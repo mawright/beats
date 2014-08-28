@@ -206,7 +206,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// Events ..........................................................
 
 	// used by Event.setLinkFundamentalDiagram to activate an FD event
-	protected void activateFDEvent(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd) throws BeatsException {
+	public void activateFDEvent(edu.berkeley.path.beats.jaxb.FundamentalDiagram fd) throws BeatsException {
 		if(fd==null)
 			return;
 
@@ -224,14 +224,14 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	}
 
 	// used by Event.revertLinkFundamentalDiagram
-	protected void revertFundamentalDiagramEvent() throws BeatsException{
+	public void revertFundamentalDiagramEvent() throws BeatsException{
 		if(!activeFDevent)
 			return;
 		activeFDevent = false;
 	}
 
 	// used by Event.setLinkLanes
-	protected void set_Lanes(double newlanes) throws BeatsException{
+	public void set_Lanes(double newlanes) throws BeatsException{
 		for(int e=0;e<myScenario.getNumEnsemble();e++)
 			if(getDensityJamInVeh(e)*newlanes/get_Lanes() < getTotalDensityInVeh(e))
 				throw new BeatsException("ERROR: Lanes could not be set.");

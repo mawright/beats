@@ -133,12 +133,12 @@ public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jax
 		
 	}
 
-	protected void update() throws BeatsException {
+	protected void update(boolean forcesample) throws BeatsException {
 		if(myLink==null)
 			return;
 		if(isdone || FD.isEmpty())
 			return;
-		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+		if(forcesample || myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int n = FD.size()-1;
 			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);

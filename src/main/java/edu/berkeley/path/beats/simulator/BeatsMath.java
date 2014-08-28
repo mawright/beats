@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Random;
+import org.apache.commons.math3.distribution.GammaDistribution;
 
 /** XXX. 
  * YYY
@@ -330,5 +331,35 @@ public final class BeatsMath {
 	
 	public static double sampleZeroMeanGaussian(double std_dev){
 		return std_dev*BeatsMath.random.nextGaussian();
+	}
+	
+	public static double[][] sampleDirichlet(double[] concentration_parameters, int numSamples){
+		// Samples from a Dirichlet distribution using Gamma distributions
+		// Random variables distributed according to a Dirichlet distribution are random vectors
+		// whose entries are in the range [0, 1] and sum to 1.
+		int i, e;
+		double[][] sample = new double[numSamples][concentration_parameters.length];
+		for(i=0;i<concentration_parameters.length;i++){
+			GammaDistribution Gamma = new GammaDistribution(concentration_parameters[i], 1);
+			for(e=0;e<numSamples;e++){
+				sample[e][i] = Gamma.sample();
+			}
+		}
+		for(e=0;e<numSamples;e++){
+			double sum_sample = BeatsMath.sum(sample[e]);
+			sample[e] = BeatsMath.times(sample[e], 1/sum_sample);
+		}
+		return sample;
+	}
+	
+	public static double[] betaParamsFromRVMeanAndVariance(double mean, double variance){
+		// The beta distribution is the special case of the Dirichlet distribution for k = 2
+		// k > 2 not implemented yet
+		double[] params = new double[2];
+		double m = mean;
+		double v = variance;
+		params[0] = - m * (Math.pow(m, 2) - m + v) / v;
+		params[1] = (m-1) * (Math.pow(m, 2) - m + v) / v;
+		return params;
 	}
 }

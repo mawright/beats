@@ -1,24 +1,21 @@
 package edu.berkeley.path.beats.actuator;
 
-import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.Scenario;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
 
 public class ActuatorRampMeter extends Actuator {
 
     public enum QueueOverrideStrategy {none,max_rate,proportional,proportional_integral};
     private double metering_rate_in_veh;
     private Link myLink;
-	private double max_rate_in_veh;
-	private double min_rate_in_veh;
+	private Double max_rate_in_veh = Double.POSITIVE_INFINITY;
+	private Double min_rate_in_veh = 0d;
     private QueueOverride queue_override;
+
+    private double cycle_increment;   // [sec]
 
     /////////////////////////////////////////////////////////////////////
     // actuation command
@@ -26,15 +23,19 @@ public class ActuatorRampMeter extends Actuator {
 
     public void setMeteringRateInVeh(Double rate_in_veh){
         metering_rate_in_veh = rate_in_veh;
+        // round to the nearest time increment
+        if(!Double.isNaN(cycle_increment) & cycle_increment>0){
+            double dt = myController.getMyScenario().getSimdtinseconds();
+            double sec_per_veh = dt/metering_rate_in_veh;
+            double sec_per_veh_round = Math.round(sec_per_veh/cycle_increment)*cycle_increment;
+            metering_rate_in_veh = dt/sec_per_veh_round;
+        }
         metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
         metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
-	}
+    }
 
 	public void setMeteringRateInVPH(Double rate_in_vph){
-        double dt_in_hours = myController.getMyScenario().getSimdtinseconds()/3600d;
-        metering_rate_in_veh = rate_in_vph*dt_in_hours;
-        metering_rate_in_veh = Math.max(metering_rate_in_veh,min_rate_in_veh);
-        metering_rate_in_veh = Math.min(metering_rate_in_veh,max_rate_in_veh);
+        setMeteringRateInVeh(rate_in_vph*myController.getMyScenario().getSimdtinseconds()/3600d);
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -53,36 +54,28 @@ public class ActuatorRampMeter extends Actuator {
 	protected void populate(Object jaxb,Scenario myScenario) {
 
         edu.berkeley.path.beats.jaxb.Actuator jaxbA = (edu.berkeley.path.beats.jaxb.Actuator) jaxb;
-        double max_rate_in_vph = Double.POSITIVE_INFINITY;
-        double min_rate_in_vph = 0d;
 		myLink = myScenario.getLinkWithId(jaxbA.getScenarioElement().getId());
+        double dt_in_hours = myScenario.getSimdtinseconds()/3600d;
 
-		if(myLink!=null && jaxbA.getParameters()!=null){
+        Parameters params = (Parameters) jaxbA.getParameters();
+
+		if(myLink!=null && params!=null){
 			double lanes = myLink.get_Lanes();
-			for(Parameter p : jaxbA.getParameters().getParameter()){
-				if(p.getName().compareTo("max_rate_in_vphpl")==0)
-					max_rate_in_vph = Double.parseDouble(p.getValue())*lanes;
-				if(p.getName().compareTo("min_rate_in_vphpl")==0)
-					min_rate_in_vph = Double.parseDouble(p.getValue())*lanes;
-			}	
+            max_rate_in_veh = params.has("max_rate_in_vphpl") ?
+                    Double.parseDouble(params.get("max_rate_in_vphpl"))*lanes*dt_in_hours :
+                    Double.POSITIVE_INFINITY;
+            min_rate_in_veh = params.has("min_rate_in_vphpl") ?
+                    Double.parseDouble(params.get("min_rate_in_vphpl"))*lanes*dt_in_hours :
+                    0d;
 		}
 
-        if(jaxbA.getParameters()!=null){
-            for(Parameter p : jaxbA.getParameters().getParameter()){
-                if(p.getName().compareTo("max_rate_in_vphpl")==0)
-                    max_rate_in_vph = Double.parseDouble(p.getValue())*myLink.get_Lanes();
-                if(p.getName().compareTo("min_rate_in_vphpl")==0)
-                    min_rate_in_vph = Double.parseDouble(p.getValue())*myLink.get_Lanes();
-            }
-        }
-
-        double dt_in_hours = myScenario.getSimdtinseconds()/3600d;
-        this.max_rate_in_veh = max_rate_in_vph*dt_in_hours;
-        this.min_rate_in_veh = min_rate_in_vph*dt_in_hours;
+        cycle_increment = Double.NaN;
+        if(params!=null && params.has("cycle_increment_sec"))
+            cycle_increment =  Double.parseDouble(params.get("cycle_increment_sec"));
 
         // queue override
         if(jaxbA.getQueueOverride()!=null)
-            queue_override = new QueueOverride(jaxbA.getQueueOverride());
+            queue_override = this.new QueueOverride(jaxbA.getQueueOverride());
 
     }
 
@@ -106,6 +99,11 @@ public class ActuatorRampMeter extends Actuator {
 	}
 
     @Override
+    protected void deploy_off_signal(){
+        implementor.deploy_metering_rate_in_veh(null);
+    };
+
+    @Override
     protected boolean register() {
         return ((Link)implementor.get_target()).register_flow_controller();
     }
@@ -114,15 +112,16 @@ public class ActuatorRampMeter extends Actuator {
 		return myLink;
 	}
 
-
-    public class QueueOverride {
-
+    private class QueueOverride {
         public QueueOverrideStrategy strategy;
         public double max_vehicles;
 
         public QueueOverride(edu.berkeley.path.beats.jaxb.QueueOverride jaxbQ){
-            this.strategy = QueueOverrideStrategy.valueOf(jaxbQ.getStrategy());
-            this.max_vehicles = jaxbQ.getMaxQueueVehicles();
+           strategy = QueueOverrideStrategy.valueOf(jaxbQ.getStrategy());
+            if(getParameters()!=null)  {
+                Parameters param = (Parameters) getParameters();
+                max_vehicles = param.has("max_queue_vehicles") ? Double.parseDouble(param.get("max_queue_vehicles")) : Double.POSITIVE_INFINITY;
+            }
         }
 
         public double compute_rate_in_veh(){

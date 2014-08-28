@@ -627,6 +627,7 @@
 			<xs:attribute name="network_id" type="xs:long" use="optional" />
 			<xs:attribute name="destination_network_id" type="xs:long" use="optional" />
 			<xs:attribute name="mod_stamp" type="xs:string" use="optional" default="0" />
+			<xs:attribute name="variance" type="xs:double" use="optional"/>
 		</xs:complexType>
 	</xs:element>		  
 
@@ -1129,7 +1130,6 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:attribute>
-			<xs:attribute name="max_queue_vehicles" type="xs:double" use="required"/>	
 		</xs:complexType>
 	</xs:element>
 

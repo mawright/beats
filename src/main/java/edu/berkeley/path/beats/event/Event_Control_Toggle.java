@@ -90,8 +90,9 @@ public class Event_Control_Toggle extends Event {
 	protected void activate() throws BeatsException{
 		for(ScenarioElement s : getTargets()){
 			Controller c = getMyScenario().getControllerWithId(s.getId());
-			setControllerIsOn(c, ison);
-		}			
+            if(c!=null)
+                c.setIson(ison);
+		}
 	}
 	
 }

@@ -83,15 +83,15 @@ public final class Runner {
         }
     }
 
-    private static void run_simulation(String[] args){
 
-        long time = System.currentTimeMillis();
+    public static Scenario load_scenario_from_properties(String propsfile){
 
+        Scenario scenario = null;
         BeatsProperties props = null;
 
         // read properties file
         try {
-            props = new BeatsProperties(args[0]);
+            props = new BeatsProperties(propsfile);
         } catch (BeatsException e){
             System.err.println(e);
             System.exit(1);
@@ -100,7 +100,7 @@ public final class Runner {
         try {
 
             // load configuration file
-            Scenario scenario = ObjectFactory.createAndLoadScenario(props.scenario_name);
+            scenario = ObjectFactory.createAndLoadScenario(props.scenario_name);
 
             if (scenario==null)
                 throw new BeatsException("Scenario did not load");
@@ -123,9 +123,23 @@ public final class Runner {
                     props.split_logger_dt,
                     props.aux_props );
 
+        }
+        catch (BeatsException exc) {
+            exc.printStackTrace();
+        }
+
+        return scenario;
+
+    }
+
+    private static void run_simulation(String[] args){
+
+        long time = System.currentTimeMillis();
+        try {
+            Scenario scenario = load_scenario_from_properties(args[0]);
+
             // run the scenario
             scenario.run();
-
         }
         catch (BeatsException exc) {
             exc.printStackTrace();
@@ -134,7 +148,6 @@ public final class Runner {
         finally{
             System.out.println("done in " + (System.currentTimeMillis()-time));
         }
-
     }
 
     private static void validate(String[] args){

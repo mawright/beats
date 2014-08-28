@@ -82,6 +82,6 @@ public class Event_Global_Demand_Knob extends Event {
 
 	@Override
 	protected void activate() throws BeatsException{
-		setGlobalDemandEventKnob(newknob);
+        myScenario.setGlobal_demand_knob(newknob);
 	}
 }

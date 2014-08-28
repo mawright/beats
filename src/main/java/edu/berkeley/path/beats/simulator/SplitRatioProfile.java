@@ -34,9 +34,9 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	private double dtinseconds;
 	private int samplesteps;
 	private int laststep;
+	private boolean isdeterministic;
 	private BeatsTimeProfile [][][] profile; 	// profile[i][j][v] is the split ratio profile for
-												// input link i, output link j, vehicle type v.
-	
+												// input link i, output link j, vehicle type v.	
 	// does change ........................................
 	private Double3DMatrix currentSplitRatio; 	// current split ratio matrix with dimension [inlink x outlink x vehicle type]
 	private boolean isdone; 
@@ -92,6 +92,12 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 			if(!profile[in_index][out_index][vt_index].isEmpty())
 				laststep = Math.max(laststep,profile[in_index][out_index][vt_index].getNumTime());
 		}
+		
+		// optional uncertainty model
+		if(super.getVariance()!=null)
+			isdeterministic = false;
+		else
+			isdeterministic = true;
 				
 		// inform the node
 		myNode.setMySplitRatioProfile(this);
@@ -170,14 +176,14 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 //					}		
 	}
 
-	protected void update() {
+	protected void update(boolean forcesample) {
 		if(profile==null)
 			return;
 		if(myNode==null)
 			return;
 		if(isdone)
 			return;
-		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+		if(forcesample || myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);
 
@@ -269,5 +275,9 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         }
         return val;
     }
+
+	public boolean isdeterministic() {
+		return isdeterministic;
+	}
 
 }

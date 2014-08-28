@@ -3,10 +3,12 @@ package edu.berkeley.path.beats.control;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.*;
 
+import java.util.Properties;
+
 public class PolicyMaker_Tester implements RampMeteringPolicyMaker {
 
     @Override
-    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt) {
+    public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
 
         RampMeteringPolicySet policy = new RampMeteringPolicySet();
 

@@ -122,7 +122,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
         current_sample = capacity.get(0);
 	}
 	
-	protected void update() {
+	protected void update(boolean forcesample) {
 
 		if(isOrphan)
 			return;
@@ -133,7 +133,7 @@ public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.Downstre
 		if(isdone)
 			return;
 		
-		if(myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
+		if(forcesample || myScenario.getClock().is_time_to_sample_abs(samplesteps, step_initial_abs)){
 			
 			int n = capacity.getNumTime()-1;
 			int step = myScenario.getClock().sample_index_abs(samplesteps,step_initial_abs);

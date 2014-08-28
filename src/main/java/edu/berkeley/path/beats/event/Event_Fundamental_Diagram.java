@@ -137,9 +137,9 @@ public class Event_Fundamental_Diagram extends Event {
 		for(ScenarioElement s : getTargets()){
 			Link targetlink = (Link) s.getReference();
 			if(resetToNominal)
-				revertLinkFundamentalDiagram(targetlink);
-			else
-				setLinkFundamentalDiagram(targetlink,FD);
+                targetlink.revertFundamentalDiagramEvent();
+         	else
+                targetlink.activateFDEvent(FD);
 		}
 		
 	}
