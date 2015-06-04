@@ -43,7 +43,8 @@ public class BeatsTimeProfileDouble1D extends BeatsTimeProfile<Double[]> {
             Double[] z = data.get(t);
             for(int i=0;i<numTypes;i++) {
                 Double[] X = numbers.get(i);
-                z[i] = X[t] * simdtinseconds;
+                if(X!=null)
+                    z[i] = X[t] * simdtinseconds;
             }
             data.set(t, z);
         }

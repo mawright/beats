@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="0" name="" schemaVersion="">
+	<settings>
+		<units>SI</units>
+	</settings>
+
+	<VehicleTypeSet id="1">
+		<vehicleType id="1" name="comm1" size_factor="1.0"/>					
+		<vehicleType id="0" name="comm0" size_factor="1.0"/>		
+	</VehicleTypeSet>  
+
+	<SplitRatioSet id="1">
+		<splitRatioProfile id="1" dt="300" node_id="4">
+			<splitratio vehicle_type_id="0" link_in="3" link_out="4">1.0</splitratio>
+		</splitRatioProfile>
+	</SplitRatioSet>
+
+	<DemandSet id="1" >
+		<demandProfile dt="300" id="1" link_id_org="1">
+			<demand vehicle_type_id="0">0.1</demand>
+		</demandProfile>
+	</DemandSet>
+
+	<FundamentalDiagramSet  id="1">
+		<fundamentalDiagramProfile id="1" link_id="1">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="2">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="3">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="4">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="5">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="6">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="7">
+			<fundamentalDiagram id="1" capacity="0.2" congestion_speed="6" free_flow_speed="27"/>
+		</fundamentalDiagramProfile>
+	</FundamentalDiagramSet>
+
+	<NetworkSet  id="1">
+		<network id="1" name="">
+			<description></description>
+			<position>
+				<point lat="0" lng="0"/>
+			</position>
+			<NodeList>
+				<node id="1" >
+					<outputs>
+						<output link_id="1"/>
+					</outputs>
+					<inputs/>
+				</node>
+				<node id="2">
+					<outputs>
+						<output link_id="2"/>
+					</outputs>
+					<inputs>
+						<input link_id="1"/>
+					</inputs>
+				</node>
+				<node id="3">
+					<outputs>
+						<output link_id="3"/>
+					</outputs>
+					<inputs>
+						<input link_id="2"/>
+						<input link_id="6"/>
+					</inputs>
+				</node>
+				<node id="4">
+					<outputs>
+						<output link_id="4"/>
+						<output link_id="7"/>
+					</outputs>
+					<inputs>
+						<input link_id="3"/>
+					</inputs>
+				</node>
+				<node id="5">
+					<outputs>
+						<output link_id="5"/>
+					</outputs>
+					<inputs>
+						<input link_id="4"/>
+					</inputs>
+				</node>
+				<node id="6" >
+					<outputs/>
+					<inputs/>
+				</node>
+				<node id="7" >
+					<outputs/>
+					<inputs/>
+				</node>
+				<node id="8" >
+					<outputs/>
+					<inputs/>
+				</node>
+			</NodeList>
+			<LinkList>
+				<link id="1" lanes="1" length="400" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="1"/>
+					<end node_id="2"/>
+				</link>
+				<link id="2" lanes="1" length="400" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="2"/>
+					<end node_id="3"/>
+				</link>
+				<link id="3" lanes="1" length="400" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="3"/>
+					<end node_id="4"/>
+				</link>
+				<link id="4" lanes="1" length="400" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="4"/>
+					<end node_id="5"/>
+				</link>
+				<link id="5" lanes="1" length="400" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="5"/>
+					<end node_id="6"/>
+				</link>
+				<link id="6" lanes="1" length="400" >
+					<link_type id="1" name="On-ramp"/>
+					<begin node_id="7"/>
+					<end node_id="3"/>
+				</link>
+				<link id="7" lanes="1" length="400" >
+					<link_type id="1" name="Off-ramp"/>
+					<begin node_id="4"/>
+					<end node_id="8"/>
+				</link>
+			</LinkList>
+		</network>
+	</NetworkSet>
+
+	<ControllerSet id="1">
+		<controller dt="300" id="0" name="" type="Commodity_Swapper" enabled="true">
+			<target_actuators>
+				<target_actuator id="1"/>
+			</target_actuators>
+			
+		  <table name="splits">
+			 <column_names>
+				<column_name id="0" name="comm_in"/>
+				<column_name id="1" name="comm_out"/>
+				<column_name id="2" name="dt"/>
+				<column_name id="3" name="split_str"/>
+			 </column_names>
+			 <row>
+				<column id="0">0</column>
+				<column id="1">1</column>
+				<column id="2">300</column>
+				<column id="3">0,1</column>
+			 </row>
+		  </table>
+		  
+		</controller>
+	</ControllerSet>
+
+	<ActuatorSet id="0">
+		<actuator id="1">
+			<scenarioElement id="2" type="link"/>
+			<actuator_type id="0" name="commodity_changer"/>
+		</actuator>
+	</ActuatorSet>
+
+</scenario>

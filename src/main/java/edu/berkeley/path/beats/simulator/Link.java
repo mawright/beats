@@ -67,6 +67,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 	// Actuation
     protected boolean has_flow_controller;
     protected boolean has_speed_controller;
+    protected boolean has_density_controller;
     protected double external_max_flow;
     protected double external_max_speed;
 	
@@ -119,6 +120,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
 
         has_flow_controller = false;
         has_speed_controller = false;
+        has_density_controller = false;
 
         // link type
         if(getLinkType()==null)
@@ -310,6 +312,13 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link {
         if(has_speed_controller)
             return false;
         has_speed_controller = true;
+        return true;
+    }
+
+    public boolean register_density_controller(){
+        if(has_density_controller)
+            return false;
+        has_density_controller = true;
         return true;
     }
 

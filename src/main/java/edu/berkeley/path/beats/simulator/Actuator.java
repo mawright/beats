@@ -10,7 +10,7 @@ public class Actuator extends edu.berkeley.path.beats.jaxb.Actuator {
     protected Actuator.Type myType;
     protected boolean isOn;
 
-	public static enum Type	{ ramp_meter,signal,vsl,cms };
+	public static enum Type	{ ramp_meter,signal,vsl,cms,commodity_changer };
 
 	/////////////////////////////////////////////////////////////////////
 	// construction

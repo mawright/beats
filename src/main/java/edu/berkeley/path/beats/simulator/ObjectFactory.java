@@ -109,6 +109,10 @@ final public class ObjectFactory {
 //				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
 //				break;
 
+            case Commodity_Swapper:
+                C = new Controller_Commodity_Swapper(myScenario,jaxbC);
+                break;
+
 			default:
 				C = null;
 				break;
@@ -192,6 +196,10 @@ final public class ObjectFactory {
 			case cms:
 				A = new ActuatorCMS(myScenario,jaxbA,imp);
 				break;
+
+            case commodity_changer:
+                A = new ActuatorCommodity(myScenario,jaxbA,imp);
+                break;
 
 			default:
 				A = null;
