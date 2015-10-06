@@ -42,6 +42,7 @@ public class Controller_SR_Generator_new extends Controller {
             String demandString = "";
             double dpdt = Double.NaN;
             double knob = Double.NaN;
+            double start_time = Double.NaN;
 
             for( Column col : row.getColumn() ){
 
@@ -62,11 +63,14 @@ public class Controller_SR_Generator_new extends Controller {
                     case 3:
                         knob = Double.parseDouble(col.getContent());
                         break;
+
+                    case 4:
+                        start_time = Double.parseDouble(col.getContent());
                 }
             }
 
-            if (!demandString.isEmpty() && link != null && !Double.isNaN(knob) && !Double.isNaN(dpdt))
-                node_data.put(link.getId(), new NodeData(this, link, demandString, knob, dpdt, myScenario));
+            if (!demandString.isEmpty() && link != null && !Double.isNaN(knob) && !Double.isNaN(dpdt) && !Double.isNaN(start_time))
+                node_data.put(link.getId(), new NodeData(this, link, demandString, knob, dpdt, start_time,myScenario));
         }
 
 
@@ -137,7 +141,7 @@ public class Controller_SR_Generator_new extends Controller {
         private Double current_flow_veh;
 //        private Double [] alpha_tilde; // row sum of splits from feeding to non-measured links
 
-        public NodeData(Controller parent,Link profileLink,String demandStr,Double knob,Double dpdt, Scenario scenario) {
+        public NodeData(Controller parent,Link profileLink,String demandStr,Double knob,Double dpdt, Double start_time, Scenario scenario) {
 
             this.knob = knob;
             this.myNode = profileLink.getBegin_node();
@@ -166,7 +170,7 @@ public class Controller_SR_Generator_new extends Controller {
                 return;
 
             // find the demand profile for the offramp
-            measured_flow_profile_veh = new BeatsTimeProfileDouble(demandStr, ",", dpdt, 0d, scenario.get.simdtinseconds());
+            measured_flow_profile_veh = new BeatsTimeProfileDouble(demandStr, ",", dpdt, start_time, scenario.get.simdtinseconds());
             measured_flow_profile_veh.multiplyscalar(scenario.get.simdtinseconds());
 
 //            alpha_tilde = new Double[myNode.nIn];
@@ -194,6 +198,7 @@ public class Controller_SR_Generator_new extends Controller {
 
         public void reset() {
             measured_flow_profile_veh.reset();
+            current_flow_veh = 0d;
             try {
                 cms.reset();
             } catch (BeatsException e) {

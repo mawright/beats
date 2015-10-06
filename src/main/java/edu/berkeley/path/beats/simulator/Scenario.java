@@ -420,23 +420,24 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create scenario updater
         if(is_actm){
+            logger.info("Running in ACTM mode.");
             runMode = RunMode.ACTM;
             updater = new ScenarioUpdaterACTM(this);
         }
         else{
             if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0) {
+                logger.info("Running in offramp demands mode.");
                 runMode = RunMode.FRDEMANDS;
                 updater = new ScenarioUpdaterFrFlow(this, nodeflowsolver, nodesrsolver);
-
 
                 // generate split ratio controllers
                 if(controllerSet==null)
                     controllerSet = new edu.berkeley.path.beats.jaxb.ControllerSet();
 
                 controllerSet.getController().add(generate_SR_controllers());
-
             }
             else {
+                logger.info("Running in normal mode.");
                 runMode = RunMode.NORMAL;
                 updater = new ScenarioUpdaterStandard(this, nodeflowsolver, nodesrsolver);
             }
@@ -1041,6 +1042,10 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         col3.setName("knob");
         colnames.getColumnName().add(3,col3);
 
+        ColumnName col4 = new ColumnName();
+        col3.setId(4);
+        col3.setName("start_time");
+        colnames.getColumnName().add(4,col4);
 
         for(edu.berkeley.path.beats.jaxb.DemandProfile dp : demandSet.getDemandProfile()){
             Link link = get.linkWithId(dp.getLinkIdOrg());
@@ -1076,8 +1081,13 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
                 c3.setContent(String.format("%f",dp.getKnob()));
                 row.getColumn().add(c3);
 
-                table.getRow().add(row);
+                // start time
+                Column c4 = new Column();
+                c4.setId(4);
+                c4.setContent(String.format("%f",dp.getStartTime()));
+                row.getColumn().add(c4);
 
+                table.getRow().add(row);
             }
         }
 

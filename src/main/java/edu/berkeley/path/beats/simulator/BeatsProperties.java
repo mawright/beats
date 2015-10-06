@@ -53,10 +53,10 @@ public class BeatsProperties extends Properties {
         duration = Double.parseDouble(getProperty("DURATION","86400"));
         output_dt = Double.parseDouble(getProperty("OUTPUT_DT","300"));
         num_reps = Integer.parseInt(getProperty("NUM_REPS", "1"));
-        uncertainty_model = getProperty("UNCERTAINTY_MODEL", "gaussian");
-        split_ratio_model = getProperty("NODE_SPLIT_RATIO_SOLVER","A");
-        node_flow_model = getProperty("NODE_FLOW_SOLVER","proportional");
-        run_mode = getProperty("RUN_MODE","normal");
+        uncertainty_model = getProperty("UNCERTAINTY_MODEL", "gaussian").trim();
+        split_ratio_model = getProperty("NODE_SPLIT_RATIO_SOLVER","A").trim();
+        node_flow_model = getProperty("NODE_FLOW_SOLVER","proportional").trim();
+        run_mode = getProperty("RUN_MODE","normal").trim();
         ensemble_size = Integer.parseInt(getProperty("ENSEMBLE_SIZE", "1"));
         performance_config = getProperty("PERFORMANCE", "");
         split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
