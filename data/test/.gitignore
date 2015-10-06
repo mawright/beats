@@ -1,0 +1,70 @@
+/output/
+/lib/
+/src/main/generated-java/
+/data/output/
+sirius.jar
+beats.jar
+*.lck
+*.dat
+output_*
+*.ppt
+*.asv
+*.mat
+/src/main/generated-java/
+velocity.log
+/derby.log
+/src/org/apache/torque/linkage/
+*.pptx
+
+*~
+/target
+.cache
+*.jar
+.project
+.settings
+.project
+bin/
+# use glob syntax.
+syntax: glob
+*.ser
+*.class
+*~
+*.bak
+#*.off
+*.old
+
+# eclipse conf file
+.settings
+.classpath
+.project
+.manager
+.scala_dependencies
+
+# idea
+.idea
+*.iml
+
+# building
+target
+build
+null
+tmp*
+temp*
+dist
+test-output
+build.log
+
+# other scm
+.svn
+.CVS
+.hg*
+
+# switch to regexp syntax.
+#  syntax: regexp
+#  ^\.pc/
+
+#SHITTY output not in target directory
+build.log
+
+
+hi_0.xml
