@@ -37,11 +37,20 @@ public class BeatsProperties extends Properties {
     public BeatsProperties(String prop_file_name) throws BeatsException {
 
         // load properties file
+        FileInputStream fis = null;
         try{
-            load(new FileInputStream(prop_file_name));
+            fis = new FileInputStream(prop_file_name);
+            load(fis);
         }
         catch (IOException e){
             System.err.print(e);
+        }
+        finally{
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         // read properties
@@ -67,8 +76,8 @@ public class BeatsProperties extends Properties {
         DebugFlags.signal_events = getProperty("DEBUG.SIGNAL_EVENTS") ==null ? false : Boolean.parseBoolean(getProperty("DEBUG.SIGNAL_EVENTS"));
 
         // validate
-        if(scenario_name.isEmpty())
-            throw new BeatsException("Scenario name not provided in properties file.");
+//        if(scenario_name.isEmpty())
+//            throw new BeatsException("Scenario name not provided in properties file.");
         if(Double.isNaN(sim_dt))
             throw new BeatsException("Simulation dt not provided in properties file.");
         if(output_prefix.isEmpty())
