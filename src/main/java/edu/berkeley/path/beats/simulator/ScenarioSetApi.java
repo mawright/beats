@@ -1,9 +1,9 @@
 package edu.berkeley.path.beats.simulator;
 
-//import edu.berkeley.path.beats.control.splitgen.Controller_SR_Generator_Fw;
 import edu.berkeley.path.beats.control.Controller_SR_Generator_new;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
+import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.jaxb.VehicleType;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
@@ -20,7 +20,7 @@ public class ScenarioSetApi {
         this.scenario = scenario;
     }
 
-    // SIMULATION PARAMETERS ------------------------------------------------------
+    /* SIMULATION PARAMETERS ------------------------------------------ */
 
     public void configfilename(String configfilename) {
         scenario.configfilename = configfilename;
@@ -61,13 +61,13 @@ public class ScenarioSetApi {
 //        }
 //    }
 
-    // PERFORMANCE ------------------------------------------------------
+    /* PERFORMANCE ----------------------------------------------- */
 
     public void performance_calculator(PerformanceCalculator pcalc){
         scenario.perf_calc = pcalc;
     }
 
-    // LOG ------------------------------------------------------
+    /* LOG ------------------------------------------------------ */
 
     public void splitLoggerPrefix(String split_logger_prefix){
         scenario.split_logger_prefix = split_logger_prefix;
@@ -82,7 +82,7 @@ public class ScenarioSetApi {
             c.setIson(global_control_on);
     }
 
-    // DEMAND ------------------------------------------------------
+    /* DEMAND ------------------------------------------------------ */
 
     public void global_demand_knob(double global_demand_knob) {
         scenario.global_demand_knob = global_demand_knob;
@@ -152,9 +152,33 @@ public class ScenarioSetApi {
         }
     }
 
-    // SPLITS ------------------------------------------------------
+    /* SPLITS ------------------------------------------------------ */
 
-    // EVENTS ------------------------------------------------------
+    public void splits_for_node(double node_id,double start_time,double dt,edu.berkeley.path.beats.jaxb.Splitratio[] splitratios){
+
+        JaxbObjectFactory jaxb = new JaxbObjectFactory();
+        SplitRatioProfile srp = (SplitRatioProfile) jaxb.createSplitRatioProfile();
+
+        srp.setNodeId((long)node_id);
+        srp.setStartTime(start_time);
+        srp.setDt(dt);
+        srp.getSplitratio().addAll(java.util.Arrays.asList(splitratios));
+
+        System.out.println("populate");
+        srp.populate(scenario);
+        System.out.println("validate");
+        srp.validate();
+        System.out.println("reset");
+        srp.reset();
+        System.out.println("update");
+        srp.update(true);
+        System.out.println("set");
+
+        SplitRatioSet srset = (SplitRatioSet) this.scenario.getSplitRatioSet();
+        srset.set_split_profile_for_node_id(srp.getNodeId(),srp);
+    }
+
+    /* EVENTS ------------------------------------------------------ */
 
     public boolean event(Event E){
         if(scenario.scenario_locked)
@@ -169,7 +193,7 @@ public class ScenarioSetApi {
         return true;
     }
 
-    // FD ------------------------------------------------------
+    /* FD ------------------------------------------------------ */
 
     public void capacity_for_sink_si(long link_id,double dt,double [] capacity) throws Exception {
 
@@ -209,7 +233,7 @@ public class ScenarioSetApi {
 
     }
 
-    // STATE ------------------------------------------------------
+    /* STATE ------------------------------------------------------ */
 
     public void initial_state() throws BeatsException {
 
@@ -293,7 +317,7 @@ public class ScenarioSetApi {
 
     }
 
-    // set density indexed by [link][ensemble]
+    // set density in [veh] indexed by [link][ensemble]
     public boolean totalDensity(double [][] d){
 
         if(scenario.getNetworks().size()>1){

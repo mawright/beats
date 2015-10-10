@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * Created by gomes on 4/28/2015.
- */
 public class ScenarioGetApi {
 
     Scenario scenario;
@@ -20,7 +17,7 @@ public class ScenarioGetApi {
         this.scenario = scenario;
     }
 
-    // SIMULATION PARAMETERS ------------------------------------------------------
+    /* SIMULATION PARAMETERS ------------------------------------ */
 
     public String outputPrefix(){
         return scenario.runParam.outprefix;
@@ -93,7 +90,11 @@ public class ScenarioGetApi {
         return scenario.clock;
     }
 
-    // VEHICLE TYPES ------------------------------------------------------
+    public Properties auxiliary_properties(String group_name){
+        return scenario.aux_props.get(group_name);
+    }
+
+    /*  VEHICLE TYPES ------------------------------------------- */
 
     public int numVehicleTypes() {
         return  scenario.numVehicleTypes;
@@ -131,7 +132,7 @@ public class ScenarioGetApi {
         return scenario.getVehicleTypeSet().getVehicleType().get(index).getId();
     }
 
-    // NETWORK ------------------------------------------------------
+    /*  NETWORK ------------------------------------------------- */
 
     public Network networkWithId(long id){
         List<edu.berkeley.path.beats.jaxb.Network> networks = scenario.getNetworks();
@@ -166,7 +167,7 @@ public class ScenarioGetApi {
         return null;
     }
 
-    // SENSORS ------------------------------------------------------
+    /*  SENSORS ------------------------------------------------- */
 
     public Sensor sensorWithLinkId(long link_id){
         if(scenario.sensorset==null)
@@ -203,7 +204,7 @@ public class ScenarioGetApi {
         return null;
     }
 
-    // ACTUATORS ------------------------------------------------------
+    /*  ACTUATORS ------------------------------------------------ */
 
     public Actuator actuatorWithId(long id) {
         if(scenario.actuatorset==null)
@@ -240,7 +241,7 @@ public class ScenarioGetApi {
         return x;
     }
 
-    // EVENTS ------------------------------------------------------
+    /*  EVENTS -------------------------------------------------- */
 
     public Event eventWithId(long id) {
         if(!scenario.initialized){
@@ -256,7 +257,7 @@ public class ScenarioGetApi {
         return null;
     }
 
-    // CONTROLLERS ------------------------------------------------------
+    /*  CONTROLLERS --------------------------------------------- */
 
     public Controller controllerWithId(long id) {
         if(!scenario.initialized){
@@ -272,7 +273,11 @@ public class ScenarioGetApi {
         return null;
     }
 
-    // STATE ------------------------------------------------------
+    public edu.berkeley.path.beats.simulator.ControllerSet controllerset() {
+        return scenario.controllerset;
+    }
+
+    /*  STATE -------------------------------------------------- */
 
     public double [][] densityForNetwork(long network_id,int ensemble){
 
@@ -301,9 +306,16 @@ public class ScenarioGetApi {
     }
 
     public double [][] totalDensity(long network_id){
-        Network network = networkWithId(network_id);
-        if(network==null)
-            return null;
+
+        Network network;
+        if(scenario.getNetworks().size()==1){
+            network = (Network) scenario.getNetworks().get(0);
+        }
+        else {
+            network = networkWithId(network_id);
+            if(network==null)
+                return null;
+        }
 
         int numEnsemble = this.scenario.get.numEnsemble();
         double [][] density = new double [network.getLinkList().getLink().size()][numEnsemble];
@@ -314,6 +326,24 @@ public class ScenarioGetApi {
                 density[i][e] = link.getTotalDensityInVeh(e);
         }
         return density;
+    }
+
+    public InitialDensitySet current_densities_si(){
+        Network network = (Network) scenario.getNetworks().get(0);
+        JaxbObjectFactory factory = new JaxbObjectFactory();
+        InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
+        int numVehTypes = this.scenario.get.numVehicleTypes();
+        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
+            Link L = (Link) jaxbL;
+            for(int v=0;v<numVehTypes;v++){
+                Density den = factory.createDensity();
+                den.setLinkId(jaxbL.getId());
+                den.setVehicleTypeId(vehicleTypeIdForIndex(v));
+                den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
+                init_dens_set.getDensity().add(den);
+            }
+        }
+        return init_dens_set;
     }
 
     public double [][] totalInflow(long network_id){
@@ -367,7 +397,7 @@ public class ScenarioGetApi {
         return scenario.cumulatives;
     }
 
-    // ROUTES ------------------------------------------------------
+    /*  ROUTES ---------------------------------------------- */
 
     public Route routeWithId(long id) {
         if(scenario.getRouteSet()==null)
@@ -378,6 +408,8 @@ public class ScenarioGetApi {
         }
         return null;
     }
+
+    /*  FDS ------------------------------------------------ */
 
     public FundamentalDiagramSet current_fds_si(double time_current){
         Network network = (Network) scenario.getNetworks().get(0);
@@ -403,39 +435,6 @@ public class ScenarioGetApi {
         return fd_set;
     }
 
-    public InitialDensitySet current_densities_si(){
-        Network network = (Network) scenario.getNetworks().get(0);
-        JaxbObjectFactory factory = new JaxbObjectFactory();
-        InitialDensitySet init_dens_set = (InitialDensitySet) factory.createInitialDensitySet();
-        int numVehTypes = this.scenario.get.numVehicleTypes();
-        for(edu.berkeley.path.beats.jaxb.Link jaxbL : network.getListOfLinks()){
-            Link L = (Link) jaxbL;
-            for(int v=0;v<numVehTypes;v++){
-                Density den = factory.createDensity();
-                den.setLinkId(jaxbL.getId());
-                den.setVehicleTypeId(vehicleTypeIdForIndex(v));
-                den.setContent(String.format("%f",L.getDensityInVeh(0,v)/L.getLengthInMeters()));
-                init_dens_set.getDensity().add(den);
-            }
-        }
-        return init_dens_set;
-    }
-
-    public DemandProfile current_demand_for_link(long link_id){
-        if(scenario.getDemandSet()==null)
-            return null;
-        return ((DemandSet)scenario.getDemandSet()).get_demand_profile_for_link_id(link_id);
-    }
-
-    public Properties auxiliary_properties(String group_name){
-        return scenario.aux_props.get(group_name);
-    }
-
-    protected edu.berkeley.path.beats.simulator.ControllerSet controllerset() {
-        return scenario.controllerset;
-    }
-
-
     public edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile FDprofileForLinkId(long link_id){
         if(scenario.getFundamentalDiagramSet()==null)
             return null;
@@ -446,4 +445,21 @@ public class ScenarioGetApi {
                 return fdp;
         return null;
     }
+
+    /* DEMANDS ---------------------------------------------- */
+
+    public DemandProfile current_demand_for_link(long link_id){
+        if(scenario.getDemandSet()==null)
+            return null;
+        return ((DemandSet)scenario.getDemandSet()).get_demand_profile_for_link_id(link_id);
+    }
+
+    /* SPLITS ---------------------------------------------- */
+
+    public SplitRatioProfile splitprofile_for_node(long node_id){
+        if(scenario.getSplitRatioSet()==null)
+            return null;
+        return ((SplitRatioSet) scenario.getSplitRatioSet()).get_split_profile_for_node_id(node_id);
+    }
+
 }

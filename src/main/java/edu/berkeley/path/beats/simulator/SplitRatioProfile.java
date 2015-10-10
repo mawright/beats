@@ -48,7 +48,6 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 
-
     protected void populate(Scenario myScenario) {
 
         ArrayList<Integer> in_index,out_index,vt_index;
@@ -128,7 +127,8 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         }
 
     }
-	protected void reset() {
+
+    protected void reset() {
         if (myNode==null)
             return;
         splitsProfile.reset();

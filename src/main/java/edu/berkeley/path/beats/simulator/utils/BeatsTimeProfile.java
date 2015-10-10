@@ -68,6 +68,7 @@ public class BeatsTimeProfile <T> {
             int step = clock.sample_index_abs(samplesteps,step_initial_abs);
 
             if(forcesample){
+                System.out.println(step+","+n+","+samplesteps+","+step_initial_abs+","+clock.getT());
                 current_sample = data.get(Math.min(step,n));
                 return true;
             }
