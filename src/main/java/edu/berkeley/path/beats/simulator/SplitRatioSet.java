@@ -81,12 +81,9 @@ final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatio
     /////////////////////////////////////////////////////////////////////
 
     public SplitRatioProfile get_split_profile_for_node_id(Long id){
-        for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile()){
-            if(sr.getNodeId()==id) {
-                System.out.println(sr.getSplitratio().size());
+        for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
+            if(sr.getNodeId()==id)
                 return (SplitRatioProfile) sr;
-            }
-        }
         return null;
     }
 

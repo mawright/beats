@@ -164,15 +164,10 @@ public class ScenarioSetApi {
         srp.setDt(dt);
         srp.getSplitratio().addAll(java.util.Arrays.asList(splitratios));
 
-        System.out.println("populate");
         srp.populate(scenario);
-        System.out.println("validate");
         srp.validate();
-        System.out.println("reset");
         srp.reset();
-        System.out.println("update");
         srp.update(true);
-        System.out.println("set");
 
         SplitRatioSet srset = (SplitRatioSet) this.scenario.getSplitRatioSet();
         srset.set_split_profile_for_node_id(srp.getNodeId(),srp);

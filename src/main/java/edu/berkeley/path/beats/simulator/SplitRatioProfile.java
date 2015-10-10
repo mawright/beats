@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.utils.*;
 
 import java.util.ArrayList;
@@ -317,4 +318,13 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
     public boolean isConstant(){
         return splitsProfile.getNumTime()==1;
     }
+
+    @Override
+    public String toString() {
+        String str = String.format("node_id = %d\n",nodeId);
+        for(Splitratio sr : this.getSplitratio())
+            str += String.format("\tlink_in=%d, link_out=%d, profile=%s\n",sr.getLinkIn(),sr.getLinkOut(),sr.getContent());
+        return str;
+    }
+
 }
