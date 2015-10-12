@@ -26,6 +26,10 @@ public class ScenarioSetApi {
         scenario.configfilename = configfilename;
     }
 
+    public void end_time(double maxt){
+        this.scenario.clock.set_end_time(maxt);
+    }
+
 //    // set the clock to a specific time
 //    public void timeInSeconds(int timeInSecs) throws BeatsException {
 //

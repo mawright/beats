@@ -33,7 +33,7 @@ public final class Clock {
     private final double to;    // [sec after midnight] reset time
     private final int step_o;   // [-] # time steps from midnight to to
     private final double dt;    // [sec] time step
-    private final double maxt;	// [sec after midnight] final time
+    private double maxt;	// [sec after midnight] final time
 	private double t;			// [sec after midnight] current time
     private int rel_step;		// [-] # time steps after to
 
@@ -137,7 +137,11 @@ public final class Clock {
     /////////////////////////////////////////////////////////////////////
     // setter
     /////////////////////////////////////////////////////////////////////
-    
+
+    protected void set_end_time(double maxt){
+        this.maxt = maxt;
+    }
+
     /** set to a specific timestep **/
     protected void setRelativeTimeStep(int step){
     	rel_step = step;
