@@ -87,6 +87,9 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
                 else
                     node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
                 break;
+            case balancing:
+                node_sr_solver = new Node_SplitRatioSolver_Balancing(node);
+                break;
             default:
                 node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
         }
