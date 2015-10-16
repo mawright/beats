@@ -894,6 +894,17 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         }
 
+        public RunParameters clone() {
+            RunParameters that = null;
+            try {
+                that = new RunParameters(dt_sim, t_start_output, t_end_output, outsteps*dt_sim,  writefiles, outtype, outprefix, numReps, numEnsemble);
+            } catch (BeatsException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return that;
+        }
+
         /**
          * Rounds the double value, precision: .1
          * @param val

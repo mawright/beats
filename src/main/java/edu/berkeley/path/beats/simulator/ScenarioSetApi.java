@@ -30,6 +30,20 @@ public class ScenarioSetApi {
         this.scenario.clock.set_end_time(maxt);
     }
 
+    public void output_dt(double dt){
+        // make a clone of runParam
+        Scenario.RunParameters runParam2 = this.scenario.runParam.clone();
+        runParam2.dt_output = dt;
+        runParam2.outsteps = BeatsMath.round(dt/runParam2.dt_sim);
+        try {
+            runParam2.validate();
+        } catch (BeatsException e) {
+            System.out.println("set.output_dt failed.");
+            e.printStackTrace();
+            return;
+        }
+        this.scenario.runParam = runParam2;
+    }
 //    // set the clock to a specific time
 //    public void timeInSeconds(int timeInSecs) throws BeatsException {
 //
