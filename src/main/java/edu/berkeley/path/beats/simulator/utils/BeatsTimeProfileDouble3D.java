@@ -40,7 +40,7 @@ public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
                 int in = splitinfo.inIndex;
                 int out = splitinfo.outIndex;
                 int vt = splitinfo.vtIndex;
-                z[in][out][vt] = splitinfo.X==null ? Double.NaN : splitinfo.X[t];
+                z[in][out][vt] = splitinfo.X==null ? Double.NaN : splitinfo.X[Math.min(t,splitinfo.X.length-1)];
             }
             data.set(t, z);
         }
