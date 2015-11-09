@@ -5,11 +5,14 @@ import edu.berkeley.path.beats.jaxb.Density;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class ScenarioGetApi {
+public class ScenarioGetApi implements Serializable {
+
+    private static final long serialVersionUID = 1182354562760868158L;
 
     Scenario scenario;
 

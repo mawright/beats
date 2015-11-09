@@ -32,13 +32,16 @@ import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.List;
 
 /** Node class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public class Node extends edu.berkeley.path.beats.jaxb.Node {
+public class Node extends edu.berkeley.path.beats.jaxb.Node implements Serializable {
+
+    private static final long serialVersionUID = -4134801470575166497L;
 
     public SplitRatioLogger split_ratio_logger = null;
 

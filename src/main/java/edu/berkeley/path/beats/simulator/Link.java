@@ -31,13 +31,16 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /** Link class.
  * 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class Link extends edu.berkeley.path.beats.jaxb.Link {
+public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializable {
+
+    private static final long serialVersionUID = 6752301095198199827L;
 
     public enum Type {onramp,offramp,source,freeway,hov,intersection_approach,street,other,undefined}
 

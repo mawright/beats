@@ -28,7 +28,11 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
-public final class Clock {
+import java.io.Serializable;
+
+public final class Clock implements Serializable {
+
+    private static final long serialVersionUID = -5075202694075569412L;
 
     private final double to;    // [sec after midnight] reset time
     private final int step_o;   // [-] # time steps from midnight to to

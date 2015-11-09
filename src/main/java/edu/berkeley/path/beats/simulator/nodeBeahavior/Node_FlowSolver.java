@@ -3,9 +3,13 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
-public abstract class Node_FlowSolver {
+import java.io.Serializable;
 
-    public Node myNode;
+public abstract class Node_FlowSolver implements Serializable {
+
+	private static final long serialVersionUID = -1405763028140546852L;
+
+	public Node myNode;
 
     public abstract IOFlow computeLinkFlows(final Double [][][] sr,final int ensemble_index);
 

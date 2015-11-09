@@ -11,7 +11,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PerformanceCalculator {
+public class PerformanceCalculator implements Serializable {
+
+    private static final long serialVersionUID = -3854528599311338682L;
 
     protected OutputRequest output_request;
     protected enum Quantity { veh_time,

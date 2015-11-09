@@ -7,10 +7,14 @@ import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorQueueAndTravel
 import edu.berkeley.path.beats.simulator.nodeBeahavior.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 10/26/14.
  */
-public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterface {
+public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterface, Serializable {
+
+    private static final long serialVersionUID = -7933758719160452088L;
 
     protected Scenario scenario;
 

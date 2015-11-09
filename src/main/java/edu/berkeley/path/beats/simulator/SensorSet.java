@@ -26,12 +26,15 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.SensorType;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet  {
+public final class SensorSet extends edu.berkeley.path.beats.jaxb.SensorSet implements Serializable {
+
+	private static final long serialVersionUID = -8240089073029445302L;
 
 	private ArrayList<Sensor> sensors = new ArrayList<Sensor>();
 

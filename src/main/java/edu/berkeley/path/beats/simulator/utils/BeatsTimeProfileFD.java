@@ -3,12 +3,15 @@ package edu.berkeley.path.beats.simulator.utils;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.beats.simulator.Link;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by gomes on 6/4/2015.
  */
-public class BeatsTimeProfileFD extends BeatsTimeProfile<FundamentalDiagram>  {
+public class BeatsTimeProfileFD extends BeatsTimeProfile<FundamentalDiagram> implements Serializable {
+    private static final long serialVersionUID = -6924411263724890747L;
+
     public BeatsTimeProfileFD(Link myLink,List<edu.berkeley.path.beats.jaxb.FundamentalDiagram> fds, Double dt, Double startTime, double simdtinseconds) {
         super(dt, startTime, simdtinseconds);
         for (edu.berkeley.path.beats.jaxb.FundamentalDiagram fd : fds) {

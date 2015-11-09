@@ -30,11 +30,13 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble1D;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile {
+final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProfile implements Serializable {
 
-	// does not change ....................................
+    private static final long serialVersionUID = 6110764422329397207L;
+    // does not change ....................................
     protected boolean isSinkDemand;
     private TypeUncertainty uncertaintyModel;
 	private boolean isOrphan;

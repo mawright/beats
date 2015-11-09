@@ -2,10 +2,14 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 10/28/14.
  */
-public class Node_SupplyPartitioner {
+public class Node_SupplyPartitioner implements Serializable {
+
+    private static final long serialVersionUID = -308007296457311285L;
 
     Node node;
 

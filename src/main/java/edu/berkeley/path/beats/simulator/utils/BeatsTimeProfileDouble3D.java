@@ -1,8 +1,11 @@
 package edu.berkeley.path.beats.simulator.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> {
+public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> implements Serializable {
+
+    private static final long serialVersionUID = -2466808932226474067L;
 
     public BeatsTimeProfileDouble3D(
             ArrayList<Integer> in_index,

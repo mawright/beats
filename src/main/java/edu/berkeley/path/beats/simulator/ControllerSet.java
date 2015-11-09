@@ -29,9 +29,12 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet {
+public final class ControllerSet extends edu.berkeley.path.beats.jaxb.ControllerSet implements Serializable {
+
+	private static final long serialVersionUID = 4413037177227130851L;
 
 //	private enum OperationType {Deactivate,Activate}
 

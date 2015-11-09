@@ -29,11 +29,14 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.utils.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
+public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile implements Serializable {
 
-	// does not change ...................................
+    private static final long serialVersionUID = 9139636978420761113L;
+
+    // does not change ...................................
 	private Scenario myScenario;
 	private Node myNode;
 	private boolean isdeterministic;

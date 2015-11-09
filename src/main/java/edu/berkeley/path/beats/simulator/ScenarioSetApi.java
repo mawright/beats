@@ -10,9 +10,12 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ScenarioSetApi {
+public class ScenarioSetApi implements Serializable {
+
+    private static final long serialVersionUID = -8397613472604860318L;
 
     Scenario scenario;
 

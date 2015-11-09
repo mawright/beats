@@ -34,8 +34,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.actuator.ActuatorSignal;
-import edu.berkeley.path.beats.control.Controller_SR_Generator_new;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.output.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
@@ -44,7 +42,6 @@ import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterAbstract;
 import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterFrFlow;
 import edu.berkeley.path.beats.simulator.scenarioUpdate.ScenarioUpdaterStandard;
 import edu.berkeley.path.beats.simulator.utils.*;
-import edu.berkeley.path.beats.simulator.utils.Table;
 import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.calibrator.FDCalibrator;
@@ -53,10 +50,12 @@ import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
-@SuppressWarnings("restriction")
-public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
+//@SuppressWarnings("restriction")
+public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario implements Serializable {
 
-    public enum RunMode {NORMAL,ACTM,FRDEMANDS};
+    private static final long serialVersionUID = 1840966378758409866L;
+
+    public enum RunMode {NORMAL,ACTM,FRDEMANDS}
     protected String configfilename;
     public Clock clock;
     protected int numVehicleTypes;			// number of vehicle types
@@ -819,7 +818,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     // inner classes
     /////////////////////////////////////////////////////////////////////
 
-    public class RunParameters{
+    public class RunParameters implements Serializable {
+
+        private static final long serialVersionUID = 4449540657191375227L;
 
         // prescribed
         public double dt_sim;				// [sec] simulation time step
@@ -919,7 +920,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
     }
 
-    public static class Cumulatives {
+    public static class Cumulatives implements Serializable {
+
+        private static final long serialVersionUID = -4531632662663725971L;
 
         Scenario scenario;
         java.util.Map<Long, LinkCumulativeData> links = null;
