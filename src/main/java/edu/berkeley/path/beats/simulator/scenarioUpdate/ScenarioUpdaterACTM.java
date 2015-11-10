@@ -7,14 +7,16 @@ import edu.berkeley.path.beats.simulator.nodeBeahavior.Node_FlowSolver;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gomes on 10/26/14.
  */
-public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
+public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract implements Serializable {
 
+    private static final long serialVersionUID = -6303015223303097613L;
     private List<FwyNode> fwy_nodes;
 
     private static double xi = 0.1;
@@ -179,7 +181,8 @@ public class ScenarioUpdaterACTM extends ScenarioUpdaterAbstract {
         return null; //new Node_FlowSolver_ACTM(node);
     }
 
-    public class FwyNode {
+    public class FwyNode implements Serializable {
+        private static final long serialVersionUID = -8920100129381839624L;
         Node node = null;
         Link dn_ml = null;
         Link up_ml = null;

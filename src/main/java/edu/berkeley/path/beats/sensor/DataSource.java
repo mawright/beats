@@ -26,9 +26,12 @@
 
 package edu.berkeley.path.beats.sensor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DataSource {
+public class DataSource implements Serializable {
+	private static final long serialVersionUID = -3753968334283869433L;
+
 	private String urlname;
 	private DataSource.Format format;
 	private ArrayList<Integer> for_vds = new ArrayList<Integer>();

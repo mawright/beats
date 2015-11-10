@@ -57,7 +57,7 @@ public final class Runner {
 
             // version
             else if (cmd.equals("-v")){
-                System.out.println(get_version());
+                System.out.println(Version.print());
             }
 
             // check scenario
@@ -203,10 +203,6 @@ public final class Runner {
 
     }
 
-    private static Version get_version(){
-        return Version.get();
-    }
-
     public static String get_usage(){
         String str =
                 "Usage: [-h|-p|-v] [-s file|-c file]\n" +
@@ -295,6 +291,8 @@ public final class Runner {
 //	}
 
     public static class InvalidUsageException extends Exception {
+        private static final long serialVersionUID = 4740643831033936086L;
+
         public InvalidUsageException() {
             super();
         }

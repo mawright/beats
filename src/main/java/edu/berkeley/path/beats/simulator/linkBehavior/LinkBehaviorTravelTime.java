@@ -4,14 +4,16 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gomes on 3/12/14.
  */
-public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
+public class LinkBehaviorTravelTime extends LinkBehaviorCTM implements Serializable {
 
+    private static final long serialVersionUID = 3718087443932943108L;
     protected List<CellArray> ensemble;     // ensemble of cell arrays
 
     public LinkBehaviorTravelTime(Link link){
@@ -120,7 +122,8 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     // vehicles travel from the end of the cell_array to the begining
-    private class CellArray{
+    private class CellArray implements Serializable{
+        private static final long serialVersionUID = 6814558847297173138L;
         public ArrayList<Cell> cell_array;
         public CellArray(int numcell,int num_veh_types){
             cell_array = new ArrayList<Cell>();

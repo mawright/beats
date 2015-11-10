@@ -43,12 +43,13 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 @SuppressWarnings("restriction")
 public class Version {
 
-	String schemaVersion;
-	String engineVersion;
+	private static Logger logger = Logger.getLogger(Version.class);
 
-	private Version() {}
+	public static void main(String[] args) {
+		System.out.println(Version.print());
+	}
 
-    public String getGitHash(){
+    public static String getGitHash(){
         InputStream inputStream = Runner.class.getResourceAsStream("/buildNumber.properties");
         Properties properties = new Properties();
         try {
@@ -68,70 +69,45 @@ public class Version {
         return properties.getProperty("git-sha-1");
     }
 
-	/**
-	 * @return the schemaVersion
-	 */
-	public String getSchemaVersion() {
-		return schemaVersion;
-	}
-
-	/**
-	 * @param schemaVersion the schemaVersion to set
-	 */
-	public void setSchemaVersion(String schemaVersion) {
-		this.schemaVersion = schemaVersion;
-	}
-
-	/**
-	 * @return the engineVersion
-	 */
-	public String getEngineVersion() {
-		return engineVersion;
-	}
-
-	/**
-	 * @param engineVersion the engineVersion to set
-	 */
-	public void setEngineVersion(String engineVersion) {
-		this.engineVersion = engineVersion;
-	}
-
-	/**
-	 * @return java version
-	 */
-	public String getJavaVersion() {
-		return System.getProperty("java.version");
-	}
-
-	private static Logger logger = Logger.getLogger(Version.class);
-
-	public static Version get() {
-		Version version = new Version();
-
-		// schema version
+	public static String getSchemaVersion() {
+		String x = "";
 		try {
-			version.setSchemaVersion(SchemaUtil.getSchemaVersion());
+			x = SchemaUtil.getSchemaVersion();
 		} catch (BeatsException exc) {
 			logger.error("Failed to retrieve schema version", exc);
 		}
+		return x;
+	}
 
-		// engine version
+	public static String getEngineVersion() {
+		String x = "";
 		java.io.InputStream istream = Version.class.getClassLoader().getResourceAsStream("engine.version");
 		if (null != istream) {
 			BufferedReader br = new BufferedReader(new InputStreamReader(istream));
 			try{
-				version.setEngineVersion(br.readLine());
+				x = br.readLine();
 				br.close();
 			} catch (IOException exc) {
 				logger.error("Failed to retrieve engine version", exc);
 			}
 		}
-
-		return version;
+		return x;
 	}
 
-	@Override
-	public String toString() {
+	public static String getJavaVersion() {
+		return System.getProperty("java.version");
+	}
+
+//	public static Version get() {
+//		Version version = new Version();
+//
+//		String schema = Version.getSchemaVersion();
+//		String engine = Version.getEngineVersion();
+//
+//		return version;
+//	}
+
+	public static String print() {
 		final String linesep = System.getProperty("line.separator");
 		StringBuilder sb = new StringBuilder();
         sb.append("git: ").append(getGitHash());

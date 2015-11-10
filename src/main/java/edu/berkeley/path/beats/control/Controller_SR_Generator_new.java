@@ -6,14 +6,17 @@ import edu.berkeley.path.beats.jaxb.Row;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.*;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * HOVs and GP feed the offramp
  */
-public class Controller_SR_Generator_new extends Controller {
+public class Controller_SR_Generator_new extends Controller implements Serializable {
 
-//    private List<NodeData> node_data;
+    private static final long serialVersionUID = 1775010600579864073L;
+
+    //    private List<NodeData> node_data;
     private HashMap<Long,NodeData> node_data;
 
     /////////////////////////////////////////////////////////////////////

@@ -5,6 +5,7 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +14,9 @@ import java.util.Map;
 /**
  * Created by matt on 7/3/15.
  */
-public class RestrictionCoefficients extends edu.berkeley.path.beats.jaxb.RestrictionCoefficients {
+public class RestrictionCoefficients extends edu.berkeley.path.beats.jaxb.RestrictionCoefficients implements Serializable {
+
+	private static final long serialVersionUID = -628756181384788286L;
 
 	private Node myNode;
 	private HashMap<Link,Table> RestrictionMatrices;

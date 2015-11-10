@@ -3,8 +3,11 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
-public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver {
-	
+import java.io.Serializable;
+
+public class Node_SplitRatioSolver_HAMBURGER extends Node_SplitRatioSolver implements Serializable {
+
+	private static final long serialVersionUID = 6010744214675762520L;
 	/* Fields */
 	private double threshold;
     private double scaling_factor;

@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import edu.berkeley.path.beats.simulator.Node;
@@ -17,8 +18,9 @@ import org.apache.log4j.Logger;
  * if for each outgoing link there is at most one zero-priority incoming link
  * with strictly positive directed demand.
  */
-public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
+public class Node_FlowSolver_Symmetric extends Node_FlowSolver implements Serializable {
 
+	private static final long serialVersionUID = -4490898681235593337L;
 	/** directed demands */
 	private double [][] directed_demand; // [nIn][nOut] S_{ij}
 	/** incoming link priorities */
@@ -112,7 +114,8 @@ public class Node_FlowSolver_Symmetric extends Node_FlowSolver {
 		return ioflow;
 	}
 
-	public static class NodeModel {
+	public static class NodeModel implements Serializable {
+		private static final long serialVersionUID = 3659546083729372428L;
 		private int nIn;
 		private int nOut;
 

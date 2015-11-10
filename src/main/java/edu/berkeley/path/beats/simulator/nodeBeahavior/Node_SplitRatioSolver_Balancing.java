@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,9 @@ import java.util.List;
  * Split ratio assignment algorithm described in Section 4 of Wright, Gomes, Horowitz and Kurzhanskiy,
  * "A new model for multi-commodity macroscopic modeling of complex traffic networks"
  */
-public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver{
+public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  implements Serializable {
 
+	private static final long serialVersionUID = -7517471691845897550L;
 	protected Double [][][] computed_splitratio; //nIn x nOut x nVType
 	protected int nVType;
 	protected Double [][] demands;

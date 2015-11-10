@@ -52,7 +52,8 @@ public abstract class Node_FlowSolver implements Serializable {
 		}
 	}
 	
-	public static class IOFlow {
+	public static class IOFlow implements Serializable {
+		private static final long serialVersionUID = -5377400410894173778L;
 		// input to node model, copied from link suppy/demand
 		protected Double [][] in;		// [nIn][nTypes]
 		protected Double [][] out;	// [ensemble][nOut][nTypes]

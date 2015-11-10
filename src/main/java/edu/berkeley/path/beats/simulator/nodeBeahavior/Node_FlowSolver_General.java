@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,8 +13,9 @@ import java.util.Map;
  * The general node model described in Section 3.5 of Wright, Gomes, Horowitz and Kurzhanskiy,
  * "A new model for multi-commodity macroscopic modeling of complex traffic networks"
  */
-public class Node_FlowSolver_General extends Node_FlowSolver {
+public class Node_FlowSolver_General extends Node_FlowSolver implements Serializable {
 
+	private static final long serialVersionUID = 3225338640367388312L;
 	// used in update()
 	protected boolean [][] iscontributor;	// [nIn][nOut]
 

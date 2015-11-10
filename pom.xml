@@ -41,7 +41,7 @@
 
 		<plugins>
 
-			<!-- ???
+			<!-- version number -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
@@ -55,7 +55,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			-->
 
 			<!-- JAXB 
 			<plugin>
@@ -148,11 +147,9 @@
 							<mainClass>edu.berkeley.path.beats.Runner</mainClass>
 							<!--<addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
 						</manifest>
-						<!--
 						<manifestEntries>
 							<git-SHA-1>${buildNumber}</git-SHA-1>
 						</manifestEntries>
-						-->
 					</archive>
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
@@ -173,11 +170,9 @@
 							<classpathPrefix>lib/</classpathPrefix>
 							<!--<addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
 						</manifest>
-						<!--
 						<manifestEntries>
 							<git-SHA-1>${buildNumber}</git-SHA-1>
 						</manifestEntries>
-						-->
 					</archive>
 				</configuration>
 			</plugin>
