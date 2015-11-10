@@ -29,8 +29,11 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
-public class Node_FlowSolver_LNCTM extends Node_FlowSolver {
+import java.io.Serializable;
 
+public class Node_FlowSolver_LNCTM extends Node_FlowSolver implements Serializable {
+
+    private static final long serialVersionUID = -96391726575060181L;
     // used in update()
 	protected double [] outDemandKnown;	// [nOut]
 	protected double [] dsratio;			// [nOut]

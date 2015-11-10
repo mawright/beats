@@ -26,13 +26,17 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.Splitratio;
 import edu.berkeley.path.beats.simulator.utils.*;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile {
+public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitRatioProfile implements Serializable {
 
-	// does not change ...................................
+    private static final long serialVersionUID = 9139636978420761113L;
+
+    // does not change ...................................
 	private Scenario myScenario;
 	private Node myNode;
 	private boolean isdeterministic;
@@ -47,7 +51,6 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
 	/////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
-
 
     protected void populate(Scenario myScenario) {
 
@@ -128,7 +131,8 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
         }
 
     }
-	protected void reset() {
+
+    protected void reset() {
         if (myNode==null)
             return;
         splitsProfile.reset();
@@ -317,4 +321,13 @@ public final class SplitRatioProfile extends edu.berkeley.path.beats.jaxb.SplitR
     public boolean isConstant(){
         return splitsProfile.getNumTime()==1;
     }
+
+    @Override
+    public String toString() {
+        String str = String.format("node_id = %d\n",nodeId);
+        for(Splitratio sr : this.getSplitratio())
+            str += String.format("\tlink_in=%d, link_out=%d, profile=%s\n",sr.getLinkIn(),sr.getLinkOut(),sr.getContent());
+        return str;
+    }
+
 }

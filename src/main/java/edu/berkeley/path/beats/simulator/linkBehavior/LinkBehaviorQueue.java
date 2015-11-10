@@ -4,10 +4,14 @@ import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 3/12/14.
  */
-public class LinkBehaviorQueue extends LinkBehaviorCTM {
+public class LinkBehaviorQueue extends LinkBehaviorCTM implements Serializable {
+
+    private static final long serialVersionUID = -4492099505782736550L;
 
     public LinkBehaviorQueue(Link link){
         super(link);

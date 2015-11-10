@@ -6,10 +6,14 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.TypeUncertainty;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 11/3/2014.
  */
-public class LinkBehaviorACTM extends LinkBehaviorCTM {
+public class LinkBehaviorACTM extends LinkBehaviorCTM implements Serializable {
+
+    private static final long serialVersionUID = -2893966833535794822L;
 
     private Node my_end_node;
     private int my_link_ind;

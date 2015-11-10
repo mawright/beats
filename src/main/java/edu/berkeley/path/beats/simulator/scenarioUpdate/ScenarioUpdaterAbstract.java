@@ -7,10 +7,14 @@ import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorQueueAndTravel
 import edu.berkeley.path.beats.simulator.nodeBeahavior.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 10/26/14.
  */
-public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterface {
+public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterface, Serializable {
+
+    private static final long serialVersionUID = -7933758719160452088L;
 
     protected Scenario scenario;
 
@@ -87,6 +91,9 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
                 else
                     node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
                 break;
+            case balancing:
+                node_sr_solver = new Node_SplitRatioSolver_Balancing(node);
+                break;
             default:
                 node_sr_solver = new Node_SplitRatioSolver_Greedy(node);
         }
@@ -102,6 +109,9 @@ public abstract class ScenarioUpdaterAbstract implements ScenarioUpdaterInterfac
             case symmetric:
             case tampere:
                 node_flow_solver = new Node_FlowSolver_Symmetric(node);
+                break;
+            case general:
+                node_flow_solver = new Node_FlowSolver_General(node);
                 break;
             default:
                 node_flow_solver = new Node_FlowSolver_LNCTM(node);

@@ -89,6 +89,8 @@ final public class ObjectFactory {
 				C = new Controller_SIG_Pretimed(myScenario, jaxbC);
 				break;
 
+			case SR_Generator:
+			case SR_Generator_Fw:
 			case SR_Generator_new:
 				C = new Controller_SR_Generator_new(myScenario, jaxbC);
 				break;

@@ -37,11 +37,20 @@ public class BeatsProperties extends Properties {
     public BeatsProperties(String prop_file_name) throws BeatsException {
 
         // load properties file
+        FileInputStream fis = null;
         try{
-            load(new FileInputStream(prop_file_name));
+            fis = new FileInputStream(prop_file_name);
+            load(fis);
         }
         catch (IOException e){
             System.err.print(e);
+        }
+        finally{
+            try {
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         // read properties
@@ -53,10 +62,10 @@ public class BeatsProperties extends Properties {
         duration = Double.parseDouble(getProperty("DURATION","86400"));
         output_dt = Double.parseDouble(getProperty("OUTPUT_DT","300"));
         num_reps = Integer.parseInt(getProperty("NUM_REPS", "1"));
-        uncertainty_model = getProperty("UNCERTAINTY_MODEL", "gaussian");
-        split_ratio_model = getProperty("NODE_SPLIT_RATIO_SOLVER","A");
-        node_flow_model = getProperty("NODE_FLOW_SOLVER","proportional");
-        run_mode = getProperty("RUN_MODE","normal");
+        uncertainty_model = getProperty("UNCERTAINTY_MODEL", "gaussian").trim();
+        split_ratio_model = getProperty("NODE_SPLIT_RATIO_SOLVER","A").trim();
+        node_flow_model = getProperty("NODE_FLOW_SOLVER","proportional").trim();
+        run_mode = getProperty("RUN_MODE","normal").trim();
         ensemble_size = Integer.parseInt(getProperty("ENSEMBLE_SIZE", "1"));
         performance_config = getProperty("PERFORMANCE", "");
         split_logger_prefix = getProperty("SPLIT_LOGGER_PREFIX","");
@@ -67,8 +76,8 @@ public class BeatsProperties extends Properties {
         DebugFlags.signal_events = getProperty("DEBUG.SIGNAL_EVENTS") ==null ? false : Boolean.parseBoolean(getProperty("DEBUG.SIGNAL_EVENTS"));
 
         // validate
-        if(scenario_name.isEmpty())
-            throw new BeatsException("Scenario name not provided in properties file.");
+//        if(scenario_name.isEmpty())
+//            throw new BeatsException("Scenario name not provided in properties file.");
         if(Double.isNaN(sim_dt))
             throw new BeatsException("Simulation dt not provided in properties file.");
         if(output_prefix.isEmpty())

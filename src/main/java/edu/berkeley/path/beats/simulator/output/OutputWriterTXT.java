@@ -26,11 +26,7 @@
 
 package edu.berkeley.path.beats.simulator.output;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.Properties;
 

@@ -1,4 +1,4 @@
-build.bat
+/output/
 /lib/
 /src/main/generated-java/
 /data/output/

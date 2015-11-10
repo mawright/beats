@@ -31,8 +31,11 @@ import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfile;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble;
 
-public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile {
+import java.io.Serializable;
 
+public final class CapacityProfile extends edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile implements Serializable {
+
+	private static final long serialVersionUID = -5500522551015498761L;
 	// does not change ....................................
 	private Scenario myScenario;
 	private boolean isOrphan;

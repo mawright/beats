@@ -30,7 +30,11 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileFD;
 
-public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile {
+import java.io.Serializable;
+
+public final class FundamentalDiagramProfile extends edu.berkeley.path.beats.jaxb.FundamentalDiagramProfile implements Serializable {
+
+    private static final long serialVersionUID = 1939374386939181119L;
 
     // does not change ....................................
     private Scenario myScenario;

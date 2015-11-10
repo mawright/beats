@@ -5,10 +5,14 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 3/12/14.
  */
-public class LinkBehaviorCTM {
+public class LinkBehaviorCTM implements Serializable {
+
+    private static final long serialVersionUID = 4172754141077034414L;
 
     public Link myLink;
     public Scenario myScenario;

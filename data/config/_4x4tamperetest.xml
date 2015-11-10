@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="0" name="null" schemaVersion="2.0.2">
+  <settings>
+    <units>SI</units>
+  </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="car" size_factor="1.0"/>					
+   </VehicleTypeSet>  
+   
+  <SplitRatioSet project_id="-1" id="-1">
+    <splitRatioProfile id="-1" dt="300" node_id="-9">
+      <splitratio vehicle_type_id="0" link_in="1" link_out="5">0.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="1" link_out="6">0.100000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="1" link_out="7">0.300000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="1" link_out="8">0.600000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="2" link_out="5">0.050000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="2" link_out="6">0.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="2" link_out="7">0.150000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="2" link_out="8">0.800000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="3" link_out="5">0.125000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="3" link_out="6">0.125000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="3" link_out="7">0.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="3" link_out="8">0.750000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="4" link_out="5">0.058824</splitratio>
+      <splitratio vehicle_type_id="0" link_in="4" link_out="6">0.470588</splitratio>
+      <splitratio vehicle_type_id="0" link_in="4" link_out="7">0.470588</splitratio>
+      <splitratio vehicle_type_id="0" link_in="4" link_out="8">0.000000</splitratio>
+    </splitRatioProfile>
+  </SplitRatioSet>
+  
+  <!--
+  <EventSet project_id="-1" ID="-1">
+    <event enabled="true" ID="0" tstamp="10980" type="link_lanes">
+      <description/>
+      <display_position>
+        <point lat="37.8649695878758" lng="-122.302958965302"/>
+      </display_position>
+      <targetElements>
+        <scenarioElement ID="-3" type="link"/>
+      </targetElements>
+      <parameters>
+        <parameter name="reset_to_nominal" value="true"/>
+        <parameter name="lane_count_change" value="1"/>
+      </parameters>
+    </event>
+  </EventSet>
+  -->
+ 
+<!--  <DemandSet id="-1" project_id="-1">
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-6">
+      <demand vehicle_type_id="0">400</demand>
+   </demandProfile>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="-1">
+      <demand vehicle_type_id="0">100</demand>
+   </demandProfile>
+  </DemandSet>-->
+  
+  <FundamentalDiagramSet project_id="-1" id="-1">
+    <fundamentalDiagramProfile id="-1" link_id="1">
+      <fundamentalDiagram id="-1" capacity="1000" capacity_drop="0" congestion_speed="2500" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="2">
+      <fundamentalDiagram id="-1" capacity="2000" capacity_drop="0" congestion_speed="2500" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="3">
+      <fundamentalDiagram id="-1" capacity="1000" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="4">
+      <fundamentalDiagram id="-1" capacity="2000" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="5">
+      <fundamentalDiagram id="-1" capacity="1000" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="6">
+      <fundamentalDiagram id="-1" capacity="2000" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="7">
+      <fundamentalDiagram id="-1" capacity="1000" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="8">
+      <fundamentalDiagram id="-1" capacity="2000" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100" critical_speed="6000"/>
+    </fundamentalDiagramProfile>
+  </FundamentalDiagramSet>
+  
+  <NetworkSet project_id="-1" id="-1">
+    <network id="-1" name="New Network">
+      <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
+      <NodeList>
+        <node id="-1" >
+          <roadway_markers>
+            <marker id="0" name="1"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="-1"/>
+          </outputs>
+          <inputs/>
+        </node>
+        <node id="-2">
+          <roadway_markers>
+            <marker id="0" name="2"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="2"/>
+          </outputs>
+          <inputs/>
+        </node>
+        <node id="-3">
+          <roadway_markers>
+            <marker id="0" name="3"/>
+          </roadway_markers>
+          <outputs>
+			<output link_id="-3"/>
+          </outputs>
+          <inputs>
+          </inputs>
+        </node>
+        <node id="-4">
+          <roadway_markers>
+            <marker id="0" name="4"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="-4"/>
+          </outputs>
+          <inputs>
+          </inputs>
+        </node>
+        <node id="-5">
+          <roadway_markers>
+            <marker id="0" name="5"/>
+          </roadway_markers>
+          <outputs>
+          </outputs>
+          <inputs>
+            <input link_id="5"/>
+          </inputs>
+		</node>
+        <node id="-6">
+          <roadway_markers>
+            <marker id="0" name="6"/>
+          </roadway_markers>
+          <outputs>
+          </outputs>
+          <inputs>
+            <input link_id="6"/>
+          </inputs>
+		</node>
+        <node id="-7">
+          <roadway_markers>
+            <marker id="0" name="7"/>
+          </roadway_markers>
+          <outputs>
+          </outputs>
+          <inputs>
+            <input link_id="7"/>
+          </inputs>
+		</node>
+        <node id="-8">
+          <roadway_markers>
+            <marker id="0" name="8"/>
+          </roadway_markers>
+          <outputs>
+          </outputs>
+          <inputs>
+            <input link_id="8"/>
+          </inputs>
+		</node>
+        <node id="-9">
+          <roadway_markers>
+            <marker id="0" name="9"/>
+          </roadway_markers>
+          <outputs>
+			<output link_id="5"/>
+			<output link_id="6"/>
+			<output link_id="7"/>
+			<output link_id="8"/>
+          </outputs>
+          <inputs>
+            <input link_id="1"/>
+			<input link_id="2"/>
+			<input link_id="3"/>
+			<input link_id="4"/>
+          </inputs>
+		<restriction_coefficients>
+			<table name="1">
+				<column_names>
+					<column_name name="5" key="false" id="5"/>
+					<column_name name="6" key="false" id="6"/>
+					<column_name name="7" key="false" id="7"/>
+					<column_name name="8" key="false" id="8"/>
+				</column_names>
+				<row name="5">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="6">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="7">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="8">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+			</table>
+			<table name="2">
+				<column_names>
+					<column_name name="5" key="false" id="5"/>
+					<column_name name="6" key="false" id="6"/>
+					<column_name name="7" key="false" id="7"/>
+					<column_name name="8" key="false" id="8"/>
+				</column_names>
+				<row name="5">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">0</column>
+					<column id="8">0.5</column>
+				</row>
+				<row name="6">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="7">
+					<column id="5">0</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">0.5</column>
+				</row>
+				<row name="8">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+			</table>
+			<table name="3">
+				<column_names>
+					<column_name name="5" key="false" id="5"/>
+					<column_name name="6" key="false" id="6"/>
+					<column_name name="7" key="false" id="7"/>
+					<column_name name="8" key="false" id="8"/>
+				</column_names>
+				<row name="5">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="6">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="7">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="8">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+			</table>
+			<table name="4">
+				<column_names>
+					<column_name name="5" key="false" id="5"/>
+					<column_name name="6" key="false" id="6"/>
+					<column_name name="7" key="false" id="7"/>
+					<column_name name="8" key="false" id="8"/>
+				</column_names>
+				<row name="5">
+					<column id="5">1</column>
+					<column id="6">0.5</column>
+					<column id="7">0</column>
+					<column id="8">1</column>
+				</row>
+				<row name="6">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="7">
+					<column id="5">0</column>
+					<column id="6">0.5</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+				<row name="8">
+					<column id="5">1</column>
+					<column id="6">1</column>
+					<column id="7">1</column>
+					<column id="8">1</column>
+				</row>
+			</table>
+		</restriction_coefficients>
+		</node>
+      </NodeList>
+      <LinkList>
+        <link id="1" lanes="1" length="100" priority="1000" >
+          <link_type id="-2" name="source"/>
+          <begin node_id="-1"/>
+          <end node_id="-9"/>
+        </link>
+        <link id="2" lanes="1" length="100" priority="2000" >
+          <link_type id="-2" name="source"/>
+          <begin node_id="-2"/>
+          <end node_id="-9"/>
+        </link>
+        <link id="3" lanes="1" length="100" priority="1000" >
+          <link_type id="-2" name="source"/>
+          <begin node_id="-3"/>
+          <end node_id="-9"/>
+        </link>
+        <link id="4" lanes="1" length="100" priority="2000" >
+          <link_type id="-2" name="source"/>
+          <begin node_id="-4"/>
+          <end node_id="-9"/>
+        </link>
+        <link id="5" lanes="1" length="100" >
+          <link_type id="-1" name="freeway"/>
+          <begin node_id="-9"/>
+          <end node_id="-5"/>
+        </link>
+        <link id="6" lanes="1" length="100" >
+          <link_type id="-1" name="freeway"/>
+          <begin node_id="-9"/>
+          <end node_id="-6"/>
+		</link>
+        <link id="7" lanes="1" length="100" >
+          <link_type id="-1" name="freeway"/>
+          <begin node_id="-9"/>
+          <end node_id="-7"/>
+		</link>
+        <link id="8" lanes="1" length="100" >
+          <link_type id="-1" name="freeway"/>
+          <begin node_id="-9"/>
+          <end node_id="-8"/>
+        </link>
+      </LinkList>
+    </network>
+  </NetworkSet>
+
+</scenario>

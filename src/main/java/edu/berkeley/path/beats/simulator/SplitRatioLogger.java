@@ -3,11 +3,14 @@ package edu.berkeley.path.beats.simulator;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Created by gomes on 2/13/14.
  */
-public class SplitRatioLogger  {
+public class SplitRatioLogger implements Serializable {
+
+    private static final long serialVersionUID = 6170765784312344779L;
 
     Node myNode;
     int dt_steps;

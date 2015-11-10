@@ -29,7 +29,11 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
-public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram{
+import java.io.Serializable;
+
+public final class FundamentalDiagram extends edu.berkeley.path.beats.jaxb.FundamentalDiagram implements Serializable {
+
+	private static final long serialVersionUID = -2340603653265839023L;
 
 	// does not change ....................................
 	private Link myLink;

@@ -2,7 +2,11 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 
 import edu.berkeley.path.beats.simulator.Node;
 
-public abstract class Node_SplitRatioSolver {
+import java.io.Serializable;
+
+public abstract class Node_SplitRatioSolver implements Serializable {
+
+    private static final long serialVersionUID = -8863696145226240360L;
 
     public Node myNode;
 

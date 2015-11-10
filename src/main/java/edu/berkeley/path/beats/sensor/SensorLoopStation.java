@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.sensor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -36,8 +37,10 @@ import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.Sensor;
 
-public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor {
-	
+public class SensorLoopStation extends edu.berkeley.path.beats.simulator.Sensor implements Serializable {
+
+	private static final long serialVersionUID = -6709579882540546468L;
+
 	private int VDS;								// PeMS vehicle detector station number
 	private ArrayList<edu.berkeley.path.beats.sensor.DataSource> _datasources = new ArrayList<edu.berkeley.path.beats.sensor.DataSource>();
 	private FiveMinuteData data;

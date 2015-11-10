@@ -3,11 +3,15 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
+
 /**
  * Link cumulative data storage
  */
-final public class LinkCumulativeData {
-	
+final public class LinkCumulativeData implements Serializable {
+
+	private static final long serialVersionUID = 1446092154302320409L;
+
 	private edu.berkeley.path.beats.simulator.Link link;
 	private int nensemble;
 	private int nvehtype;

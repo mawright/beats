@@ -75,4 +75,27 @@ final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatio
                         str += String.format("%d\t%d\t%d\t%d\t%s\n",srp.getNodeId(),sr.getLinkIn(),sr.getLinkOut(),sr.getVehicleTypeId(),sr.getContent());
         return str;
     }
+
+    /////////////////////////////////////////////////////////////////////
+    // public interface
+    /////////////////////////////////////////////////////////////////////
+
+    public SplitRatioProfile get_split_profile_for_node_id(Long id){
+        for(edu.berkeley.path.beats.jaxb.SplitRatioProfile sr : getSplitRatioProfile())
+            if(sr.getNodeId()==id)
+                return (SplitRatioProfile) sr;
+        return null;
+    }
+
+    public void set_split_profile_for_node_id(Long id,SplitRatioProfile srp){
+        boolean foundit = false;
+        for(int i=0;i<getSplitRatioProfile().size();i++)
+            if(getSplitRatioProfile().get(i).getNodeId()==srp.getNodeId()) {
+                getSplitRatioProfile().set(i, srp);
+                foundit = true;
+            }
+        if(!foundit)
+            getSplitRatioProfile().add(srp);
+    }
+
 }

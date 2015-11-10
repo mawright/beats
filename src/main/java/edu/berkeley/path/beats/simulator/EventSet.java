@@ -29,10 +29,13 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet {
+public final class EventSet extends edu.berkeley.path.beats.jaxb.EventSet implements Serializable {
+
+	private static final long serialVersionUID = -4067660661136767401L;
 
 	// does not change ....................................
 	private Scenario myScenario;

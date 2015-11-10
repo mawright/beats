@@ -3,10 +3,12 @@ package edu.berkeley.path.beats.simulator.nodeBeahavior;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver {
+public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver implements Serializable {
 
+    private static final long serialVersionUID = 3640200036289723774L;
     protected double [] outDemandKnown;	    // [nOut]
 	protected double [] dsratio;			// [nOut]
 

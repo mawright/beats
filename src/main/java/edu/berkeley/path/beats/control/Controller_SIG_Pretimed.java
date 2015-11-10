@@ -161,8 +161,8 @@ public class Controller_SIG_Pretimed extends Controller {
         for(PlanScheduleEntry pse : plan_schedule){
             if(pse.plan==null)
                 BeatsErrorLog.addError("Bad plan ID in plan schedule.");
-            if(pse.start_time<0)
-                BeatsErrorLog.addError("Negative start-time in plan schedule.");
+//            if(pse.start_time<0)
+//                BeatsErrorLog.addError("Negative start-time in plan schedule.");
         }
 
 		// all targets are signals

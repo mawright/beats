@@ -28,13 +28,16 @@ package edu.berkeley.path.beats.data;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.io.Serializable;
 import java.io.Writer;
 import java.util.ArrayList;
 
 /** Class for holding five minute flow and speed data associated with a VDS.
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class FiveMinuteData {
+public class FiveMinuteData implements Serializable {
+
+	private static final long serialVersionUID = 8051012906638788589L;
 
 	protected boolean isaggregate;	// true if object holds only averages over all lanes
 	protected int vds;

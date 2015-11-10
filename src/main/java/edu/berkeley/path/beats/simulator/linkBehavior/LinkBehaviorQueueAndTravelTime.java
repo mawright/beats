@@ -5,13 +5,16 @@ import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gomes on 3/13/14.
  */
-public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
+public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM implements Serializable {
+
+    private static final long serialVersionUID = -5202026708817181880L;
 
     protected List<CellArrayAndQueue> ensemble;     // ensemble of cell arrays
 
@@ -187,7 +190,9 @@ public class LinkBehaviorQueueAndTravelTime extends LinkBehaviorCTM {
     /////////////////////////////////////////////////////////////////////
 
     // vehicles travel from the end of the cell_array to the begining
-    private class CellArrayAndQueue {
+    private class CellArrayAndQueue implements Serializable {
+        private static final long serialVersionUID = -7238499783874925536L;
+
         public Double [] queue;
         public ArrayList<Cell> cell_array;
         public CellArrayAndQueue(int numcell, int num_veh_types){

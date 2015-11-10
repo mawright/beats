@@ -341,7 +341,7 @@ public class RunnerCOP {
 	}
 
 	private static void printVersion() {
-		System.out.println(Version.get());
+		System.out.println(Version.print());
 	}
 
 }

@@ -1,14 +1,17 @@
 package edu.berkeley.path.beats.simulator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.ActuatorType;
 import edu.berkeley.path.beats.jaxb.Signal;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet {
+public class ActuatorSet extends edu.berkeley.path.beats.jaxb.ActuatorSet implements Serializable {
 
-    Scenario myScenario;
+	private static final long serialVersionUID = 1696074128551940908L;
+
+	Scenario myScenario;
 	private ArrayList<Actuator> actuators = new ArrayList<Actuator>();
 
 	/////////////////////////////////////////////////////////////////////

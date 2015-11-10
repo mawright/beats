@@ -45,10 +45,10 @@ public class BeatsTimeProfile <T> {
     }
 
     public void validate(){
-        if(start_time<0)
-            BeatsErrorLog.addError("start_time<0 in a time profile");
-        if(step_initial_abs<0)
-            BeatsErrorLog.addError("step_initial_abs<0 in a time profile");
+//        if(start_time<0)
+//            BeatsErrorLog.addError("start_time<0 in a time profile");
+//        if(step_initial_abs<0)
+//            BeatsErrorLog.addError("step_initial_abs<0 in a time profile");
         if(dtinseconds<=0)
             BeatsErrorLog.addError("dt<=0 in a time profile");
         if(!Double.isInfinite(dtinseconds) && samplesteps<=0)

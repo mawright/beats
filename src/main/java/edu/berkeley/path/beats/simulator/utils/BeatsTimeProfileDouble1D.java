@@ -1,12 +1,15 @@
 package edu.berkeley.path.beats.simulator.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Created by gomes on 5/18/2015.
  */
-public class BeatsTimeProfileDouble1D extends BeatsTimeProfile<Double[]> {
+public class BeatsTimeProfileDouble1D extends BeatsTimeProfile<Double[]> implements Serializable {
+
+    private static final long serialVersionUID = 4706195356893433606L;
 
     protected int numTypes;
 

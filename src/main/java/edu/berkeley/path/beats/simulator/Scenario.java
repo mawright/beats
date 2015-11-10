@@ -34,8 +34,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.actuator.ActuatorSignal;
-import edu.berkeley.path.beats.control.Controller_SR_Generator_new;
 import edu.berkeley.path.beats.jaxb.*;
 import edu.berkeley.path.beats.simulator.output.OutputWriterBase;
 import edu.berkeley.path.beats.simulator.output.OutputWriterFactory;
@@ -52,10 +50,12 @@ import edu.berkeley.path.beats.data.FiveMinuteData;
 import edu.berkeley.path.beats.sensor.DataSource;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 
-@SuppressWarnings("restriction")
-public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
+//@SuppressWarnings("restriction")
+public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario implements Serializable {
 
-    public enum RunMode {NORMAL,ACTM,FRDEMANDS};
+    private static final long serialVersionUID = 1840966378758409866L;
+
+    public enum RunMode {NORMAL,ACTM,FRDEMANDS}
     protected String configfilename;
     public Clock clock;
     protected int numVehicleTypes;			// number of vehicle types
@@ -419,23 +419,24 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         // create scenario updater
         if(is_actm){
+            logger.info("Running in ACTM mode.");
             runMode = RunMode.ACTM;
             updater = new ScenarioUpdaterACTM(this);
         }
         else{
             if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0) {
+                logger.info("Running in offramp demands mode.");
                 runMode = RunMode.FRDEMANDS;
                 updater = new ScenarioUpdaterFrFlow(this, nodeflowsolver, nodesrsolver);
-
 
                 // generate split ratio controllers
                 if(controllerSet==null)
                     controllerSet = new edu.berkeley.path.beats.jaxb.ControllerSet();
 
                 controllerSet.getController().add(generate_SR_controllers());
-
             }
             else {
+                logger.info("Running in normal mode.");
                 runMode = RunMode.NORMAL;
                 updater = new ScenarioUpdaterStandard(this, nodeflowsolver, nodesrsolver);
             }
@@ -817,7 +818,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
     // inner classes
     /////////////////////////////////////////////////////////////////////
 
-    public class RunParameters{
+    public class RunParameters implements Serializable {
+
+        private static final long serialVersionUID = 4449540657191375227L;
 
         // prescribed
         public double dt_sim;				// [sec] simulation time step
@@ -892,6 +895,17 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
         }
 
+        public RunParameters clone() {
+            RunParameters that = null;
+            try {
+                that = new RunParameters(dt_sim, t_start_output, t_end_output, outsteps*dt_sim,  writefiles, outtype, outprefix, numReps, numEnsemble);
+            } catch (BeatsException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return that;
+        }
+
         /**
          * Rounds the double value, precision: .1
          * @param val
@@ -906,7 +920,9 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         }
     }
 
-    public static class Cumulatives {
+    public static class Cumulatives implements Serializable {
+
+        private static final long serialVersionUID = -4531632662663725971L;
 
         Scenario scenario;
         java.util.Map<Long, LinkCumulativeData> links = null;
@@ -1013,8 +1029,37 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
         edu.berkeley.path.beats.jaxb.Controller contr = new edu.berkeley.path.beats.jaxb.Controller();
         contr.setType("SR_Generator_new");
         contr.setEnabled(true);
-        Parameters parms = new Parameters();
-        contr.setParameters(parms);
+
+        // construct a jaxb table
+        edu.berkeley.path.beats.jaxb.Table table = new edu.berkeley.path.beats.jaxb.Table();
+        contr.getTable().add(table);
+        edu.berkeley.path.beats.jaxb.ColumnNames colnames = new edu.berkeley.path.beats.jaxb.ColumnNames();
+        table.setColumnNames(colnames);
+
+        ColumnName col0 = new ColumnName();
+        col0.setId(0);
+        col0.setName("linkid");
+        colnames.getColumnName().add(0,col0);
+
+        ColumnName col1 = new ColumnName();
+        col1.setId(1);
+        col1.setName("demand");
+        colnames.getColumnName().add(1,col1);
+
+        ColumnName col2 = new ColumnName();
+        col2.setId(2);
+        col2.setName("dt");
+        colnames.getColumnName().add(2,col2);
+
+        ColumnName col3 = new ColumnName();
+        col3.setId(3);
+        col3.setName("knob");
+        colnames.getColumnName().add(3,col3);
+
+        ColumnName col4 = new ColumnName();
+        col3.setId(4);
+        col3.setName("start_time");
+        colnames.getColumnName().add(4,col4);
 
         for(edu.berkeley.path.beats.jaxb.DemandProfile dp : demandSet.getDemandProfile()){
             Link link = get.linkWithId(dp.getLinkIdOrg());
@@ -1023,12 +1068,43 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario {
 
             // create a controller in this case
             if(issink) {
-                parms.addParameter("linkid",String.format("%d", dp.getLinkIdOrg()));
-                parms.addParameter("demand",dp.getDemand().get(0).getContent());
-                parms.addParameter("dt", String.format("%f", dp.getDt()));
-                parms.addParameter("knob",String.format("%f",dp.getKnob()));
+
+                edu.berkeley.path.beats.jaxb.Row row = new edu.berkeley.path.beats.jaxb.Row();
+
+                // linkid
+                Column c0 = new Column();
+                c0.setId(0);
+                c0.setContent(String.format("%d", dp.getLinkIdOrg()));
+                row.getColumn().add(c0);
+
+                // demand
+                Column c1 = new Column();
+                c1.setId(1);
+                c1.setContent(dp.getDemand().get(0).getContent());
+                row.getColumn().add(c1);
+
+                // dt
+                Column c2 = new Column();
+                c2.setId(2);
+                c2.setContent(String.format("%f", dp.getDt()));
+                row.getColumn().add(c2);
+
+                // knob
+                Column c3 = new Column();
+                c3.setId(3);
+                c3.setContent(String.format("%f",dp.getKnob()));
+                row.getColumn().add(c3);
+
+                // start time
+                Column c4 = new Column();
+                c4.setId(4);
+                c4.setContent(String.format("%f",dp.getStartTime()));
+                row.getColumn().add(c4);
+
+                table.getRow().add(row);
             }
         }
+
         return contr;
     }
 }

@@ -28,13 +28,16 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Network class
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class Network extends edu.berkeley.path.beats.jaxb.Network {
+public final class Network extends edu.berkeley.path.beats.jaxb.Network implements Serializable {
+
+	private static final long serialVersionUID = -8880765319358707399L;
 
 	public boolean isempty;
     public Scenario myScenario;
