@@ -112,7 +112,7 @@ final public class ObjectFactory {
 //				break;
 
             case Commodity_Swapper:
-                C = new Controller_Commodity_Swapper(myScenario,jaxbC);
+                C = new Controller_VehType_Swapper(myScenario,jaxbC);
                 break;
 
 			default:
@@ -200,7 +200,7 @@ final public class ObjectFactory {
 				break;
 
             case commodity_changer:
-                A = new ActuatorCommodity(myScenario,jaxbA,imp);
+                A = new ActuatorVehType(myScenario,jaxbA,imp);
                 break;
 
 			default:

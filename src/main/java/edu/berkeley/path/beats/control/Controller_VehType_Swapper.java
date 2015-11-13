@@ -1,25 +1,28 @@
 package edu.berkeley.path.beats.control;
 
-import edu.berkeley.path.beats.actuator.ActuatorCommodity;
+import edu.berkeley.path.beats.actuator.ActuatorVehType;
+import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by gomes on 6/4/2015.
  */
-public class Controller_Commodity_Swapper extends Controller {
+public class Controller_VehType_Swapper extends Controller {
 
     private HashMap<Link,LinkRef> LinkRefs;
+    private Link myLink;
 
     /////////////////////////////////////////////////////////////////////
     // Construction
     /////////////////////////////////////////////////////////////////////
 
-    public Controller_Commodity_Swapper(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
+    public Controller_VehType_Swapper(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
         super(myScenario,c,Algorithm.Commodity_Swapper);
     }
 
@@ -32,6 +35,12 @@ public class Controller_Commodity_Swapper extends Controller {
     protected void populate(Object jaxbO) {
 
         super.populate(jaxbO);
+
+        List<Parameter> jaxbParams = this.getJaxbController().getParameters().getParameter();
+        for( Parameter param : jaxbParams) {
+            if( param.getName().toLowerCase().equals("link_id") || param.getName().toLowerCase().equals("link"))
+                myLink = myScenario.get.linkWithId(Long.parseLong( param.getValue() ));
+        }
 
         LinkRefs = new HashMap<Link, LinkRef>();
 
@@ -75,22 +84,24 @@ public class Controller_Commodity_Swapper extends Controller {
     }
 
     protected class LinkRef {
-        private Controller_Commodity_Swapper myController;
+        private Controller_VehType_Swapper myController;
         private Link myLink;
-        private ActuatorCommodity myActuator;
+        private ActuatorVehType myActuator;
 
         private ArrayList<BeatsTimeProfileDouble> proportionSeries;
         private ArrayList<Integer> comm_in;
         private ArrayList<Integer> comm_out;
+        private ArrayList<List<Double>> amount_to_switch;
 
 
-        private LinkRef(Controller_Commodity_Swapper parent, Link link, int this_comm_in, int this_comm_out,
+        private LinkRef(Controller_VehType_Swapper parent, Link link, int this_comm_in, int this_comm_out,
                         String prop_string, double dt, double start_time) {
             myController = parent;
             myLink = link;
 
             comm_in = new ArrayList<Integer>();
             comm_out = new ArrayList<Integer>();
+            amount_to_switch = new ArrayList<List<Double>>();
             proportionSeries = new ArrayList<BeatsTimeProfileDouble>();
 
             comm_in.add(this_comm_in);
@@ -109,7 +120,7 @@ public class Controller_Commodity_Swapper extends Controller {
             jaxbA.setId(-1);
             jaxbA.setScenarioElement(se);
             jaxbA.setActuatorType(at);
-            myActuator = new ActuatorCommodity(myScenario,jaxbA,new BeatsActuatorImplementation(jaxbA,myScenario));
+            myActuator = new ActuatorVehType(myScenario,jaxbA,new BeatsActuatorImplementation(jaxbA,myScenario));
             myActuator.populate(null,null);
             myActuator.setMyController(parent);
 
@@ -123,7 +134,7 @@ public class Controller_Commodity_Swapper extends Controller {
         }
 
         public void validate(){
-            
+
         }
 
         public void reset() {
@@ -137,13 +148,18 @@ public class Controller_Commodity_Swapper extends Controller {
         }
 
         public void update(Clock clock) {
+            for( BeatsTimeProfileDouble series : proportionSeries) {
+                series.sample(false, clock);
+            }
+        }
+
+        public void deploy(double current_time_in_seconds) {
             int numswitches = proportionSeries.size();
-            for( int i=0;i<numswitches;i++) {
-                proportionSeries.get(i).sample(false,clock);
+            int ensembleSize = myScenario.get.numEnsemble();
 
-
+            for( int i=0; i<numswitches; i++) {
+                double switchProportion = proportionSeries.get(i).getCurrentSample();
             }
         }
     }
-
 }

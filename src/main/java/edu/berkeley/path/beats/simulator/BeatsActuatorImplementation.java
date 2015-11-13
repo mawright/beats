@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.jaxb.LinkReference;
 import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.jaxb.Splitratio;
+import edu.berkeley.path.beats.jaxb.SwitchRatio;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,6 +124,11 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
         for(Link link : links)
             link.set_external_max_flow_in_veh(maxflow);
+    }
+
+    @Override
+    public void deploy_switch_ratio(List<SwitchRatio> switchRatios){
+
     }
 
 }
