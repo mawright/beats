@@ -14,7 +14,7 @@ import static org.junit.Assert.fail;
 /**
  * Created by gomes on 6/4/2015.
  */
-public class CommodityActuatorTest {
+public class VehTypeActuatorTest {
 
     @Test
     public void test() {
