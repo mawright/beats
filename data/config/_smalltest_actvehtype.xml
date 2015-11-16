@@ -151,12 +151,13 @@
 				<target_actuator id="1"/>
 			</target_actuators>
 			
-		  <table name="splits">
+		  <table name="swap_profiles">
 			 <column_names>
 				<column_name id="0" name="comm_in"/>
 				<column_name id="1" name="comm_out"/>
 				<column_name id="2" name="dt"/>
-				<column_name id="3" name="split_str"/>
+				<column_name id="3" name="proportion_str"/>
+				<column_name id="4" name="link_id"/>
 			 </column_names>
 			 <row>
 				<column id="0">0</column>
@@ -168,12 +169,4 @@
 		  
 		</controller>
 	</ControllerSet>
-
-	<ActuatorSet id="0">
-		<actuator id="1">
-			<scenarioElement id="2" type="link"/>
-			<actuator_type id="0" name="commodity_changer"/>
-		</actuator>
-	</ActuatorSet>
-
 </scenario>
