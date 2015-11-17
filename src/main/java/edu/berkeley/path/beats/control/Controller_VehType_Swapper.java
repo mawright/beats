@@ -23,7 +23,7 @@ public class Controller_VehType_Swapper extends Controller {
     /////////////////////////////////////////////////////////////////////
 
     public Controller_VehType_Swapper(Scenario myScenario, edu.berkeley.path.beats.jaxb.Controller c) {
-        super(myScenario,c,Algorithm.Commodity_Swapper);
+        super(myScenario,c,Algorithm.VehType_Swapper);
     }
 
 

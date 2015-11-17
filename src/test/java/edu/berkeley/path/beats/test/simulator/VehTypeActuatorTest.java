@@ -1,10 +1,14 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
+import junit.framework.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -16,8 +20,39 @@ import static org.junit.Assert.fail;
  */
 public class VehTypeActuatorTest {
 
+    static Scenario static_scenario;
+    private static String config_folder = "data/config/";
+
+    @BeforeClass
+    public static void setUpBeforeClass() throws Exception {
+		try {
+			String config_file = "_smalltest_actvehtype.xml";
+			static_scenario = Jaxb.create_scenario_from_xml(config_folder + config_file);
+			if(static_scenario==null)
+				fail("scenario did not load");
+
+			// initialize
+			double timestep = 1d;
+			double starttime = 0d;
+			double endtime = Double.POSITIVE_INFINITY;
+			int numEnsemble = 1;
+			static_scenario.initialize(timestep,starttime,endtime,numEnsemble,"gaussian","general","A");
+			static_scenario.reset();
+
+		} catch (BeatsException e) {
+			fail("initialization failure.");
+		}
+    }
+
     @Test
-    public void test() {
+    @Ignore
+    public void testConstruction() {
+        Assert.assertEquals(static_scenario.get.controllerset().getController().get(0).getType(), "VehType_Swapper");
+    }
+
+    @Test
+    @Ignore
+    public void testRun() {
         try {
             Scenario scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_actcomm.xml");
             if (scenario == null)

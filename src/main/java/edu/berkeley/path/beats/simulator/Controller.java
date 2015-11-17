@@ -72,7 +72,7 @@ public class Controller {
 		SR_Generator_Fw,
 		SR_Generator_new,
 		HOV_SR_Generator,
-        Commodity_Swapper}
+		Vehicle_Type_Swapper	}
 
     public static enum ActuatorType {
 		ramp_meter,

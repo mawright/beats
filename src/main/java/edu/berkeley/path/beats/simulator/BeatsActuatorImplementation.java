@@ -22,7 +22,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
         switch(Actuator.Type.valueOf(parent.getActuatorType().getName())){
             case ramp_meter:
-            case commodity_changer:
+            case vehtype_changer:
             case vsl:
                 target = scenario.get.linkWithId(se.getId());
                 break;

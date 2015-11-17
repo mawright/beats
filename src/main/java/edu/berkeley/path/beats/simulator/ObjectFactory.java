@@ -111,7 +111,7 @@ final public class ObjectFactory {
 //				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
 //				break;
 
-            case Commodity_Swapper:
+            case VehType_Swapper:
                 C = new Controller_VehType_Swapper(myScenario,jaxbC);
                 break;
 
@@ -199,7 +199,7 @@ final public class ObjectFactory {
 				A = new ActuatorCMS(myScenario,jaxbA,imp);
 				break;
 
-            case commodity_changer:
+            case vehtype_changer:
                 A = new ActuatorVehType(myScenario,jaxbA,imp);
                 break;
 
