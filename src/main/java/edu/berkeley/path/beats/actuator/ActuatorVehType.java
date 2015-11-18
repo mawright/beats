@@ -2,10 +2,7 @@ package edu.berkeley.path.beats.actuator;
 
 import edu.berkeley.path.beats.control.Controller_VehType_Swapper;
 import edu.berkeley.path.beats.jaxb.SwitchRatio;
-import edu.berkeley.path.beats.simulator.Actuator;
-import edu.berkeley.path.beats.simulator.ActuatorImplementation;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 import java.util.ArrayList;
@@ -16,9 +13,7 @@ import java.util.List;
  */
 public class ActuatorVehType extends Actuator {
 
-    protected List<Double> currentSwitchRatio;
-    protected List<Integer> VehTypeIn;
-    protected List<Integer> VehTypeOut;
+    protected List<SwitchRatio> switchRatios;
 
     /////////////////////////////////////////////////////////////////////
     // construction
@@ -30,13 +25,25 @@ public class ActuatorVehType extends Actuator {
 
     @Override
     public void populate(Object jaxbObject, Scenario scenario) {
-        currentSwitchRatio = new ArrayList<Double>();
+        switchRatios = new ArrayList<SwitchRatio>();
     }
 
-    public void set_switch_ratio(int vehTypeIn, int vehTypeOut, double value) {
+    public void set_switch_ratio(long vehTypeIn, long vehTypeOut, double value) {
 
         // overwrite if it exists
+        for( SwitchRatio S : switchRatios) {
+            if( S.getVehicleTypeIn() == vehTypeIn && S.getVehicleTypeOut() == vehTypeOut) {
+                S.setContent(String.format("%f",value));
+                return;
+            }
+        }
 
+        // otherwise append it
+        SwitchRatio newSwitchRatio = (new JaxbObjectFactory()).createSwitchRatio();
+        newSwitchRatio.setVehicleTypeIn(vehTypeIn);
+        newSwitchRatio.setVehicleTypeOut(vehTypeOut);
+        newSwitchRatio.setContent(String.format("%f",value));
+        switchRatios.add(newSwitchRatio);
     }
 
     @Override
@@ -47,15 +54,14 @@ public class ActuatorVehType extends Actuator {
     @Override
     public void reset() throws BeatsException {
         super.reset();
-        VehTypeIn = ((Controller_VehType_Swapper) getMyController()).getVehTypesIn();
-        VehTypeOut = ((Controller_VehType_Swapper) getMyController()).getVehTypesOut();
+        switchRatios = new ArrayList<SwitchRatio>();
     }
 
 
     @Override
     public void deploy(double current_time_in_seconds) {
-        for(int i=0; i<currentSwitchRatio.size();i++) {
-            this.implementor.deploy_switch_ratio(VehTypeIn, VehTypeOut, currentSwitchRatio);
+        for(int i=0; i<switchRatios.size();i++) {
+            this.implementor.deploy_switch_ratio(switchRatios);
         }
     }
 }

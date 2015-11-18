@@ -127,7 +127,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
     }
 
     @Override
-    public void deploy_switch_ratio(List<Integer> VehTypeIn, List<Integer> VehTypeOut, List<Double> switchRatios) {
+    public void deploy_switch_ratio(List<SwitchRatio> switchRatios) {
 
     }
 

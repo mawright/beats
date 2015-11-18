@@ -19,8 +19,8 @@ public class Controller_VehType_Swapper extends Controller {
     private HashMap<Link,LinkRef> LinkRefs;
     private Link myLink;
 
-    private List<Integer> VehTypesIn;
-    private List<Integer> VehTypesOut;
+    private List<Long> VehTypesIn;
+    private List<Long> VehTypesOut;
     private List<SwitchRatio> jaxbSwitchRatios;
     private ActuatorVehType myActuator;
 
@@ -54,16 +54,16 @@ public class Controller_VehType_Swapper extends Controller {
 
         jaxbSwitchRatios = getJaxbController().getSwitchRatio();
 
-        VehTypesIn = new ArrayList<Integer>(jaxbSwitchRatios.size());
-        VehTypesOut = new ArrayList<Integer>(jaxbSwitchRatios.size());
+        VehTypesIn = new ArrayList<Long>(jaxbSwitchRatios.size());
+        VehTypesOut = new ArrayList<Long>(jaxbSwitchRatios.size());
         switchRatioContent = new ArrayList<BeatsTimeProfileDouble>(jaxbSwitchRatios.size());
 
 
         // extract switch ratio info
         for(int i = 0; i< jaxbSwitchRatios.size(); i++) {
             SwitchRatio sr = jaxbSwitchRatios.get(i);
-            VehTypesIn.add( myScenario.get.vehicleTypeIndexForId( sr.getVehicleTypeIn() ) );
-            VehTypesOut.add( myScenario.get.vehicleTypeIndexForId( sr.getVehicleTypeOut() ) );
+            VehTypesIn.add( sr.getVehicleTypeIn() );
+            VehTypesOut.add( sr.getVehicleTypeOut() );
             switchRatioContent.add( new BeatsTimeProfileDouble( sr.getContent(), ",", sr.getDt(), sr.getStartTime(),
                     myScenario.get.simdtinseconds() ));
         }
@@ -146,14 +146,19 @@ public class Controller_VehType_Swapper extends Controller {
     }
 
     public void deploy() {
+        for( int i=0;i<switchRatioContent.size();i++) {
+            myActuator.set_switch_ratio(getVehTypesIn().get(i), getVehTypesOut().get(i),
+                    switchRatioContent.get(i).getCurrentSample());
+        }
 
+        myActuator.deploy(myScenario.get.currentTimeInSeconds());
     }
 
-    public List<Integer> getVehTypesIn() {
+    public List<Long> getVehTypesIn() {
         return VehTypesIn;
     }
 
-    public List<Integer> getVehTypesOut() {
+    public List<Long> getVehTypesOut() {
         return VehTypesOut;
     }
 

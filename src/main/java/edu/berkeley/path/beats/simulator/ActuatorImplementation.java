@@ -24,5 +24,5 @@ public abstract class ActuatorImplementation {
 	public void deploy_cms_split(List<Splitratio> splits){};
 	public void deploy_vsl_speed(){};
     public void deploy_bulb_color(NEMA.ID nema,ActuatorSignal.BulbColor color){};
-    public void deploy_switch_ratio(List<Integer> VehTypeIn, List<Integer> VehTypeOut, List<Double> switchRatios){};
+    public void deploy_switch_ratio(List<SwitchRatio> switchRatios){};
 }
