@@ -16,12 +16,10 @@ import java.util.List;
  */
 public class Controller_VehType_Swapper extends Controller {
 
-    private HashMap<Link,LinkRef> LinkRefs;
     private Link myLink;
 
     private List<Long> VehTypesIn;
     private List<Long> VehTypesOut;
-    private List<SwitchRatio> jaxbSwitchRatios;
     private ActuatorVehType myActuator;
 
     private List<BeatsTimeProfileDouble> switchRatioContent;
@@ -52,7 +50,7 @@ public class Controller_VehType_Swapper extends Controller {
             }
         }
 
-        jaxbSwitchRatios = getJaxbController().getSwitchRatio();
+        List<SwitchRatio> jaxbSwitchRatios = getJaxbController().getSwitchRatio();
 
         VehTypesIn = new ArrayList<Long>(jaxbSwitchRatios.size());
         VehTypesOut = new ArrayList<Long>(jaxbSwitchRatios.size());
@@ -162,83 +160,11 @@ public class Controller_VehType_Swapper extends Controller {
         return VehTypesOut;
     }
 
-    protected class LinkRef {
-        private Controller_VehType_Swapper myController;
-        private Link myLink;
-        private ActuatorVehType myActuator;
+    public ActuatorVehType getMyActuator() {
+        return myActuator;
+    }
 
-        private ArrayList<BeatsTimeProfileDouble> proportionSeries;
-        private ArrayList<Integer> comm_in;
-        private ArrayList<Integer> comm_out;
-        private ArrayList<List<Double>> amount_to_switch;
-
-
-        private LinkRef(Controller_VehType_Swapper parent, Link link, int this_comm_in, int this_comm_out,
-                        String prop_string, double dt, double start_time) {
-            myController = parent;
-            myLink = link;
-
-            comm_in = new ArrayList<Integer>();
-            comm_out = new ArrayList<Integer>();
-            amount_to_switch = new ArrayList<List<Double>>();
-            proportionSeries = new ArrayList<BeatsTimeProfileDouble>();
-
-            comm_in.add(this_comm_in);
-            comm_out.add(this_comm_out);
-            proportionSeries.add(new BeatsTimeProfileDouble(prop_string, ",", dt, start_time,
-                    myScenario.get.simdtinseconds()));
-
-            // create the actuator
-            edu.berkeley.path.beats.jaxb.Actuator jaxbA = new edu.berkeley.path.beats.jaxb.Actuator();
-            edu.berkeley.path.beats.jaxb.ScenarioElement se = new edu.berkeley.path.beats.jaxb.ScenarioElement();
-            edu.berkeley.path.beats.jaxb.ActuatorType at = new edu.berkeley.path.beats.jaxb.ActuatorType();
-            se.setId(myLink.getId());
-            se.setType("link");
-            at.setId(-1);
-            at.setName("commodity");
-            jaxbA.setId(-1);
-            jaxbA.setScenarioElement(se);
-            jaxbA.setActuatorType(at);
-            myActuator = new ActuatorVehType(myScenario,jaxbA,new BeatsActuatorImplementation(jaxbA,myScenario));
-            myActuator.populate(null,null);
-            myActuator.setMyController(parent);
-
-        }
-
-        private void addSeries(int this_comm_in, int this_comm_out, String prop_string, double dt, double start_time) {
-            comm_in.add(this_comm_in);
-            comm_out.add(this_comm_out);
-            proportionSeries.add(new BeatsTimeProfileDouble(prop_string,",", dt, start_time,
-                    myScenario.get.simdtinseconds()));
-        }
-
-        public void validate(){
-
-        }
-
-        public void reset() {
-            for( BeatsTimeProfileDouble series : proportionSeries)
-                series.reset();
-            try {
-                myActuator.reset();
-            } catch( Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        public void update(Clock clock) {
-            for( BeatsTimeProfileDouble series : proportionSeries) {
-                series.sample(false, clock);
-            }
-        }
-
-        public void deploy(double current_time_in_seconds) {
-            int numswitches = proportionSeries.size();
-            int ensembleSize = myScenario.get.numEnsemble();
-
-            for( int i=0; i<numswitches; i++) {
-                double switchProportion = proportionSeries.get(i).getCurrentSample();
-            }
-        }
+    public Link getMyLink() {
+        return myLink;
     }
 }

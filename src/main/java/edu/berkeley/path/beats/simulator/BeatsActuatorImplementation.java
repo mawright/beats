@@ -128,7 +128,12 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
     @Override
     public void deploy_switch_ratio(List<SwitchRatio> switchRatios) {
-
+        if(target==null)
+            return;
+        if(switchRatios==null)
+            ((Link) target).deactivate_vehtype_switching();
+        else
+            ((Link) target).set_controller_switch_ratios(switchRatios);
     }
 
 }

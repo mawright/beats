@@ -2,10 +2,7 @@ package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.control.Controller_VehType_Swapper;
-import edu.berkeley.path.beats.simulator.Controller;
-import edu.berkeley.path.beats.simulator.Defaults;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import junit.framework.Assert;
@@ -24,6 +21,7 @@ public class VehTypeActuatorTest {
 
     static Scenario static_scenario;
     private static String config_folder = "data/config/";
+    private static Controller_VehType_Swapper controller;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -47,28 +45,24 @@ public class VehTypeActuatorTest {
     }
 
     @Test
-    @Ignore
     public void testConstruction() {
-        Controller_VehType_Swapper controller = (Controller_VehType_Swapper) static_scenario.get.controllerWithId(0);
-        Assert.assertEquals(controller.getMyType().toString(), "Vehicle_Type_Swapper");
+        controller = (Controller_VehType_Swapper) static_scenario.get.controllerWithId(0);
+
+        Assert.assertEquals(controller.getMyType(), Controller.Algorithm.Vehicle_Type_Swapper );
+        Assert.assertEquals( controller.getMyActuator().get_type(), Actuator.Type.vehtype_changer );
     }
 
     @Test
     @Ignore
     public void testRun() {
+
         try {
-            Scenario scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_actcomm.xml");
-            if (scenario == null)
-                fail("scenario did not load");
-            String outprefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "test";
-
-            scenario.initialize(5d, 0d, 3600d, 5d, "text", outprefix, 1, 1, null, null, null, null, "normal", null, null, null);
-            scenario.run();
-
-
+            static_scenario.advanceNSeconds(10);
         } catch (BeatsException e) {
-            e.printStackTrace();
+            fail(e.toString());
         }
+
+        Double[] X = controller.getMyLink().getDensityInVeh(0);
     }
 
 }

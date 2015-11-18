@@ -31,7 +31,7 @@ public class ActuatorVehType extends Actuator {
     public void set_switch_ratio(long vehTypeIn, long vehTypeOut, double value) {
 
         // overwrite if it exists
-        for( SwitchRatio S : switchRatios) {
+        for( SwitchRatio S : switchRatios ) {
             if( S.getVehicleTypeIn() == vehTypeIn && S.getVehicleTypeOut() == vehTypeOut) {
                 S.setContent(String.format("%f",value));
                 return;
@@ -48,7 +48,7 @@ public class ActuatorVehType extends Actuator {
 
     @Override
     public boolean register() {
-        return ((Link)implementor.get_target()).register_density_controller();
+        return ((Link)implementor.get_target()).register_vehtype_controller();
     }
 
     @Override
@@ -60,8 +60,24 @@ public class ActuatorVehType extends Actuator {
 
     @Override
     public void deploy(double current_time_in_seconds) {
-        for(int i=0; i<switchRatios.size();i++) {
-            this.implementor.deploy_switch_ratio(switchRatios);
+        // ensure all the switch ratios for a single vehtype are <= 1, normalize if not
+        normalize();
+
+        this.implementor.deploy_switch_ratio(switchRatios);
+    }
+
+    public void normalize() {
+        Double[] sumSwitchRatios = new Double[getMyController().getMyScenario().get.numVehicleTypes()];
+
+        for(SwitchRatio S : switchRatios) {
+            sumSwitchRatios[getMyController().getMyScenario().get.vehicleTypeIndexForId(S.getVehicleTypeIn())] +=
+                    Double.parseDouble(S.getContent());
+        }
+        for( Double sum : sumSwitchRatios ) {
+            if (sum > 1d) {
+                for( SwitchRatio S : switchRatios )
+                    S.setContent( String.format("%f", Double.parseDouble(S.getContent())/ sum) );
+            }
         }
     }
 }
