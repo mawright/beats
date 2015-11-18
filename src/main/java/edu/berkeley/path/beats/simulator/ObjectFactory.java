@@ -111,7 +111,7 @@ final public class ObjectFactory {
 //				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
 //				break;
 
-            case VehType_Swapper:
+			case Vehicle_Type_Swapper:
                 C = new Controller_VehType_Swapper(myScenario,jaxbC);
                 break;
 

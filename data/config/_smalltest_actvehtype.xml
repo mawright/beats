@@ -146,27 +146,11 @@
 	</NetworkSet>
 
 	<ControllerSet id="1">
-		<controller dt="300" id="0" name="" type="Commodity_Swapper" enabled="true">
-			<target_actuators>
-				<target_actuator id="1"/>
-			</target_actuators>
-			
-		  <table name="swap_profiles">
-			 <column_names>
-				<column_name id="0" name="comm_in"/>
-				<column_name id="1" name="comm_out"/>
-				<column_name id="2" name="dt"/>
-				<column_name id="3" name="proportion_str"/>
-				<column_name id="4" name="link_id"/>
-			 </column_names>
-			 <row>
-				<column id="0">0</column>
-				<column id="1">1</column>
-				<column id="2">300</column>
-				<column id="3">0,1</column>
-			 </row>
-		  </table>
-		  
+		<controller dt="300" id="0" name="" type="Vehicle_Type_Swapper" enabled="true">
+			<parameters>
+				<parameter name="link_id" value="4"/>
+			</parameters>
+			<switchRatio vehicle_type_in="1" vehicle_type_out="0" dt="10">0.5,0.2</switchRatio>
 		</controller>
 	</ControllerSet>
 </scenario>

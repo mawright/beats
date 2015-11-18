@@ -1,6 +1,8 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.control.Controller_VehType_Swapper;
+import edu.berkeley.path.beats.simulator.Controller;
 import edu.berkeley.path.beats.simulator.Defaults;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
@@ -47,7 +49,8 @@ public class VehTypeActuatorTest {
     @Test
     @Ignore
     public void testConstruction() {
-        Assert.assertEquals(static_scenario.get.controllerset().getController().get(0).getType(), "VehType_Swapper");
+        Controller_VehType_Swapper controller = (Controller_VehType_Swapper) static_scenario.get.controllerWithId(0);
+        Assert.assertEquals(controller.getMyType().toString(), "Vehicle_Type_Swapper");
     }
 
     @Test
