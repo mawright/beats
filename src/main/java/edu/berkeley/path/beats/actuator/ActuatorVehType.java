@@ -4,6 +4,7 @@ import edu.berkeley.path.beats.control.Controller_VehType_Swapper;
 import edu.berkeley.path.beats.jaxb.SwitchRatio;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ActuatorVehType extends Actuator {
     }
 
     public void normalize() {
-        Double[] sumSwitchRatios = new Double[getMyController().getMyScenario().get.numVehicleTypes()];
+        Double[] sumSwitchRatios = BeatsMath.zeros( getMyController().getMyScenario().get.numVehicleTypes());
 
         for(SwitchRatio S : switchRatios) {
             sumSwitchRatios[getMyController().getMyScenario().get.vehicleTypeIndexForId(S.getVehicleTypeIn())] +=

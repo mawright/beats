@@ -32,7 +32,7 @@ public class VehTypeActuatorTest {
 				fail("scenario did not load");
 
 			// initialize
-			double timestep = 1d;
+			double timestep = 10d;
 			double starttime = 0d;
 			double endtime = Double.POSITIVE_INFINITY;
 			int numEnsemble = 1;
@@ -53,16 +53,47 @@ public class VehTypeActuatorTest {
     }
 
     @Test
-    @Ignore
     public void testRun() {
 
         try {
-            static_scenario.advanceNSeconds(10);
+            static_scenario.advanceNSeconds(100);
         } catch (BeatsException e) {
             fail(e.toString());
         }
 
-        Double[] X = controller.getMyLink().getDensityInVeh(0);
+        Double[] X = controller.getMyLink().getInflowInVeh(0);
+        Double[] Y = controller.getMyLink().getDensityInVeh(0);
+
+        // for the first 109 seconds the switch ratio is 0.5
+        Assert.assertEquals(X[0], X[1]);
+        Assert.assertEquals(Y[0], Y[1]);
+
+        try {
+            static_scenario.advanceNSeconds(100);
+        } catch (BeatsException e) {
+            fail(e.toString());
+        }
+
+        X = controller.getMyLink().getInflowInVeh(0);
+        Double Z = X[0] + X[1];
+
+        // after that the switch ratio from 0 to 1 is 0.2
+        Assert.assertEquals(X[0], Z*0.8, 1e-4);
+        Assert.assertEquals(X[1], Z*0.2, 1e-4);
+    }
+
+    @Test
+    public void testNormalization() {
+        try {
+            static_scenario.advanceNSeconds(100);
+        } catch (BeatsException e) {
+            fail(e.toString());
+        }
+
+        Double[] X = controller.getMyLink().getInflowInVeh(0);
+
+        // the switch ratio from 0 to 1 is 0.5, from 0 to 2 is 0.75, it should normalize to 0.4 and 0.6
+        Assert.assertEquals(X[1] * .6, X[2] * .4, 1e-4);
     }
 
 }

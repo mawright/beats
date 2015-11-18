@@ -216,7 +216,7 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
         if(has_vehtype_switchratio) {
             Double[] flowDifference;
             for(int e=0; e<inflow.length; e++ ) { // inflow is ensembleSize long
-                flowDifference = new Double[inflow[e].length];
+                flowDifference = BeatsMath.zeros(inflow[e].length);
 
                 // convert all switching ratios to vehicles
                 for( SwitchRatio sr : controllerSwitchRatios) {

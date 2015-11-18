@@ -5,8 +5,9 @@
 	</settings>
 
 	<VehicleTypeSet id="1">
+		<vehicleType id="0" name="comm0" size_factor="1.0"/>
 		<vehicleType id="1" name="comm1" size_factor="1.0"/>					
-		<vehicleType id="0" name="comm0" size_factor="1.0"/>		
+		<vehicleType id="2" name="comm2" size_factor="1.0"/>	
 	</VehicleTypeSet>  
 
 	<SplitRatioSet id="1">
@@ -107,7 +108,7 @@
 			</NodeList>
 			<LinkList>
 				<link id="1" lanes="1" length="400" >
-					<link_type id="1" name="freeway"/>
+					<link_type id="1" name="freeway"/>s
 					<begin node_id="1"/>
 					<end node_id="2"/>
 				</link>
@@ -146,11 +147,12 @@
 	</NetworkSet>
 
 	<ControllerSet id="1">
-		<controller dt="300" id="0" name="" type="Vehicle_Type_Swapper" enabled="true">
+		<controller dt="100" id="0" name="" type="Vehicle_Type_Swapper" enabled="true">
 			<parameters>
 				<parameter name="link_id" value="4"/>
 			</parameters>
-			<switchRatio vehicle_type_in="1" vehicle_type_out="0" dt="10">0.5,0.2</switchRatio>
+			<switchRatio vehicle_type_in="0" vehicle_type_out="1" dt="100">0.5,0.2,0.5</switchRatio>
+			<switchRatio vehicle_type_in="0" vehicle_type_out="2" dt="100">0,0,0.75</switchRatio>
 		</controller>
 	</ControllerSet>
 </scenario>
