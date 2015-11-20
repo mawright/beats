@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.actuator.NEMA;
 import edu.berkeley.path.beats.jaxb.LinkReference;
 import edu.berkeley.path.beats.jaxb.Phase;
 import edu.berkeley.path.beats.jaxb.Splitratio;
+import edu.berkeley.path.beats.jaxb.SwitchRatio;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
         switch(Actuator.Type.valueOf(parent.getActuatorType().getName())){
             case ramp_meter:
+            case vehtype_changer:
             case vsl:
                 target = scenario.get.linkWithId(se.getId());
                 break;
@@ -122,6 +124,16 @@ public class BeatsActuatorImplementation extends ActuatorImplementation {
 
         for(Link link : links)
             link.set_external_max_flow_in_veh(maxflow);
+    }
+
+    @Override
+    public void deploy_switch_ratio(List<SwitchRatio> switchRatios) {
+        if(target==null)
+            return;
+        if(switchRatios==null)
+            ((Link) target).deactivate_vehtype_switching();
+        else
+            ((Link) target).set_controller_switch_ratios(switchRatios);
     }
 
 }

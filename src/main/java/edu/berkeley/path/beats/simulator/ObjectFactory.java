@@ -111,6 +111,10 @@ final public class ObjectFactory {
 //				C = new Controller_HOV_SR_Generator(myScenario, jaxbC);
 //				break;
 
+			case Vehicle_Type_Swapper:
+                C = new Controller_VehType_Swapper(myScenario,jaxbC);
+                break;
+
 			default:
 				C = null;
 				break;
@@ -194,6 +198,10 @@ final public class ObjectFactory {
 			case cms:
 				A = new ActuatorCMS(myScenario,jaxbA,imp);
 				break;
+
+            case vehtype_changer:
+                A = new ActuatorVehType(myScenario,jaxbA,imp);
+                break;
 
 			default:
 				A = null;

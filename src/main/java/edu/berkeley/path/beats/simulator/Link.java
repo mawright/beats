@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.jaxb.SwitchRatio;
 import edu.berkeley.path.beats.simulator.linkBehavior.LinkBehaviorCTM;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
@@ -33,6 +34,7 @@ import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /** Link class.
  * 
@@ -70,6 +72,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
 	// Actuation
     protected boolean has_flow_controller;
     protected boolean has_speed_controller;
+    protected boolean has_density_controller;
+    protected boolean has_vehtype_controller;
     protected double external_max_flow;
     protected double external_max_speed;
 	
@@ -90,6 +94,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
 
     // link behavior
     public LinkBehaviorCTM link_behavior;
+
+    // vehtype switching control
+    protected boolean has_vehtype_switchratio;
+    protected List<SwitchRatio> controllerSwitchRatios;
 
 	/////////////////////////////////////////////////////////////////////
 	// protected default constructor
@@ -122,6 +130,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
 
         has_flow_controller = false;
         has_speed_controller = false;
+        has_density_controller = false;
+        has_vehtype_controller = false;
 
         // link type
         if(getLinkType()==null)
@@ -201,6 +211,26 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
         if(issource && myDemandProfile!=null)
             for(int e=0;e<myScenario.get.numEnsemble();e++)
                 inflow[e] = myDemandProfile.getCurrentValue(e);
+
+        // apply vehtype switching on just-entering vehicles if applicable
+        if(has_vehtype_switchratio) {
+            Double[] flowDifference;
+            for(int e=0; e<inflow.length; e++ ) { // inflow is ensembleSize long
+                flowDifference = BeatsMath.zeros(inflow[e].length);
+
+                // convert all switching ratios to vehicles
+                for( SwitchRatio sr : controllerSwitchRatios) {
+                    int vehTypeInIndex = myScenario.get.vehicleTypeIndexForId(sr.getVehicleTypeIn());
+                    int vehTypeOutIndex = myScenario.get.vehicleTypeIndexForId(sr.getVehicleTypeOut());
+                    double value = Double.parseDouble(sr.getContent());
+                    flowDifference[vehTypeInIndex] -= inflow[e][vehTypeInIndex] * value;
+                    flowDifference[vehTypeOutIndex] += inflow[e][vehTypeInIndex] * value;
+                }
+                for (int i = 0; i < inflow[e].length; i++) {
+                    inflow[e][i] += flowDifference[i];
+                }
+            }
+        }
 
         link_behavior.update_state(inflow,outflow);
 	}
@@ -316,6 +346,20 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
         return true;
     }
 
+    public boolean register_density_controller(){
+        if(has_density_controller)
+            return false;
+        has_density_controller = true;
+        return true;
+    }
+
+    public boolean register_vehtype_controller(){
+        if(has_vehtype_controller)
+            return false;
+        has_vehtype_controller = true;
+        return true;
+    }
+
     public void set_external_max_flow_in_veh(double value_in_veh){
         if(has_flow_controller)
             external_max_flow = value_in_veh;
@@ -329,6 +373,22 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
     public void set_external_max_speed(double value){
         if(has_speed_controller)
             external_max_speed = value;
+    }
+
+    public void set_controller_switch_ratios(List<SwitchRatio> switchRatios){
+        if(!has_vehtype_controller)
+            return;
+
+        this.controllerSwitchRatios = switchRatios;
+        has_vehtype_switchratio = true;
+    }
+
+    public void deactivate_vehtype_switching() {
+        if(!has_vehtype_controller)
+            return;
+
+        this.controllerSwitchRatios = null;
+        has_vehtype_switchratio = false;
     }
 
     public Network getMyNetwork(){
