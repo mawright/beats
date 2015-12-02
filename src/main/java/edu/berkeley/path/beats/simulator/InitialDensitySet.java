@@ -30,13 +30,16 @@ import edu.berkeley.path.beats.jaxb.Density;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
+
 /** XXX.
  * YYY
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet {
+public final class InitialDensitySet extends edu.berkeley.path.beats.jaxb.InitialDensitySet implements Serializable  {
 
+	private static final long serialVersionUID = 721184610663985404L;
 	// does not change ....................................
 	private Scenario myScenario;
 	private Link [] link;					// ordered array of references

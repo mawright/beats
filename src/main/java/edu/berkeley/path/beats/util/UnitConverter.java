@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.util;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
@@ -49,7 +50,9 @@ import edu.berkeley.path.beats.util.scenario.ScenarioSaver;
  * from US (mile, hour) or Metric (kilometer, hour)
  * to SI (meter, second).
  */
-public class UnitConverter {
+public class UnitConverter implements Serializable {
+	private static final long serialVersionUID = 584123421159629986L;
+
 	/**
 	 * Loads a scenario, performs unit conversion, saves the resulting scenario
 	 * @param iconfig input scenario file

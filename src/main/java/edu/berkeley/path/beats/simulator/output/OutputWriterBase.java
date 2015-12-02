@@ -30,8 +30,11 @@ import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public abstract class OutputWriterBase implements InterfaceOutputWriter {
-	
+import java.io.Serializable;
+
+public abstract class OutputWriterBase implements InterfaceOutputWriter,Serializable {
+
+	private static final long serialVersionUID = 3049508634225685710L;
 	public Scenario scenario;
     public double outStart;      // time to start writing output
     public double outDt;			// output frequency in seconds

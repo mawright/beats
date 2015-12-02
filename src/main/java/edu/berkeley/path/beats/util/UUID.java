@@ -26,7 +26,9 @@
 
 package edu.berkeley.path.beats.util;
 
-public class UUID {
+import java.io.Serializable;
+
+public class UUID implements Serializable {
 	/**
 	 * Generates a universally unique identifier
 	 * @return the generated UUID

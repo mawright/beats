@@ -1,15 +1,13 @@
 package edu.berkeley.path.beats.simulator.utils;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.HashMap;
 
 /**
  * Created by gomes on 3/27/14.
  */
-public class DebugLogger {
+public class DebugLogger implements Serializable {
+    private static final long serialVersionUID = -5719086319108642449L;
 
     private static HashMap<Integer,Writer> writers;
 

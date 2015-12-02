@@ -29,6 +29,8 @@ package edu.berkeley.path.beats.simulator.output;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 /**
  * Output writer interface
  */

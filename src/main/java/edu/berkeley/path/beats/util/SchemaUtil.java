@@ -12,9 +12,11 @@ import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 
 @SuppressWarnings("restriction")
-public class SchemaUtil {
+public class SchemaUtil implements Serializable {
 
 	private static Logger logger = Logger.getLogger(SchemaUtil.class);
 

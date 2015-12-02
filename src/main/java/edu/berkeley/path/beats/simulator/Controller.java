@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

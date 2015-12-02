@@ -26,13 +26,15 @@
 
 package edu.berkeley.path.beats.simulator.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class BeatsErrorLog {
-	
+public final class BeatsErrorLog implements Serializable {
+
+	private static final long serialVersionUID = -5410007540065774392L;
 	private static boolean haserror;
 	private static boolean haswarning;
 	private static enum level {Warning,Error}

@@ -26,7 +26,9 @@
 
 package edu.berkeley.path.beats.simulator.utils;
 
-/** XXX. 
+import java.io.Serializable;
+
+/** XXX.
  * YYY
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)

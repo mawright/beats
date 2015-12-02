@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator.utils;
 
+import java.io.Serializable;
 import java.util.*;
 
 import org.apache.commons.math3.distribution.GammaDistribution;
@@ -35,8 +36,9 @@ import org.apache.commons.math3.distribution.GammaDistribution;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public final class BeatsMath {
-	
+public final class BeatsMath implements Serializable {
+
+	private static final long serialVersionUID = -361466048892717553L;
 	private static Random random = new Random();
 	private static final double EPSILON = (double) 1e-4;
 

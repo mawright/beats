@@ -28,13 +28,15 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Demand;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet {
+final public class DemandSet extends edu.berkeley.path.beats.jaxb.DemandSet implements Serializable{
 
-	private Scenario myScenario;
+    private static final long serialVersionUID = -1829561013769591525L;
+    private Scenario myScenario;
 	private Map<Long,DemandProfile> link_id_to_demandprofile;
 	
 	/////////////////////////////////////////////////////////////////////

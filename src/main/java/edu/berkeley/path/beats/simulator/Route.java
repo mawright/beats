@@ -3,14 +3,16 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.jaxb.RouteLink;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gomes on 1/24/14.
  */
-public class Route extends edu.berkeley.path.beats.jaxb.Route {
+public class Route extends edu.berkeley.path.beats.jaxb.Route implements Serializable {
 
+    private static final long serialVersionUID = 9162511535397309828L;
     protected List<Link> ordered_links;
 
     /////////////////////////////////////////////////////////////////////

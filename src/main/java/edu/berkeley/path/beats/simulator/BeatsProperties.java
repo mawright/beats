@@ -5,6 +5,7 @@ import edu.berkeley.path.beats.simulator.utils.DebugFlags;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -12,8 +13,9 @@ import java.util.Properties;
 /**
  * Created by gomes on 2/7/14.
  */
-public class BeatsProperties extends Properties {
+public class BeatsProperties extends Properties implements Serializable {
 
+    private static final long serialVersionUID = 6399773161279963980L;
     public HashMap<String,Properties> aux_props;
 
     public String scenario_name;

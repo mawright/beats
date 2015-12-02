@@ -4,6 +4,7 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacityProfile;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,8 +12,9 @@ import java.util.Map;
 /**
  * Created by gomes on 7/15/14.
  */
-public class CapacitySet extends DownstreamBoundaryCapacitySet {
+public class CapacitySet extends DownstreamBoundaryCapacitySet implements Serializable {
 
+    private static final long serialVersionUID = 7592913157855733668L;
     private Scenario myScenario;
     private Map<Long,CapacityProfile> link_id_to_capacityprofile;
 

@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.simulator.output;
 
+import java.io.Serializable;
 import java.util.Properties;
 
 //import edu.berkeley.path.beats.simulator.output.OutputWriterDB;
@@ -35,8 +36,10 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 /**
  *
  */
-final public class OutputWriterFactory {
-	
+final public class OutputWriterFactory implements Serializable {
+
+	private static final long serialVersionUID = -471289673857178768L;
+
 	/**
 	 * Constructs an output writer of a given type
 	 * @param scenario

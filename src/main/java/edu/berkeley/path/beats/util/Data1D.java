@@ -26,12 +26,15 @@
 
 package edu.berkeley.path.beats.util;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-public class Data1D {
+public class Data1D implements Serializable {
+	private static final long serialVersionUID = -1397610917751970838L;
+
 	private BigDecimal[] data = null;
 
 	private static Logger logger = Logger.getLogger(Data1D.class);

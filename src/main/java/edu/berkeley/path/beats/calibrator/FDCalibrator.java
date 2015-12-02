@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.calibrator;
 
+import java.io.Serializable;
 import java.util.*;
 
 import edu.berkeley.path.beats.Jaxb;
@@ -40,8 +41,9 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 * @author Gabriel Gomes
 * @version VERSION NUMBER
 */
-public class FDCalibrator {
-	
+public class FDCalibrator implements Serializable{
+	private static final long serialVersionUID = 7247824706511043557L;
+
 	/////////////////////////////////////////////////////////////////////////////////
 	// API
 	/////////////////////////////////////////////////////////////////////////////////

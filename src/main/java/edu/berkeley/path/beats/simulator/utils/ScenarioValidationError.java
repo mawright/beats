@@ -2,6 +2,8 @@ package edu.berkeley.path.beats.simulator.utils;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 @SuppressWarnings("serial")
 final public class ScenarioValidationError extends BeatsException {
 	public ScenarioValidationError() {

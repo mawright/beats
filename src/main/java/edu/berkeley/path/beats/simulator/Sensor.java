@@ -28,13 +28,16 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 /** Base class for sensors.
  * Provides a default implementation of <code>InterfaceSensor</code>.
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceSensor {
-	
+public class Sensor extends edu.berkeley.path.beats.jaxb.Sensor implements InterfaceSensor,Serializable {
+
+	private static final long serialVersionUID = 2742670414069731654L;
 	/** The scenario that contains this sensor. */
 	private Scenario myScenario;	
 

@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.util;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
@@ -9,7 +10,8 @@ import java.util.Set;
 /**
  * A bounded set of integers
  */
-public class ArraySet implements Set<Integer> {
+public class ArraySet implements Set<Integer>,Serializable {
+	private static final long serialVersionUID = 1442052103687730811L;
 
 	private boolean [] elems;
 

@@ -28,9 +28,13 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.Splitratio;
 
-final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet {
+import java.io.Serializable;
 
-	/////////////////////////////////////////////////////////////////////
+final public class SplitRatioSet extends edu.berkeley.path.beats.jaxb.SplitRatioSet implements Serializable {
+    private static final long serialVersionUID = 1802285887597060497L;
+
+
+    /////////////////////////////////////////////////////////////////////
 	// populate / reset / validate / update
 	/////////////////////////////////////////////////////////////////////
 	

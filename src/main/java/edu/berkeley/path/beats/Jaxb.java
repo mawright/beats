@@ -12,11 +12,13 @@ import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 
 /**
  * Created by gomes on 9/8/14.
  */
-public class Jaxb {
+public class Jaxb implements Serializable {
+    private static final long serialVersionUID = 9081503712558255882L;
 
     /* READ */
 

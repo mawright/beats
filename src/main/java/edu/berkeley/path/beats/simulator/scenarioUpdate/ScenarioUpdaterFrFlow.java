@@ -9,6 +9,8 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
  */
 public class ScenarioUpdaterFrFlow extends ScenarioUpdaterAbstract {
 
+    private static final long serialVersionUID = 6573601804020311187L;
+
     public ScenarioUpdaterFrFlow(Scenario scenario,String nodeflowsolver_name,String nodesrsolver_name){
         super(scenario,nodeflowsolver_name,nodesrsolver_name);
     }

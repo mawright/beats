@@ -39,8 +39,9 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 * @author Gabriel Gomes
 * @version VERSION NUMBER
 */
-public class DataFileReader {
+public class DataFileReader implements Serializable {
 
+	private static final long serialVersionUID = 2356427775282335166L;
 	private ColumnFormat PeMSDataClearingHouse = new ColumnFormat(",",5,8,9,10,8,false,"US");
 	private ColumnFormat CaltransDbx 		   = new ColumnFormat("\t",6,20,22,23,8,true,"US");
 
@@ -178,8 +179,9 @@ public class DataFileReader {
 		}
     }
     
-    private class ColumnFormat {
-    	public int laneblocksize;
+    private class ColumnFormat implements Serializable{
+		private static final long serialVersionUID = -4619908862444081840L;
+		public int laneblocksize;
     	public int flwoffset;
     	//public int occoffset;
     	public int spdoffset;
