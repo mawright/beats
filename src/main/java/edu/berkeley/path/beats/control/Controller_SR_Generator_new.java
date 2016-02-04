@@ -72,11 +72,14 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
             }
 
             if (!demandString.isEmpty() && link != null && !Double.isNaN(knob) && !Double.isNaN(dpdt) && !Double.isNaN(start_time))
-                node_data.put(link.getId(), new NodeData(this, link, demandString, knob, dpdt, start_time,myScenario));
+                node_data.put(link.getId(), createNodeData(link, demandString, knob, dpdt, start_time));
         }
-
-
     }
+
+    protected NodeData createNodeData(Link link, String demandString, double knob, double dpdt, double start_time) {
+        return new NodeData(this, link, demandString, knob, dpdt, start_time, myScenario);
+    }
+
 
     @Override
     public boolean register() {
@@ -131,14 +134,14 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
 
     class NodeData {
 
-        private Node myNode;
-        private ActuatorCMS cms;
-        private double knob;
+        protected Node myNode;
+        protected ActuatorCMS cms;
+        protected double knob;
         protected double beta;
-        private ArrayList<Boolean> is_feed;
-        private ArrayList<Boolean> is_measured;
-        private BeatsTimeProfileDouble measured_flow_profile_veh;
-        private Double measured_flow_veh;
+        protected ArrayList<Boolean> is_feed;
+        protected ArrayList<Boolean> is_measured;
+        protected BeatsTimeProfileDouble measured_flow_profile_veh;
+        protected Double measured_flow_veh;
 
         public NodeData(Controller parent,Link profileLink,String demandStr,Double knob,Double dpdt, Double start_time, Scenario scenario) {
 
