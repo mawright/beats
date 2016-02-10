@@ -72,11 +72,8 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 				return;
 			}
 
-			// keep track of split ratio proportions to non-offramp links
-
-
-			bLow = 0;
-			bHigh = measured_flow_veh / BeatsMath.sum(S);
+			bHigh = 1d;
+			bLow = measured_flow_veh / BeatsMath.sum(S);
 
 			// begin bisection method
 			bTest = bLow;
@@ -84,11 +81,54 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 			while (!solved) {
 				for (int c=0; c<myScenario.get.numVehicleTypes(); c++)
 				{
-					splitratio[hov_in][offramp_out][c] = bTest;
+					splitratio[hov_in][offramp_out][c] = bTest; // beta we are searching for
 					splitratio[gp_in][offramp_out][c] = bTest;
+
+					// remaining split
+					for (i=0; i<myNode.getnIn(); i++) {
+						for (j=0; j<myNode.getnOut(); j++) {
+							if (!((i==hov_in || i==gp_in) && j==offramp_out)) {
+								splitratio[i][j][c] = (1 - bTest) * myNode.getSplitRatio(i,j,c);
+							}
+						}
+					}
 				}
 				flow = myNode.node_behavior.flow_solver.computeLinkFlows(splitratio, e);
+				if (BeatsMath.equals( BeatsMath.sum(flow.getOut(offramp_out)),measured_flow_veh, measured_flow_veh*.001 )) {
+					beta = bTest;
+					solved = true;
+				}
+				else if (BeatsMath.sum(flow.getOut(offramp_out)) - measured_flow_veh < 0) {
+					bLow = (bLow + bHigh) / 2;
+					bTest = (bLow + bHigh) / 2;
+				}
+				else {
+					bHigh = (bLow + bHigh) / 2;
+					bTest = (bLow + bHigh) / 2;
+				}
 			}
+		}
+
+		@Override
+		public void deploy(double current_time_in_seconds){
+			int i,j,c;
+			for(i=0;i<myNode.nIn;i++){
+				Link inlink = myNode.input_link[i];
+				if( inlink.isHov() || inlink.isFreeway()){
+					for(j=0;j<myNode.nOut;j++){
+						Link outlink = myNode.output_link[j];
+						if(j==offramp_out) // the offramp gets split ratio of beta
+							cms.set_split(inlink.getId(),outlink.getId(),beta);
+						else {   // not measured scaled to 1-beta
+							for(c=0;c<myScenario.get.numVehicleTypes();c++) { //
+								cms.set_split(inlink.getId(), outlink.getId(), myScenario.get.vehicleTypeIdForIndex(c),
+										myNode.getSplitRatio(i, j, c) * (1d - beta)); // split ratios differ across commodities
+							}
+						}
+					}
+				}
+			}
+			cms.deploy(current_time_in_seconds);
 		}
 	}
 
