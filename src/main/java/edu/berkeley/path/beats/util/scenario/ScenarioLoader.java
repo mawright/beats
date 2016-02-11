@@ -2,6 +2,8 @@ package edu.berkeley.path.beats.util.scenario;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 /**
  * Loads a scenario from a file or from a database.
  * The supported file formats are XML and JSON.
@@ -11,7 +13,8 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
  * it may need unit conversion, validation, etc.
  * However, it is faster to load than a "processed" scenario.
  */
-public class ScenarioLoader {
+public class ScenarioLoader implements Serializable{
+	private static final long serialVersionUID = -6295975918696605879L;
 
 //	private static ScenarioLoaderIF getLoader(String filename, String format) throws BeatsException {
 //		if (null == format)

@@ -34,13 +34,16 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.DebugFlags;
 
+import java.io.Serializable;
 import java.util.*;
 
 /** ActuatorSignal class.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
-public final class ActuatorSignal extends Actuator {
+public final class ActuatorSignal extends Actuator  implements Serializable {
+
+    private static final long serialVersionUID = -1132579882403725363L;
 
     public static enum BulbColor {GREEN,YELLOW,RED,DARK};
 	private HashMap<NEMA.ID,SignalPhase> nema2phase;
@@ -342,8 +345,9 @@ public final class ActuatorSignal extends Actuator {
     // SignalPhase class
     /////////////////////////////////////////////////////////////////////
 
-    public class SignalPhase {
+    public class SignalPhase implements Serializable{
 
+        private static final long serialVersionUID = -808386477650736702L;
         // references ....................................................
         protected ActuatorSignal mySignal;
 

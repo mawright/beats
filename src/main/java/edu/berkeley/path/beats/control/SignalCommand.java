@@ -2,6 +2,8 @@ package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.NEMA;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: gomes
@@ -10,7 +12,9 @@ import edu.berkeley.path.beats.actuator.NEMA;
  * To change this template use File | Settings | File Templates.
  */
 @SuppressWarnings("rawtypes")
-public class SignalCommand implements Comparable {
+public class SignalCommand implements Comparable,Serializable {
+
+    private static final long serialVersionUID = 8063530719559558233L;
 
     public static enum Type {hold,forceoff};
 

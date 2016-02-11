@@ -26,14 +26,16 @@
 
 package edu.berkeley.path.beats.control;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.actuator.ActuatorRampMeter;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
-public class Controller_IRM_Alinea extends Controller {
+public class Controller_IRM_Alinea extends Controller implements Serializable {
 
+	private static final long serialVersionUID = -123251252700320224L;
 	// sensors
 	private Sensor mainline_sensor;
 	private Link mainline_link;

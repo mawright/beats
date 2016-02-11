@@ -33,9 +33,12 @@ import edu.berkeley.path.beats.simulator.Sensor;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
-public class Controller_IRM_Time_of_Day extends Controller {
-	
-	private Link onramplink = null;	
+import java.io.Serializable;
+
+public class Controller_IRM_Time_of_Day extends Controller implements Serializable {
+
+	private static final long serialVersionUID = -4319968397916537809L;
+	private Link onramplink = null;
 	private Sensor queuesensor = null;	
 	private boolean hasqueuesensor;
 	

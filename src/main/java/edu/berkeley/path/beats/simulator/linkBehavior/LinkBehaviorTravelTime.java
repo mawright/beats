@@ -161,7 +161,8 @@ public class LinkBehaviorTravelTime extends LinkBehaviorCTM implements Serializa
     // Cell class
     /////////////////////////////////////////////////////////////////////
 
-    private class Cell {
+    private class Cell implements Serializable {
+        private static final long serialVersionUID = -9120700296690514927L;
         public Double [] n;        // [ve] for each vehicle type
         public Cell(int nVT){
             n=BeatsMath.zeros(nVT);

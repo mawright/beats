@@ -7,11 +7,13 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActuatorCMS extends Actuator {
+public class ActuatorCMS extends Actuator  implements Serializable {
 
+    private static final long serialVersionUID = 4603644362503732870L;
     protected List<Splitratio> splits;
 
     /////////////////////////////////////////////////////////////////////

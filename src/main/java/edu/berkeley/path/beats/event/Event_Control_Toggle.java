@@ -33,9 +33,12 @@ import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 
-public class Event_Control_Toggle extends Event {
+import java.io.Serializable;
 
-	protected boolean ison; 
+public class Event_Control_Toggle extends Event implements Serializable {
+
+	private static final long serialVersionUID = -3382842455693642340L;
+	protected boolean ison;
 	
 	/////////////////////////////////////////////////////////////////////
 	// Construction

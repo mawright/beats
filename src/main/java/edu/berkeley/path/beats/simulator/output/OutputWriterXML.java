@@ -28,6 +28,7 @@ package edu.berkeley.path.beats.simulator.output;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.Serializable;
 import java.util.Properties;
 
 import javax.xml.bind.JAXBContext;
@@ -44,7 +45,8 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.util.SchemaUtil;
 
 @SuppressWarnings("restriction")
-public final class OutputWriterXML extends OutputWriterBase {
+public final class OutputWriterXML extends OutputWriterBase implements Serializable{
+	private static final long serialVersionUID = 1434409828129320793L;
 	protected XMLStreamWriter xmlsw = null;
 	protected static final String SEC_FORMAT = "%.1f";
 	protected static final String NUM_FORMAT = "%.4f";
@@ -232,7 +234,8 @@ public final class OutputWriterXML extends OutputWriterBase {
 		}
 	}
 
-	protected static class Formatter {
+	protected static class Formatter implements Serializable {
+		private static final long serialVersionUID = -8452396111729122989L;
 		private String delim;
 		private String format;
 		private StringBuilder sb;

@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.util.polyline;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Vector;
 
@@ -7,7 +8,8 @@ import edu.berkeley.path.beats.jaxb.Point;
 
 /** Converts a path into a string */
 
-public class GoogleEncoder extends EncoderBase implements EncoderIF {
+public class GoogleEncoder extends EncoderBase implements EncoderIF,Serializable {
+	private static final long serialVersionUID = -4669832424586289117L;
 	StringBuilder sb;
 	Point prev = null;
 

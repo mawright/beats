@@ -6,14 +6,16 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by gomes on 6/4/2015.
  */
-public class ActuatorVehType extends Actuator {
+public class ActuatorVehType extends Actuator  implements Serializable {
 
+    private static final long serialVersionUID = 6543367506821572652L;
     protected List<SwitchRatio> switchRatios;
 
     /////////////////////////////////////////////////////////////////////

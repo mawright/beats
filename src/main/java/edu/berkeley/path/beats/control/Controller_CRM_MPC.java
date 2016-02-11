@@ -15,11 +15,13 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class Controller_CRM_MPC extends Controller {
+public class Controller_CRM_MPC extends Controller implements Serializable{
 
+    private static final long serialVersionUID = 5762681321621908443L;
     // policy maker
     private RampMeteringPolicyMaker policy_maker;
     private Properties pm_props;

@@ -26,8 +26,11 @@
 
 package edu.berkeley.path.beats.calibrator;
 
-public class FDParameters {
+import java.io.Serializable;
 
+public class FDParameters implements Serializable{
+
+	private static final long serialVersionUID = -1021142587308976977L;
 	// nominal values
 	private static float nom_vf = 65 * 0.44704f;			// [m/s]
 	private static float nom_w = 15 * 0.44704f; 			// [m/s]

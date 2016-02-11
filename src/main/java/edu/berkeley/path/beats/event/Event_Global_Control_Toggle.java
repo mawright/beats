@@ -30,8 +30,11 @@ import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-public class Event_Global_Control_Toggle extends Event {
+import java.io.Serializable;
 
+public class Event_Global_Control_Toggle extends Event implements Serializable {
+
+	private static final long serialVersionUID = 6115588176042204944L;
 	protected boolean ison;
 	
 	/////////////////////////////////////////////////////////////////////

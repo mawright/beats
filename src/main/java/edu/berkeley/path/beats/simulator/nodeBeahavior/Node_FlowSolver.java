@@ -20,7 +20,8 @@ public abstract class Node_FlowSolver implements Serializable {
 		this.myNode = myNode;
 	}
 
-	public static class SupplyDemand {
+	public static class SupplyDemand implements Serializable{
+		private static final long serialVersionUID = 6326575979927951801L;
 		// input to node model, copied from link suppy/demand
 		protected double [][] demand;    // [nIn][nTypes]
 		protected double [] supply;		// [nOut]

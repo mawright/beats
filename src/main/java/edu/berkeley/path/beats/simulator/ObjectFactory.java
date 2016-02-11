@@ -35,6 +35,8 @@ import edu.berkeley.path.beats.control.*;
 import edu.berkeley.path.beats.event.*;
 import edu.berkeley.path.beats.sensor.*;
 
+import java.io.Serializable;
+
 /** Factory methods for creating scenarios, controllers, events, sensors, and scenario elements. 
  * <p>
  * Use the static methods in this class to load a scenario and to programmatically generate events, controllers, sensors, and scenario elements.
@@ -42,7 +44,8 @@ import edu.berkeley.path.beats.sensor.*;
 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 */
 @SuppressWarnings("restriction")
-final public class ObjectFactory {
+final public class ObjectFactory  implements Serializable {
+	private static final long serialVersionUID = -537708867473359975L;
 
 //	private static Logger logger = Logger.getLogger(ObjectFactory.class);
 	

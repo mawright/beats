@@ -3,7 +3,10 @@ package edu.berkeley.path.beats.util.scenario;
 import edu.berkeley.path.beats.jaxb.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-class DBScenarioSaver implements ScenarioSaverIF {
+import java.io.Serializable;
+
+class DBScenarioSaver implements ScenarioSaverIF,Serializable {
+	private static final long serialVersionUID = 3085003338077425521L;
 
 //	Long ID = null;
 //

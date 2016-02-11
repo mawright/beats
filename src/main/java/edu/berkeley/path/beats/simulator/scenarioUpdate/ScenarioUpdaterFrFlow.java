@@ -4,11 +4,12 @@ import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 /**
  * Created by gomes on 10/26/14.
  */
-public class ScenarioUpdaterFrFlow extends ScenarioUpdaterAbstract {
-
+public class ScenarioUpdaterFrFlow extends ScenarioUpdaterAbstract implements Serializable {
     private static final long serialVersionUID = 6573601804020311187L;
 
     public ScenarioUpdaterFrFlow(Scenario scenario,String nodeflowsolver_name,String nodesrsolver_name){

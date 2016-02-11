@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.util.scenario;
 
 import java.io.File;
+import java.io.Serializable;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -8,8 +9,9 @@ import javax.xml.bind.Marshaller;
 import edu.berkeley.path.beats.jaxb.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-class XMLScenarioSaver extends ScenarioSaverBase implements ScenarioSaverIF {
+class XMLScenarioSaver extends ScenarioSaverBase implements ScenarioSaverIF,Serializable {
 
+	private static final long serialVersionUID = -5962493670375208361L;
 	private String filename;
 
 	public XMLScenarioSaver(String filename) {

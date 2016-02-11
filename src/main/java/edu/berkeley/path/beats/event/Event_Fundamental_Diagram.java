@@ -33,8 +33,11 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.ScenarioElement;
 
-public class Event_Fundamental_Diagram extends Event {
+import java.io.Serializable;
 
+public class Event_Fundamental_Diagram extends Event implements Serializable {
+
+	private static final long serialVersionUID = 6664928344411469737L;
 	protected boolean resetToNominal;
 	protected edu.berkeley.path.beats.jaxb.FundamentalDiagram FD;
 	  

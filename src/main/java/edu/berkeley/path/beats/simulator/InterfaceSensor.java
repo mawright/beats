@@ -26,6 +26,8 @@
 
 package edu.berkeley.path.beats.simulator;
 
+import java.io.Serializable;
+
 /** Sensor interface.
 *
 * @author Gabriel Gomes (gomes@path.berkeley.edu)

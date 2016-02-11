@@ -28,9 +28,12 @@ package edu.berkeley.path.beats.simulator;
 
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
 
-public class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory {
+import java.io.Serializable;
 
-    @Override
+public class JaxbObjectFactory extends edu.berkeley.path.beats.jaxb.ObjectFactory implements Serializable {
+	private static final long serialVersionUID = 6087746926740053468L;
+
+	@Override
     public edu.berkeley.path.beats.jaxb.Route createRoute() {
         return new Route();
     }

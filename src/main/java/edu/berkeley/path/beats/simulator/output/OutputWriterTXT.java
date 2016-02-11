@@ -35,7 +35,8 @@ import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public final class OutputWriterTXT extends OutputWriterBase {
+public final class OutputWriterTXT extends OutputWriterBase implements Serializable{
+	private static final long serialVersionUID = 2958119063310163523L;
 	protected Writer out_time = null;
 	protected Writer [] out_density = null;
 	protected Writer [] out_outflow = null;

@@ -8,7 +8,11 @@ import org.apache.log4j.Logger;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-abstract class ScenarioSaverBase implements ScenarioSaverIF {
+import java.io.Serializable;
+
+abstract class ScenarioSaverBase implements ScenarioSaverIF,Serializable {
+
+	private static final long serialVersionUID = 8801769867183185911L;
 
 	protected Marshaller getMarshaller() throws JAXBException, BeatsException {
 		Marshaller marshaller = ScenarioLoaderBase.getJAXBContext().createMarshaller();

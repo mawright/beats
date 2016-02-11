@@ -3,7 +3,10 @@ package edu.berkeley.path.beats.util.scenario;
 import edu.berkeley.path.beats.jaxb.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public class ScenarioSaver {
+import java.io.Serializable;
+
+public class ScenarioSaver implements Serializable {
+	private static final long serialVersionUID = -7853079346183056636L;
 
 //	/**
 //	 * Saves a scenario to a file

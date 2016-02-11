@@ -2,7 +2,10 @@ package edu.berkeley.path.beats.util.scenario;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-class DBScenarioLoader implements ScenarioLoaderIF {
+import java.io.Serializable;
+
+class DBScenarioLoader implements ScenarioLoaderIF,Serializable {
+	private static final long serialVersionUID = 5996726559475161602L;
 
 //	private Long ID;
 //

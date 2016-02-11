@@ -36,12 +36,16 @@ package edu.berkeley.path.beats.simulator.output;
 import edu.berkeley.path.beats.simulator.Scenario;
         import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
+import java.io.Serializable;
+
 //import com.workingdogs.village.DataSetException;
 
 /**
  * Database output writer
  */
-public class OutputWriterDB extends OutputWriterBase {
+public class OutputWriterDB extends OutputWriterBase implements Serializable{
+
+	private static final long serialVersionUID = -7355064789361829404L;
 
 	public OutputWriterDB(Scenario scenario,double outDt,int outsteps,double outStart) {
 		super(scenario,outDt,outsteps,outStart);

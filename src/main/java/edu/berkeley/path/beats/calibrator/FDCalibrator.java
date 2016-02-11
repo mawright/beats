@@ -352,7 +352,8 @@ public class FDCalibrator implements Serializable{
 	// nested classes
 	/////////////////////////////////////////////////////////////////////////////////
 	
-	private static class DataPoint implements Comparable<Object> {
+	private static class DataPoint implements Comparable<Object>,Serializable {
+		private static final long serialVersionUID = 8660913620236339972L;
 		float dty;
 		float flw;
 		float spd;
@@ -382,7 +383,8 @@ public class FDCalibrator implements Serializable{
 		}
 	}
 
-	private static class GrowLink {
+	private static class GrowLink implements Serializable {
+		private static final long serialVersionUID = 3516276138570910583L;
 		public Link link;
 		public Sensor sensor;
 		public boolean isgrowable = false; // link possibly connected to unassigned links

@@ -30,8 +30,11 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-public class Event_Link_Demand_Knob extends Event {
+import java.io.Serializable;
 
+public class Event_Link_Demand_Knob extends Event implements Serializable {
+
+	private static final long serialVersionUID = 1680910668010328672L;
 	protected boolean resetToNominal;
 	protected Double newknob;				// default = 1.0
 	

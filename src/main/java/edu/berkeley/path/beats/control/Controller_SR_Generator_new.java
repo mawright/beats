@@ -129,8 +129,9 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
     // inner class
     /////////////////////////////////////////////////////////////////////
 
-    class NodeData {
+    class NodeData implements Serializable {
 
+        private static final long serialVersionUID = -6120130359911337736L;
         private Node myNode;
         private ActuatorCMS cms;
         private double knob;

@@ -4,6 +4,7 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 //import edu.berkeley.path.lprm.rm.RampMeteringSolution;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,8 @@ import java.util.Map;
  * Time: 3:01 PM
  * To change this template use File | Settings | File Templates.
  */
-public class RampMeteringPolicySet {
+public class RampMeteringPolicySet  implements Serializable {
+    private static final long serialVersionUID = -6445139806056220313L;
     public List<RampMeteringPolicyProfile> profiles;
 
     public RampMeteringPolicySet() {
