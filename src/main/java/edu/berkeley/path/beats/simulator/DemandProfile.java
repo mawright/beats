@@ -222,7 +222,7 @@ final public class DemandProfile extends edu.berkeley.path.beats.jaxb.DemandProf
 	/////////////////////////////////////////////////////////////////////
 
 	public Double [] getCurrentValue(int e){
-        return current_sample_noisy_knobbed[e];
+        return current_sample_noisy_knobbed==null ? null : current_sample_noisy_knobbed[e];
 	}
 
     public Double [] predict_in_VPS(int vehicle_type_index, double begin_time, double time_step, int num_steps,double simdtinseconds){
