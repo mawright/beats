@@ -29,6 +29,7 @@ package edu.berkeley.path.beats.simulator.utils;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -37,7 +38,9 @@ import java.util.StringTokenizer;
  *
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-final public class BeatsFormatter {
+final public class BeatsFormatter implements Serializable {
+
+	private static final long serialVersionUID = 8463622583759643043L;
 
 	public static String csv(double [] V,String delim){
 		String str="";

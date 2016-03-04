@@ -1,5 +1,7 @@
 package edu.berkeley.path.beats.actuator;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: gomes
@@ -7,7 +9,9 @@ package edu.berkeley.path.beats.actuator;
  * Time: 5:24 PM
  * To change this template use File | Settings | File Templates.
  */
-public abstract class NEMA {
+public abstract class NEMA  implements Serializable {
+
+    private static final long serialVersionUID = 759606283405233084L;
 
     public static enum ID {NULL,_1,_2,_3,_4,_5,_6,_7,_8};
 

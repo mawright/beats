@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,9 @@ import java.util.List;
 /**
  * Created by gomes on 6/4/2015.
  */
-public class Controller_VehType_Swapper extends Controller {
+public class Controller_VehType_Swapper extends Controller implements Serializable {
 
+    private static final long serialVersionUID = -5601769449081489865L;
     private Link myLink;
 
     private List<Long> VehTypesIn;

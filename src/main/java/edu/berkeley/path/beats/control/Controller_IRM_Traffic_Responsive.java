@@ -33,8 +33,11 @@ import edu.berkeley.path.beats.simulator.Sensor;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
-public class Controller_IRM_Traffic_Responsive extends Controller {
-	
+import java.io.Serializable;
+
+public class Controller_IRM_Traffic_Responsive extends Controller implements Serializable{
+
+	private static final long serialVersionUID = 336732951624781616L;
 	private Link onramplink = null;
 	private Link mainlinelink = null;
 	private Sensor mainlinesensor = null;

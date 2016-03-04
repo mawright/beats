@@ -3,7 +3,11 @@ package edu.berkeley.path.beats.simulator;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 
-public class SplitRatioPerturber {
+import java.io.Serializable;
+
+public class SplitRatioPerturber implements Serializable {
+
+    private static final long serialVersionUID = -1760068806074220232L;
 
     private SplitRatioPerturber() {
         // TODO Auto-generated method stub

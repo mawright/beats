@@ -4,9 +4,12 @@ import edu.berkeley.path.beats.simulator.Actuator;
 import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-public class ActuatorVSL extends Actuator {
+import java.io.Serializable;
 
-	/////////////////////////////////////////////////////////////////////
+public class ActuatorVSL extends Actuator  implements Serializable {
+    private static final long serialVersionUID = -7757068960469048806L;
+
+    /////////////////////////////////////////////////////////////////////
 	// construction
 	/////////////////////////////////////////////////////////////////////
 

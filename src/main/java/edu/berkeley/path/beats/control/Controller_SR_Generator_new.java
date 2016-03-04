@@ -132,7 +132,7 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
     // inner class
     /////////////////////////////////////////////////////////////////////
 
-    class NodeData {
+    class NodeData implements Serializable {
 
         protected Node myNode;
         protected ActuatorCMS cms;

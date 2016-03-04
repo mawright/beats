@@ -2,6 +2,8 @@ package edu.berkeley.path.beats.control.rm_interface;
 
 import edu.berkeley.path.beats.simulator.Link;
 
+import java.io.Serializable;
+
 /**
  * Created with IntelliJ IDEA.
  * User: jdr
@@ -9,7 +11,8 @@ import edu.berkeley.path.beats.simulator.Link;
  * Time: 3:19 PM
  * To change this template use File | Settings | File Templates.
  */
-public class RampMeteringControl {
+public class RampMeteringControl implements Serializable{
+    private static final long serialVersionUID = -1920802709971458938L;
     public double min_rate; // flux in relation to max rate of link
     public double max_rate; // flux in relation to max rate of link
     public Link link;

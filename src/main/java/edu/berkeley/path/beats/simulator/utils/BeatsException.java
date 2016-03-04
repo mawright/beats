@@ -34,7 +34,7 @@ import java.io.Serializable;
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
 @SuppressWarnings("serial")
-public class BeatsException extends Exception {
+public class BeatsException extends Exception implements Serializable {
 
 	/////////////////////////////////////////////////////////////////////
 	// construction

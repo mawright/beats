@@ -41,7 +41,9 @@ import edu.berkeley.path.beats.simulator.ObjectFactory;
 import edu.berkeley.path.beats.simulator.Scenario;
 
 @SuppressWarnings("restriction")
-class XMLOutputReader {
+class XMLOutputReader implements Serializable {
+	private static final long serialVersionUID = -4229050384673865066L;
+
 	public static void main(String[] args) {
 		if (args.length < 1) {
 			System.err.print("Please specify an output file name\n");
@@ -148,7 +150,8 @@ class XMLOutputReader {
 		}
 	}
 
-	public static class Data {
+	public static class Data implements Serializable{
+		private static final long serialVersionUID = 7055769355882925627L;
 		public Scenario scenario;
 		public Vector<Double> t; // time
 		public Vector<Double> d; // density

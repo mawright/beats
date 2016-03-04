@@ -337,12 +337,12 @@ public class ScenarioSetApi implements Serializable {
     public boolean totalDensity(double [][] d){
 
         if(scenario.getNetworks().size()>1){
-            System.err.println("This methos works only with single network scenarios.");
+            System.err.println("This method works only with single network scenarios.");
             return false;
         }
 
         if(scenario.get.numVehicleTypes()>1){
-            System.err.println("This methos works only with single vehicle type scenarios.");
+            System.err.println("This method works only with single vehicle type scenarios.");
             return false;
         }
 

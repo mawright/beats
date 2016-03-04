@@ -8,7 +8,11 @@ import javax.xml.bind.Unmarshaller;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.util.SchemaUtil;
 
-abstract class ScenarioLoaderBase implements ScenarioLoaderIF {
+import java.io.Serializable;
+
+abstract class ScenarioLoaderBase implements ScenarioLoaderIF,Serializable {
+
+	private static final long serialVersionUID = 8970108864473060795L;
 
 	@Override
 	public edu.berkeley.path.beats.simulator.Scenario load() throws BeatsException {

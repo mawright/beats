@@ -1,9 +1,6 @@
 package edu.berkeley.path.beats.simulator.output;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 import java.util.Properties;
 
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
@@ -12,8 +9,9 @@ import edu.berkeley.path.beats.simulator.LinkCumulativeData;
 import edu.berkeley.path.beats.simulator.Network;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-public class OutputWriterTSV extends OutputWriterBase {
+public class OutputWriterTSV extends OutputWriterBase implements Serializable{
 
+	private static final long serialVersionUID = -9187675223718693196L;
 	protected static String delim = "\t";
 	private String prefix;
 

@@ -33,6 +33,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 
 public class Data2D implements Serializable {
+	private static final long serialVersionUID = -1215677677821410252L;
 	private BigDecimal[][] data = null;
 
 	private static Logger logger = Logger.getLogger(Data2D.class);

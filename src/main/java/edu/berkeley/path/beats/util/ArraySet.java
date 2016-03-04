@@ -156,7 +156,8 @@ public class ArraySet implements Set<Integer>,Serializable {
 		return sb.toString();
 	}
 
-	private static class ArraySetIterator implements Iterator<Integer> {
+	private static class ArraySetIterator implements Iterator<Integer>,Serializable {
+		private static final long serialVersionUID = 8878587297288529362L;
 		private ArraySet set;
 		private Integer curr;
 		private Integer next;

@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.util.scenario;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.Writer;
 
 import javax.xml.bind.JAXBException;
@@ -12,8 +13,9 @@ import org.codehaus.jettison.mapped.MappedXMLStreamWriter;
 import edu.berkeley.path.beats.jaxb.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-class JSONScenarioSaver extends ScenarioSaverBase implements ScenarioSaverIF {
+class JSONScenarioSaver extends ScenarioSaverBase implements ScenarioSaverIF,Serializable {
 
+	private static final long serialVersionUID = 8104290470700164131L;
 	Writer writer;
 
 	public JSONScenarioSaver(String filename) throws BeatsException {

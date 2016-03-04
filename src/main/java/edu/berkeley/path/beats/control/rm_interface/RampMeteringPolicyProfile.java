@@ -3,6 +3,7 @@ package edu.berkeley.path.beats.control.rm_interface;
 import edu.berkeley.path.beats.simulator.Link;
 //import scala.actors.threadpool.Arrays;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,7 +15,8 @@ import java.util.List;
  * Time: 3:00 PM
  * To change this template use File | Settings | File Templates.
  */
-public class RampMeteringPolicyProfile {
+public class RampMeteringPolicyProfile  implements Serializable {
+    private static final long serialVersionUID = -7194751858313698381L;
     public Link sensorLink;
     public List<Double> rampMeteringPolicy; // vehicles / (unit time), each element per simulation timestep
 

@@ -62,7 +62,8 @@ public class BeatsTimeProfileDouble3D extends BeatsTimeProfile<Double[][][]> imp
                             BeatsErrorLog.addError("Values out of range.");
     }
 
-    class SplitInfo {
+    class SplitInfo implements Serializable{
+        private static final long serialVersionUID = 3774562505841402258L;
         int inIndex;
         int outIndex;
         int vtIndex;

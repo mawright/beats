@@ -31,8 +31,11 @@ import edu.berkeley.path.beats.simulator.Event;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 
-public class Event_Node_Split_Ratio extends Event {
+import java.io.Serializable;
 
+public class Event_Node_Split_Ratio extends Event implements Serializable {
+
+	private static final long serialVersionUID = 5207400328521725304L;
 	protected boolean resetToNominal;			// if true, go back to nominal before applying changes
 	protected Node myNode;
 //	protected java.util.List<SplitRatio> splitratios;

@@ -29,6 +29,8 @@ package edu.berkeley.path.beats.util;
 import java.io.Serializable;
 
 public class UUID implements Serializable {
+	private static final long serialVersionUID = 5740911196074351536L;
+
 	/**
 	 * Generates a universally unique identifier
 	 * @return the generated UUID

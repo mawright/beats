@@ -108,7 +108,7 @@ public final class BeatsErrorLog implements Serializable {
 	 *
 	 * @author Gabriel Gomes (gomes@path.berkeley.edu)
 	 */
-	public static class BeatsError {
+	public static class BeatsError implements Serializable {
 		String description;
 		BeatsErrorLog.level mylevel;
 		public BeatsError(String description,BeatsErrorLog.level mylevel){

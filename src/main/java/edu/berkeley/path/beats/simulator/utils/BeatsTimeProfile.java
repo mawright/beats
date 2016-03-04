@@ -4,9 +4,11 @@ import edu.berkeley.path.beats.simulator.Clock;
 import edu.berkeley.path.beats.simulator.FundamentalDiagram;
 import edu.berkeley.path.beats.simulator.Scenario;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BeatsTimeProfile <T> {
+public class BeatsTimeProfile <T> implements Serializable {
+    private static final long serialVersionUID = 3660992918484057174L;
 
     protected T current_sample;
     protected double dtinseconds;            // not really necessary

@@ -8,7 +8,11 @@ import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
-public class ActuatorRampMeter extends Actuator {
+import java.io.Serializable;
+
+public class ActuatorRampMeter extends Actuator  implements Serializable {
+
+    private static final long serialVersionUID = 2228283060869908816L;
 
     public enum QueueOverrideStrategy {none,max_rate,proportional,proportional_integral};
     private double metering_rate_in_veh;
@@ -114,7 +118,8 @@ public class ActuatorRampMeter extends Actuator {
 		return myLink;
 	}
 
-    private class QueueOverride {
+    private class QueueOverride implements Serializable{
+        private static final long serialVersionUID = 5230456626105848852L;
         public QueueOverrideStrategy strategy;
         public double max_vehicles;
 

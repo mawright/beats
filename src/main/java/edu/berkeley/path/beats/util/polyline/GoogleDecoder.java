@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.util.polyline;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Vector;
@@ -9,7 +10,9 @@ import edu.berkeley.path.beats.jaxb.Point;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
 //** Decodes a path from a string */
-public class GoogleDecoder extends DecoderBase implements DecoderIF {
+public class GoogleDecoder extends DecoderBase implements DecoderIF,Serializable {
+	private static final long serialVersionUID = 8299963170832928168L;
+
 	public GoogleDecoder() {}
 
 	@Override

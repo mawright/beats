@@ -14,12 +14,14 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Properties;
 
-public class Controller_FRR_MPC extends Controller {
+public class Controller_FRR_MPC extends Controller implements Serializable{
 
-    // policy maker
+	private static final long serialVersionUID = 3680678081843566583L;
+	// policy maker
     private ReroutePolicyMaker policy_maker;
     private Properties policy_maker_properties;
     private ReroutePolicySet policy;

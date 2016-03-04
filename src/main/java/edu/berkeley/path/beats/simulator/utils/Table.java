@@ -25,6 +25,7 @@
  **/
 
 package edu.berkeley.path.beats.simulator.utils;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.ColumnName;
@@ -33,9 +34,10 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 /** 
  * @author Gabriel Gomes (gomes@path.berkeley.edu)
  */
-final public class Table {
+final public class Table implements Serializable {
 
-    protected int key_index;                // single primary key only
+	private static final long serialVersionUID = 3891566133140383721L;
+	protected int key_index;                // single primary key only
 	protected ArrayList<Long> column_ids;
 	protected ArrayList<String> column_names;
 	protected ArrayList<Row> rows;
@@ -168,7 +170,8 @@ final public class Table {
 //        return keys;
 //    }
 
-	public class Row {
+	public class Row implements Serializable {
+		private static final long serialVersionUID = 5243339373051310319L;
 		public String name = null;
 		public String [] column_value;
 		public Row(int numcol, String RowName) {

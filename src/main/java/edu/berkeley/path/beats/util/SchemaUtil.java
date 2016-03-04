@@ -18,6 +18,7 @@ import java.io.Serializable;
 @SuppressWarnings("restriction")
 public class SchemaUtil implements Serializable {
 
+	private static final long serialVersionUID = 7307649269954205947L;
 	private static Logger logger = Logger.getLogger(SchemaUtil.class);
 
 	/**

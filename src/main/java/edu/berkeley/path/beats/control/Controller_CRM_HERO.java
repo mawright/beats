@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.control;
 
+import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.ArrayList; 
 import java.util.HashSet;
@@ -39,8 +40,9 @@ import edu.berkeley.path.beats.simulator.Sensor;
 import edu.berkeley.path.beats.sensor.SensorLoopStation;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
-public class Controller_CRM_HERO extends Controller {
+public class Controller_CRM_HERO extends Controller implements Serializable{
 
+	private static final long serialVersionUID = 1813664001670025234L;
 	private Link onrampLink = null;
 	private Link mainlineLink = null;
 	private Sensor mainlineSensor = null;

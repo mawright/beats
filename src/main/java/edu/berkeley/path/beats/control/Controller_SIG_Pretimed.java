@@ -26,6 +26,7 @@
 
 package edu.berkeley.path.beats.control;
 
+import java.io.Serializable;
 import java.util.*;
 
 import edu.berkeley.path.beats.actuator.ActuatorSignal;
@@ -36,8 +37,9 @@ import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
-public class Controller_SIG_Pretimed extends Controller {
+public class Controller_SIG_Pretimed extends Controller implements Serializable{
 
+    private static final long serialVersionUID = -131553259591759596L;
     // data
     private List<PlanScheduleEntry> plan_schedule;
     private HashMap<Integer,PretimedPlan> plan_map;
@@ -213,7 +215,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
     }
 
-    protected class PlanScheduleEntry implements Comparable<PlanScheduleEntry> {
+    protected class PlanScheduleEntry implements Comparable<PlanScheduleEntry>,Serializable {
+        private static final long serialVersionUID = -2641897180273803251L;
         protected PretimedPlan plan;
         protected double start_time;
         public PlanScheduleEntry(double start_time,int plan_id){
@@ -226,8 +229,9 @@ public class Controller_SIG_Pretimed extends Controller {
 		}
     }
 
-    protected class PretimedPlan {
+    protected class PretimedPlan implements Serializable{
 
+        private static final long serialVersionUID = 600951010014073306L;
         protected int id;
         protected double cycle;
         protected HashMap<Integer,IntersectionPlan> intersection_plans;
@@ -318,8 +322,9 @@ public class Controller_SIG_Pretimed extends Controller {
 
     }
 
-    protected class IntersectionPlan {
+    protected class IntersectionPlan implements Serializable{
 
+        private static final long serialVersionUID = -7079095502229581853L;
         // reference
         protected PretimedPlan my_plan;
         protected ActuatorSignal my_signal;
@@ -475,7 +480,8 @@ public class Controller_SIG_Pretimed extends Controller {
 
     }
 
-    protected class Stage {
+    protected class Stage implements Serializable {
+        private static final long serialVersionUID = -4082991231779635354L;
         public NEMA.ID movA;
         public NEMA.ID movB;
         public double green_time;
@@ -505,7 +511,9 @@ public class Controller_SIG_Pretimed extends Controller {
         }
     }
 
-    protected class CircularList<T> extends ArrayList<T> {
+    protected class CircularList<T> extends ArrayList<T> implements Serializable{
+        private static final long serialVersionUID = -3892025032712225535L;
+
         @Override
         public T get(int index) {
             return super.get(index % this.size());
@@ -518,7 +526,8 @@ public class Controller_SIG_Pretimed extends Controller {
         }
     }
 
-    protected class CircularIterator<T> {
+    protected class CircularIterator<T> implements Serializable{
+        private static final long serialVersionUID = 5981654097071039897L;
         public int cur = 0;
         public CircularList<T> coll = null;
         protected CircularIterator(CircularList<T> coll) {

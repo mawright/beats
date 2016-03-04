@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.util.scenario;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -14,8 +15,9 @@ import org.codehaus.jettison.mapped.MappedXMLStreamReader;
 import edu.berkeley.path.beats.jaxb.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 
-class JSONScenarioLoader extends ScenarioLoaderBase implements ScenarioLoaderIF {
+class JSONScenarioLoader extends ScenarioLoaderBase implements ScenarioLoaderIF,Serializable {
 
+	private static final long serialVersionUID = -1469224093421545753L;
 	private String filename;
 
 	public JSONScenarioLoader(String filename) {

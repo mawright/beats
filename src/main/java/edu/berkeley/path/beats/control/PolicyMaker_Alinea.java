@@ -6,9 +6,12 @@ import edu.berkeley.path.beats.control.rm_interface.RampMeteringPolicySet;
 import edu.berkeley.path.beats.jaxb.FundamentalDiagramSet;
 import edu.berkeley.path.beats.simulator.*;
 
+import java.io.Serializable;
 import java.util.Properties;
 
-public class PolicyMaker_Alinea implements RampMeteringPolicyMaker {
+public class PolicyMaker_Alinea implements RampMeteringPolicyMaker, Serializable{
+
+    private static final long serialVersionUID = 3014576907017758678L;
 
     @Override
     public RampMeteringPolicySet givePolicy(Network net, FundamentalDiagramSet fd, DemandSet demand, SplitRatioSet splitRatios, InitialDensitySet ics, RampMeteringControlSet control, Double dt, Properties props) {
