@@ -113,6 +113,11 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 						splitKnown[i][j][c] = false;
 						computed_splitratio[i][j][c] = 0d;
 					}
+					else if (!myNode.getOutput_link()[j].canVTypeEnter(c)) {
+						// if this vtype is disallowed from this link (eg an sov vtype and hov link)
+						splitKnown[i][j][c] = true;
+						computed_splitratio[i][j][c] = 0d;
+					}
 					else {
 						splitKnown[i][j][c] = true;
 						splitRemaining[i][c] = splitRemaining[i][c] - input_splitratio[i][j][c];
