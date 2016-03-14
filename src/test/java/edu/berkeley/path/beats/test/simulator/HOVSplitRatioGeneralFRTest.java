@@ -6,6 +6,7 @@ import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -75,6 +76,7 @@ public class HOVSplitRatioGeneralFRTest {
 	public void someHOVsInFreewayTest() {
 		Double[] density = upstream_freeway_link.getDensityInVeh(0);
 		density[hov_id] += upstream_hov_link.getDensityInVeh(0, hov_id);
+		upstream_freeway_link.set_density_in_veh(0,density);
 
 		try {
 			scenario.advanceNSeconds(5);
@@ -85,16 +87,43 @@ public class HOVSplitRatioGeneralFRTest {
 		double HOVSR = node.getSplitRatio( node.getInputLinkIndex(upstream_hov_id), node.getOutputLinkIndex(offramp_link_id), hov_id);
 		double SOVSR = node.getSplitRatio( node.getInputLinkIndex(upstream_freeway_id), node.getOutputLinkIndex(offramp_link_id), sov_id);
 
+		assertEquals(HOVSR, SOVSR, 1e-3);
+
 		double HOVSR_freeway = node.getSplitRatio( node.getInputLinkIndex(upstream_freeway_id), node.getOutputLinkIndex(offramp_link_id), hov_id);
+
+		assertEquals(HOVSR_freeway, HOVSR, 1e-3); // should get equal portion of vehicles of all three vehtype/link combinations
+
+	}
+
+	@Test
+	public void moreHOVsInFreewayTest() {
+		Double[] density = upstream_freeway_link.getDensityInVeh(0);
+		density[hov_id] += upstream_hov_link.getDensityInVeh(0, hov_id) * 2;
+
+		try {
+			scenario.advanceNSeconds(5);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+		double HOVSR = node.getSplitRatio( node.getInputLinkIndex(upstream_hov_id), node.getOutputLinkIndex(offramp_link_id), hov_id);
+		double SOVSR = node.getSplitRatio( node.getInputLinkIndex(upstream_freeway_id), node.getOutputLinkIndex(offramp_link_id), sov_id);
+
+		assertEquals(HOVSR, SOVSR, 1e-3);
+
+		double HOVSR_freeway = node.getSplitRatio( node.getInputLinkIndex(upstream_freeway_id), node.getOutputLinkIndex(offramp_link_id), hov_id);
+
+		assertEquals(HOVSR_freeway, HOVSR, 1e-3); // should get equal portion of vehicles of all three vehtype/link combinations
 
 	}
 
 	@Test
 	public void zeroTest() {
 		try {
+			scenario.set.demand_for_link_si(offramp_link_id, 50, new double[]{0, 0});
 			scenario.advanceNSeconds(100d);
 		}
-		catch (BeatsException ex) {
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
@@ -106,14 +135,20 @@ public class HOVSplitRatioGeneralFRTest {
 	}
 
 	@Test
-	public void setTest() {
+	public void setNewDemandTest() {
 
 		try {
 			scenario.set.demand_for_link_si(offramp_link_id, 50, new double[]{100 / 3600, 200 / 3600});
+			scenario.advanceNSeconds(100d);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
+		double HOVofframpFlow = offramp_link.getInflowInVeh(0, hov_id);
+		double SOVofframpFlow = offramp_link.getInflowInVeh(0, sov_id);
+
+		assertEquals(100d / 3600d, SOVofframpFlow, 1e-6);
+		assertEquals(200d / 3600d, HOVofframpFlow, 1e-6);
 	}
 }

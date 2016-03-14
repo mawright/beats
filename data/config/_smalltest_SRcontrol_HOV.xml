@@ -14,36 +14,38 @@
 			<splitratio vehicle_type_id="0" link_in="3" link_out="4">0.8</splitratio>
 			<splitratio vehicle_type_id="1" link_in="3" link_out="4">0.8</splitratio>
 		</splitRatioProfile-->
-		<splitRatioProfile id="2" dt="300" node_ide="2">
-			<splitratio vehicle_type_id="0" link_in="1" link_out="2">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="1" link_out="22">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="11" link_out="2">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="11" link_out="22">0</splitratio>
+		<splitRatioProfile id="2" dt="300" node_id="2">
+			<splitratio vehicle_type_id="0" link_in="1" link_out="2"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="1" link_out="22"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="11" link_out="2"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="11" link_out="22"></splitratio>
 		</splitRatioProfile>
 		<splitRatioProfile id="3" dt="300" node_id="3">
-			<splitratio vehicle_type_id="0" link_in="2" link_out="3">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="2" link_out="33">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="22" link_out="3">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="22" link_out="33">0</splitratio>
+			<splitratio vehicle_type_id="0" link_in="2" link_out="3"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="2" link_out="33"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="22" link_out="3"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="22" link_out="33"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="6" link_out="3"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="6" link_out="33"></splitratio>
 		</splitRatioProfile>
 		<splitRatioProfile id="4" dt="300" node_id="4">
-			<splitratio vehicle_type_id="0" link_in="3" link_out="4">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="3" link_out="44">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="33" link_out="4">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="33" link_out="44">0</splitratio>
+			<splitratio vehicle_type_id="0" link_in="3" link_out="4"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="3" link_out="44"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="33" link_out="4"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="33" link_out="44"></splitratio>
 		</splitRatioProfile>
 		<splitRatioProfile id="5" dt="300" node_id="5">
-			<splitratio vehicle_type_id="0" link_in="4" link_out="5">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="4" link_out="55">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="44" link_out="5">1</splitratio>
-			<splitratio vehicle_type_id="0" link_in="44" link_out="55">0</splitratio>
+			<splitratio vehicle_type_id="0" link_in="4" link_out="5"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="4" link_out="55"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="44" link_out="5"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="44" link_out="55"></splitratio>
 		</splitRatioProfile>
 	</SplitRatioSet>
 
 	<DemandSet id="1" >
 		<demandProfile dt="300" id="1" link_id_org="6">
-			<demand vehicle_type_id="0">200</demand>
-			<demand vehicle_type_id="1">200</demand>
+			<demand vehicle_type_id="0">20</demand>
+			<demand vehicle_type_id="1">20</demand>
 		</demandProfile>
 		<demandProfile dt="300" id="1" link_id_org="1">
 			<demand vehicle_type_id="0">50</demand>

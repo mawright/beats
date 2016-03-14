@@ -40,7 +40,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 	protected double largest_oriented_dsratio;
 	protected double smallest_oriented_dsratio;
 
-	private final double zeroThreshold = Double.MIN_VALUE * 2;
+	private static double zeroThreshold = 1e-10;
 
 	public Node_SplitRatioSolver_Balancing(Node myNode) {
 		super(myNode);
