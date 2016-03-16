@@ -1,6 +1,7 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by matt on 10/8/15.
@@ -70,5 +72,27 @@ public class Node_SplitRatioSolver_Balancing_Test {
 			fail(e.getMessage());
 		}
 
+	}
+
+	@Test
+	public void noSOVInHOVLaneTest() {
+		try {
+			Scenario scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_SRcontrol_HOV.xml");
+			String outprefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "test";
+			String split_logger_prefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "testSplits";
+
+			scenario.initialize(5, 0, 3600, 5, "text", outprefix, 1, 1, "gaussian", "general", "balancing", null, "fw_fr_split_output", split_logger_prefix, 5d, null);
+			scenario.advanceNSeconds(100d);
+
+			long hov_link_id = 33;
+
+			Link hov_link = scenario.get.linkWithId(hov_link_id);
+
+			assertEquals( 0d, hov_link.getDensityInVeh(0, 0), 1e-6);
+
+		}
+		catch (BeatsException ex) {
+			ex.printStackTrace();
+		}
 	}
 }
