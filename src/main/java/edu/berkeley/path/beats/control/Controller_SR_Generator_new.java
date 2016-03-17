@@ -285,6 +285,7 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
 
         protected void set_knob(double newknob){
             knob = newknob;
+            measured_flow_veh = measured_flow_profile_veh.getCurrentSample()*knob;
         }
 
     }
