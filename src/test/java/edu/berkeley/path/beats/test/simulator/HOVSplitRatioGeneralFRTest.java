@@ -1,9 +1,7 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
-import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
-import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import org.junit.*;
 
@@ -154,13 +152,13 @@ public class HOVSplitRatioGeneralFRTest {
 	public void congestedRoadTest() {
 		try { // make the road downstream of the offramp congested
 			Double[] new_freeway_density = new Double[2];
-			new_freeway_density[0] = downstream_freeway_link.getCapacityInVeh(0) / 2d * .8;
-			new_freeway_density[1] = downstream_freeway_link.getCapacityInVeh(0) / 2d * .8;
+			new_freeway_density[0] = downstream_freeway_link.getCapacityInVeh(0) / 2d * .9;
+			new_freeway_density[1] = downstream_freeway_link.getCapacityInVeh(0) / 2d * .9;
 			downstream_freeway_link.set_density_in_veh(0, new_freeway_density);
 
 			Double[] new_hov_density = new Double[2];
 			new_hov_density[0] = 0d;
-			new_hov_density[1] = downstream_hov_link.getCapacityInVeh(0) * .8;
+			new_hov_density[1] = downstream_hov_link.getCapacityInVeh(0) * .9;
 			downstream_hov_link.set_density_in_veh(0, new_hov_density);
 
 			scenario.advanceNSeconds(5d);
@@ -181,36 +179,33 @@ public class HOVSplitRatioGeneralFRTest {
 
 	@Test
 	public void zeroDemandTest() {
+		scenario.set.demand_knob_for_link_id(offramp_link_id, 0d);
+
 		try {
-			scenario.set.demand_for_link_si(offramp_link_id, 50, new double[]{0, 0});
 			scenario.advanceNSeconds(100d);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
-		double HOVdensity = offramp_link.getDensityInVeh(0, hov_id);
-		double SOVdensity = offramp_link.getDensityInVeh(0, sov_id);
+		double totalOfframpFlow = offramp_link.getTotalInflowInVeh(0);
 
-		assertEquals(0d, HOVdensity, 1e-6);
-		assertEquals(0d, SOVdensity, 1e-6);
+		assertEquals(0d, totalOfframpFlow, 1e-6);
 	}
 
 	@Test
 	public void setNewDemandTest() {
+		scenario.set.demand_knob_for_link_id(offramp_link_id, 2d);
 
 		try {
-			scenario.set.demand_for_link_si(offramp_link_id, 50, new double[]{100 / 3600, 200 / 3600});
 			scenario.advanceNSeconds(100d);
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
-		double HOVofframpFlow = offramp_link.getInflowInVeh(0, hov_id);
-		double SOVofframpFlow = offramp_link.getInflowInVeh(0, sov_id);
+		double totalOfframpFlow = offramp_link.getTotalInflowInVeh(0);
 
-		assertEquals(100d / 3600d, SOVofframpFlow, 1e-6);
-		assertEquals(200d / 3600d, HOVofframpFlow, 1e-6);
+		assertEquals(50d * 5d / 3600d, totalOfframpFlow, 1e-6);
 	}
 }
