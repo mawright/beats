@@ -399,7 +399,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 		}
 
 		for( int j=0;j<myNode.nOut;j++) {
-			if( U_j_tilde[j].isEmpty())
+			if( U_j_tilde[j].isEmpty() && V_tilde.contains(j))
 				V_tilde.remove(V_tilde.indexOf(j));
 		}
 	}
