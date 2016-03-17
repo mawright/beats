@@ -51,6 +51,10 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 			double bHigh, bLow, bTest;
 			Node_FlowSolver.IOFlow flow;
 
+			// make node sample its split ratio...
+			if (myNode.getSplitRatioProfile()!=null)
+				myNode.sample_split_ratio_profile();
+			// ...so we can use it here
 			Double[][][] splitratio = myNode.getSplitRatio().clone();
 
 			if(measured_flow_profile_veh.sample(false,clock))
@@ -93,6 +97,9 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 						}
 					}
 				}
+				// invoke the SRsolver to fill in any undefined parts
+				splitratio = myNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio, e);
+
 				flow = myNode.node_behavior.flow_solver.computeLinkFlows(splitratio, e);
 				if (BeatsMath.equals( BeatsMath.sum(flow.getOut(offramp_out)),measured_flow_veh, measured_flow_veh*.001 )) {
 					beta = bTest;
@@ -112,6 +119,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 		@Override
 		public void deploy(double current_time_in_seconds){
 			int i,j,c;
+			double current_split;
 			for(i=0;i<myNode.nIn;i++){
 				Link inlink = myNode.input_link[i];
 				if( inlink.isHov() || inlink.isFreeway()){
@@ -121,8 +129,9 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 							cms.set_split(inlink.getId(),outlink.getId(),beta);
 						else {   // not measured scaled to 1-beta
 							for(c=0;c<myScenario.get.numVehicleTypes();c++) { //
+								current_split = myNode.getSplitRatio(i, j, c);
 								cms.set_split(inlink.getId(), outlink.getId(), myScenario.get.vehicleTypeIdForIndex(c),
-										myNode.getSplitRatio(i, j, c) * (1d - beta)); // split ratios differ across commodities
+										current_split * (1d - beta)); // split ratios differ across commodities
 							}
 						}
 					}

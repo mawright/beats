@@ -181,7 +181,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node implements Serializa
         }
         else {
             if (has_profile)
-                splitratio_nominal = my_profile.getCurrentSplitRatio();
+				sample_split_ratio_profile();
             if (has_controller_split)
                 override_splits(splitratio_nominal, controller_splits);
             //if(has_event_split)
@@ -252,6 +252,10 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node implements Serializa
             return Double.NaN;
         return my_profile.getSplit(i,j,k);
     }
+
+	public void sample_split_ratio_profile() {
+		splitratio_nominal = my_profile.getCurrentSplitRatio();
+	}
 
 	// controllers ......................................................
 
