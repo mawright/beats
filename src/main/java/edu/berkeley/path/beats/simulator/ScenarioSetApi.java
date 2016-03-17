@@ -163,6 +163,7 @@ public class ScenarioSetApi implements Serializable {
 
         if(dp.isSinkDemand && scenario.runMode.compareTo(Scenario.RunMode.FRDEMANDS)==0 ){
             ArrayList<Controller> srcontrs = scenario.controllerset.getControllersOfType("Controller_SR_Generator_new");
+            srcontrs.addAll(scenario.controllerset.getControllersOfType("Controller_SR_Generator_HOV_GeneralNode"));
             if(srcontrs==null || srcontrs.size()!=1)
                 System.out.println("Error in demand_knob_for_link_id");
             Controller_SR_Generator_new contr = (Controller_SR_Generator_new) srcontrs.get(0);
