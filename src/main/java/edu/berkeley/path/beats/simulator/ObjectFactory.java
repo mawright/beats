@@ -92,6 +92,10 @@ final public class ObjectFactory  implements Serializable {
 				C = new Controller_SIG_Pretimed(myScenario, jaxbC);
 				break;
 
+			case SR_Generator_HOV_GeneralNode:
+				C = new Controller_SR_Generator_HOV_GeneralNode(myScenario, jaxbC);
+				break;
+
 			case SR_Generator:
 			case SR_Generator_Fw:
 			case SR_Generator_new:
