@@ -40,7 +40,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 	protected double largest_oriented_dsratio;
 	protected double smallest_oriented_dsratio;
 
-	private final double zeroThreshold = Double.MIN_VALUE * 2;
+	private static double zeroThreshold = 1e-10;
 
 	public Node_SplitRatioSolver_Balancing(Node myNode) {
 		super(myNode);
@@ -109,7 +109,12 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 
 				for(int j=0;j<myNode.nOut;j++) {
 
-					if (Double.isNaN(input_splitratio[i][j][c])) {
+					if (!myNode.getOutput_link()[j].canVTypeEnter(c)) {
+						// if this vtype is disallowed from this link (eg an sov vtype and hov link)
+						splitKnown[i][j][c] = true;
+						computed_splitratio[i][j][c] = 0d;
+					}
+					else if (Double.isNaN(input_splitratio[i][j][c])) {
 						splitKnown[i][j][c] = false;
 						computed_splitratio[i][j][c] = 0d;
 					}
@@ -183,7 +188,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 			for(c=0;c<nVType;c++){
 				V_ic[i][c] = new ArrayList<Integer>(myNode.nOut);
 				for(j=0;j<myNode.nOut;j++){
-					if (U_j[j].contains(i))
+					if ( !splitKnown[i][j][c] )
 						V_ic[i][c].add(j);
 				}
 				if (V_ic[i][c].size()==1) {
@@ -394,7 +399,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 		}
 
 		for( int j=0;j<myNode.nOut;j++) {
-			if( U_j_tilde[j].isEmpty())
+			if( U_j_tilde[j].isEmpty() && V_tilde.contains(j))
 				V_tilde.remove(V_tilde.indexOf(j));
 		}
 	}

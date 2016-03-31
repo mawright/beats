@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="0" name="null" schemaVersion="2.0.2">
+	<settings>
+		<units>US</units>
+	</settings>
+
+	<VehicleTypeSet id="1">
+		<vehicleType id="0" name="sov" size_factor="1.0"/>
+		<vehicleType id="1" name="hov" size_factor="1.0"/>					
+	</VehicleTypeSet>  
+
+	<SplitRatioSet id="1">
+		<!--splitRatioProfile id="1" dt="300" node_id="4">
+			<splitratio vehicle_type_id="0" link_in="3" link_out="4">0.8</splitratio>
+			<splitratio vehicle_type_id="1" link_in="3" link_out="4">0.8</splitratio>
+		</splitRatioProfile-->
+		<splitRatioProfile id="2" dt="300" node_id="2">
+			<splitratio vehicle_type_id="0" link_in="1" link_out="2"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="1" link_out="22"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="11" link_out="2"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="11" link_out="22"></splitratio>
+		</splitRatioProfile>
+		<splitRatioProfile id="3" dt="300" node_id="3">
+			<splitratio vehicle_type_id="0" link_in="2" link_out="3"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="2" link_out="33"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="22" link_out="3"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="22" link_out="33"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="6" link_out="3"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="6" link_out="33"></splitratio>
+		</splitRatioProfile>
+		<splitRatioProfile id="4" dt="300" node_id="4">
+			<splitratio vehicle_type_id="0" link_in="3" link_out="4"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="3" link_out="44"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="33" link_out="4"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="33" link_out="44"></splitratio>
+		</splitRatioProfile>
+		<splitRatioProfile id="5" dt="300" node_id="5">
+			<splitratio vehicle_type_id="0" link_in="4" link_out="5"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="4" link_out="55"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="44" link_out="5"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="44" link_out="55"></splitratio>
+		</splitRatioProfile>
+	</SplitRatioSet>
+
+	<DemandSet id="1" >
+		<demandProfile dt="300" id="1" link_id_org="6">
+			<demand vehicle_type_id="0">20</demand>
+			<demand vehicle_type_id="1">20</demand>
+		</demandProfile>
+		<demandProfile dt="300" id="1" link_id_org="1">
+			<demand vehicle_type_id="0">50</demand>
+			<demand vehicle_type_id="1">50</demand>
+		</demandProfile>
+		<demandProfile dt="300" id="1" link_id_org="7">
+			<demand>25</demand>
+		</demandProfile>
+	</DemandSet>
+
+	<FundamentalDiagramSet  id="1">
+		<fundamentalDiagramProfile id="1" link_id="1">
+			<fundamentalDiagram id="1" capacity="600" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="2">
+			<fundamentalDiagram id="1" capacity="600" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="3">
+			<fundamentalDiagram id="1" capacity="600" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="4">
+			<fundamentalDiagram id="1" capacity="600" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="5">
+			<fundamentalDiagram id="1" capacity="400" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="6">
+			<fundamentalDiagram id="1" capacity="600" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="7">
+			<fundamentalDiagram id="1" capacity="600" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+	</FundamentalDiagramSet>
+
+	<NetworkSet  id="1">
+		<network id="1" name="">
+			<description></description>
+			<position>
+				<point lat="0" lng="0"/>
+			</position>
+			<NodeList>
+				<node id="1" >
+					<outputs>
+						<output link_id="1"/>
+						<output link_id="11"/>
+					</outputs>
+					<inputs/>
+				</node>
+				<node id="2">
+					<outputs>
+						<output link_id="2"/>
+						<output link_id="22"/>
+					</outputs>
+					<inputs>
+						<input link_id="1"/>
+						<input link_id="11"/>
+					</inputs>
+				</node>
+				<node id="3">
+					<outputs>
+						<output link_id="3"/>
+						<output link_id="33"/>
+					</outputs>
+					<inputs>
+						<input link_id="2"/>
+						<input link_id="22"/>
+						<input link_id="6"/>
+					</inputs>
+				</node>
+				<node id="4">
+					<outputs>
+						<output link_id="4"/>
+						<output link_id="44"/>
+						<output link_id="7"/>
+					</outputs>
+					<inputs>
+						<input link_id="3"/>
+						<input link_id="33"/>
+					</inputs>
+				</node>
+				<node id="5">
+					<outputs>
+						<output link_id="5"/>
+						<output link_id="55"/>
+					</outputs>
+					<inputs>
+						<input link_id="4"/>
+						<input link_id="44"/>
+					</inputs>
+				</node>
+				<node id="6">
+					<outputs/>
+					<inputs>
+						<input link_id="5"/>
+						<input link_id="55"/>
+					</inputs>
+				</node>
+				<node id="7">
+					<outputs>
+						<output link_id="6"/>
+					</outputs>
+					<inputs/>
+				</node>
+				<node id="8">
+					<outputs/>
+					<inputs>
+						<input link_id="7"/>
+					</inputs>
+				</node>
+			</NodeList>
+			<LinkList>
+				<link id="1" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="1"/>
+					<end node_id="2"/>
+				</link>
+				<link id="2" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="2"/>
+					<end node_id="3"/>
+				</link>
+				<link id="3" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="3"/>
+					<end node_id="4"/>
+				</link>
+				<link id="4" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="4"/>
+					<end node_id="5"/>
+				</link>
+				<link id="5" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="5"/>
+					<end node_id="6"/>
+				</link>
+				<link id="11" lanes="1" length="0.3" >
+					<link_type id="1" name="hov"/>
+					<begin node_id="1"/>
+					<end node_id="2"/>
+				</link>
+				<link id="22" lanes="1" length="0.3" >
+					<link_type id="1" name="hov"/>
+					<begin node_id="2"/>
+					<end node_id="3"/>
+				</link>
+				<link id="33" lanes="1" length="0.3" >
+					<link_type id="1" name="hov"/>
+					<begin node_id="3"/>
+					<end node_id="4"/>
+				</link>
+				<link id="44" lanes="1" length="0.3" >
+					<link_type id="1" name="hov"/>
+					<begin node_id="4"/>
+					<end node_id="5"/>
+				</link>
+				<link id="55" lanes="1" length="0.3" >
+					<link_type id="1" name="hov"/>
+					<begin node_id="5"/>
+					<end node_id="6"/>
+				</link>
+				<link id="6" lanes="1" length="0.3" >
+					<link_type id="1" name="On-ramp"/>
+					<begin node_id="7"/>
+					<end node_id="3"/>
+				</link>
+				<link id="7" lanes="1" length="0.3" >
+					<link_type id="1" name="Off-ramp"/>
+					<begin node_id="4"/>
+					<end node_id="8"/>
+				</link>
+			</LinkList>
+		</network>
+	</NetworkSet>
+
+</scenario>

@@ -424,7 +424,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario implements S
             updater = new ScenarioUpdaterACTM(this);
         }
         else{
-            if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0) {
+            if(run_mode.compareToIgnoreCase("fw_fr_split_output")==0 || run_mode.compareToIgnoreCase("fw_fr_split_output_hov")==0) {
                 logger.info("Running in offramp demands mode.");
                 runMode = RunMode.FRDEMANDS;
                 updater = new ScenarioUpdaterFrFlow(this, nodeflowsolver, nodesrsolver);
@@ -433,7 +433,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario implements S
                 if(controllerSet==null)
                     controllerSet = new edu.berkeley.path.beats.jaxb.ControllerSet();
 
-                controllerSet.getController().add(generate_SR_controllers());
+                controllerSet.getController().add(generate_SR_controllers( run_mode.compareToIgnoreCase("fw_fr_split_output_hov")==0 ));
             }
             else {
                 logger.info("Running in normal mode.");
@@ -1024,10 +1024,14 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario implements S
     // private
     /////////////////////////////////////////////////////////////////////
 
-    private edu.berkeley.path.beats.jaxb.Controller  generate_SR_controllers(){
+    private edu.berkeley.path.beats.jaxb.Controller  generate_SR_controllers(boolean with_HOVLanes){
 
         edu.berkeley.path.beats.jaxb.Controller contr = new edu.berkeley.path.beats.jaxb.Controller();
-        contr.setType("SR_Generator_new");
+		if(with_HOVLanes) {
+			contr.setType("SR_Generator_HOV_GeneralNode");
+		} else {
+			contr.setType("SR_Generator_new");
+		}
         contr.setEnabled(true);
 
         // construct a jaxb table

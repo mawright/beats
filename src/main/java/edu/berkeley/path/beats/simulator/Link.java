@@ -434,6 +434,10 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
         return true;
     }
 
+	public boolean canVTypeEnter(int vTypeIndex){
+		return canVTypeEnter(myScenario.get.vehicleTypeNames()[vTypeIndex]);
+	}
+
     // Link geometry ....................
 
 	public Node getBegin_node() {
