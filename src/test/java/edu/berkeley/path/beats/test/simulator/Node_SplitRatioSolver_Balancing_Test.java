@@ -2,12 +2,15 @@ package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
 import edu.berkeley.path.beats.simulator.Link;
+import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
+import edu.berkeley.path.beats.simulator.SplitRatioSet;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -72,6 +75,45 @@ public class Node_SplitRatioSolver_Balancing_Test {
 			fail(e.getMessage());
 		}
 
+	}
+
+	// this test has a scenario where the split ratio profile is defined like: 1, -1, 1, such that for part of the
+	// timeseries a movement is fully defined and another part it is solved via the SRsolver
+	@Test
+	public void PartlyUndefinedSRProfileTest() {
+
+		try {
+			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + "_2x2_twotypes_incompletesplits_timeseries.xml");
+			// initialize
+
+			double timestep = 1;
+			double starttime = 0;
+			double endtime = 1000;
+			int numEnsemble = 1;
+			scenario.initialize(timestep, starttime, endtime, Double.POSITIVE_INFINITY, "", "", 1, numEnsemble,
+					"gaussian", "general", "balancing", "", "normal", output_folder + logger_prefix, 1d, null );
+
+			scenario.reset();
+
+			scenario.advanceNSeconds(200);
+
+			// SOVs not allowed in the HOV lane in first 300 seconds
+			assertEquals( scenario.get.linkWithId(4).getInflowInVeh(0, 0), 0d, 1e-3 );
+
+			scenario.advanceNSeconds(300);
+
+			// SOVs are allowed in the HOV lane in the next 300 seconds
+			assertTrue( scenario.get.linkWithId(4).getInflowInVeh(0, 0) > 0d);
+
+			scenario.advanceNSeconds(400);
+
+			// SOVs not allowed in the HOV lane afterwards
+			assertEquals( scenario.get.linkWithId(4).getInflowInVeh(0, 0), 0d, 1e-3 );
+
+
+		} catch (BeatsException e) {
+			fail(e.getMessage());
+		}
 	}
 
 	@Test
