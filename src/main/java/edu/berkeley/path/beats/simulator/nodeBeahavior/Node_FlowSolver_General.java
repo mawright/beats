@@ -171,7 +171,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver implements Serializ
 				if(iscontributor[i][j])
 					sum_over_i += oriented_priorities[i][j];
 			}
-			reduction_factors[j] = supplies[j] / sum_over_i;
+			reduction_factors[j] = (supplies[j] < 1e-15) ? Double.POSITIVE_INFINITY : supplies[j] / sum_over_i;
 			if(reduction_factors[j] <= reduction_factors[min_reduction_index])
 				min_reduction_index = j;
 		}
@@ -276,6 +276,7 @@ public class Node_FlowSolver_General extends Node_FlowSolver implements Serializ
 
 			// update supplies
 			supplies[j] -= pair.getValue();
+			supplies[j] = Math.max(supplies[j], 0d);
 		}
 
 		// update (undirected) demands
