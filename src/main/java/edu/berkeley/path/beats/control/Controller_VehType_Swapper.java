@@ -199,13 +199,18 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
         protected void update(Clock clock) {}
 
         protected double getSwitchRatioValue() {
-            Double[][][] splitratio_nominal = refNode.getSplitRatio().clone();
+            refNode.sample_split_ratio_profile();
+            refNode.sample_split_controller();
+            Double[][][] splitratio = refNode.getSplitRatio().clone();
 
-            Double[][][] filled_splitratio = refNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_nominal, 0);
+            if( Double.isNaN(splitratio[refInLinkIndex][refOutLinkIndex][refVehTypeIndex]))
+                splitratio = refNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio, 0);
 
-            return filled_splitratio[refInLinkIndex][refOutLinkIndex][refVehTypeIndex];
+            return splitratio[refInLinkIndex][refOutLinkIndex][refVehTypeIndex];
         }
     }
+
+
 
     @Override
     public boolean register() {
@@ -257,5 +262,9 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
 
     public Link getMyLink() {
         return myLink;
+    }
+
+    public List<switchRatioAbstract> getSwitchRatios() {
+        return switchRatios;
     }
 }

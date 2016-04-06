@@ -180,12 +180,8 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node implements Serializa
             splitratio_nominal = BeatsMath.ones(nIn, nOut, numVTypes);
         }
         else {
-            if (has_profile)
-				sample_split_ratio_profile();
-            if (has_controller_split)
-                override_splits(splitratio_nominal, controller_splits);
-            //if(has_event_split)
-            //    override_splits(splitratio_nominal,event_splits);
+			sample_split_ratio_profile();
+			sample_split_controller();
         }
 
         for(e=0;e<numEnsemble;e++){
@@ -254,7 +250,15 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node implements Serializa
     }
 
 	public void sample_split_ratio_profile() {
-		splitratio_nominal = my_profile.getCurrentSplitRatio();
+		if (has_profile)
+			splitratio_nominal = my_profile.getCurrentSplitRatio();
+	}
+
+	public void sample_split_controller() {
+		if (has_controller_split)
+			override_splits(splitratio_nominal, controller_splits);
+		//if(has_event_split)
+		//    override_splits(splitratio_nominal,event_splits);
 	}
 
 	// controllers ......................................................
