@@ -4,6 +4,7 @@ import edu.berkeley.path.beats.actuator.ActuatorVehType;
 import edu.berkeley.path.beats.jaxb.Parameter;
 import edu.berkeley.path.beats.jaxb.SwitchRatio;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble;
 
@@ -19,12 +20,9 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
 
     private static final long serialVersionUID = -5601769449081489865L;
     private Link myLink;
-
-    private List<Long> VehTypesIn;
-    private List<Long> VehTypesOut;
     private ActuatorVehType myActuator;
 
-    private List<BeatsTimeProfileDouble> switchRatioContent;
+    private List<switchRatioAbstract> switchRatios;
 
     /////////////////////////////////////////////////////////////////////
     // Construction
@@ -54,18 +52,17 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
 
         List<SwitchRatio> jaxbSwitchRatios = getJaxbController().getSwitchRatio();
 
-        VehTypesIn = new ArrayList<Long>(jaxbSwitchRatios.size());
-        VehTypesOut = new ArrayList<Long>(jaxbSwitchRatios.size());
-        switchRatioContent = new ArrayList<BeatsTimeProfileDouble>(jaxbSwitchRatios.size());
-
+        switchRatios = new ArrayList<switchRatioAbstract>(jaxbSwitchRatios.size());
 
         // extract switch ratio info
         for(int i = 0; i< jaxbSwitchRatios.size(); i++) {
             SwitchRatio sr = jaxbSwitchRatios.get(i);
-            VehTypesIn.add( sr.getVehicleTypeIn() );
-            VehTypesOut.add( sr.getVehicleTypeOut() );
-            switchRatioContent.add( new BeatsTimeProfileDouble( sr.getContent(), ",", sr.getDt(), sr.getStartTime(),
-                    myScenario.get.simdtinseconds() ));
+            if(sr.getReferenceInlink() != null && sr.getReferenceOutlink() != null && sr.getReferenceVehtype() != null) {
+                switchRatios.add( new switchRatioFromReferenceSplitRatio(sr));
+            }
+            else {
+                switchRatios.add( new switchRatioFromProfile(sr));
+            }
         }
 
         // create the actuator
@@ -111,6 +108,110 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
 
         }
 
+    protected abstract class switchRatioAbstract {
+
+        protected long vehTypeIn;
+        protected long vehTypeOut;
+
+        protected abstract void validate();
+        protected abstract void reset();
+        protected abstract void update(Clock clock);
+        protected abstract double getSwitchRatioValue();
+
+        public long getVehTypeOut() {
+            return vehTypeOut;
+        }
+
+        public long getVehTypeIn() {
+            return vehTypeIn;
+        }
+    }
+
+    protected class switchRatioFromProfile extends switchRatioAbstract {
+
+        protected BeatsTimeProfileDouble content;
+
+        public switchRatioFromProfile(SwitchRatio jaxbSwitchRatio) {
+
+            vehTypeIn = jaxbSwitchRatio.getVehicleTypeIn();
+            vehTypeOut = jaxbSwitchRatio.getVehicleTypeOut();
+
+            content = new BeatsTimeProfileDouble( jaxbSwitchRatio.getContent(), ",", jaxbSwitchRatio.getDt(),
+                    jaxbSwitchRatio.getStartTime(), myScenario.get.simdtinseconds());
+
+        }
+
+        protected void validate() {
+            content.validate();
+        }
+
+        protected void reset() {
+            content.reset();
+        }
+
+        protected void update(Clock clock) {
+            content.sample(false, clock);
+        }
+
+        protected double getSwitchRatioValue() {
+            return content.getCurrentSample();
+        }
+    }
+
+    protected class switchRatioFromReferenceSplitRatio extends switchRatioAbstract {
+
+        protected int refInLinkIndex;
+        protected int refOutLinkIndex;
+        protected int refVehTypeIndex;
+
+        protected Node refNode;
+
+        public switchRatioFromReferenceSplitRatio(SwitchRatio jaxbSwitchRatio) {
+            vehTypeIn = jaxbSwitchRatio.getVehicleTypeIn();
+            vehTypeOut = jaxbSwitchRatio.getVehicleTypeOut();
+
+            long refInLink = Long.parseLong(jaxbSwitchRatio.getReferenceInlink());
+            long refOutLink = Long.parseLong(jaxbSwitchRatio.getReferenceOutlink());
+            long refVehType = Long.parseLong(jaxbSwitchRatio.getReferenceVehtype());
+
+            refNode = myScenario.get.linkWithId(refInLink).getEnd_node();
+
+            refInLinkIndex = refNode.getInputLinkIndex(refInLink);
+            refOutLinkIndex = refNode.getOutputLinkIndex(refOutLink);
+            refVehTypeIndex = myScenario.get.vehicleTypeIndexForId(refVehType);
+
+        }
+
+        protected void reset() {} // nothing to reset
+
+        protected void validate() {
+            if(refInLinkIndex==-1 || refOutLinkIndex==-1) { // means getInputLinkIndex or getOutputLinkIndex could not find the correct link
+                BeatsErrorLog.addError("Bad input/output reference link pair in switch ratio for controller id="
+                        + Controller_VehType_Swapper.this.getId() + ".");
+            }
+
+            if(refVehTypeIndex == -1) {
+                BeatsErrorLog.addError("Bad reference vehicle type index in switch ratio for controller id="
+                        + Controller_VehType_Swapper.this.getId() + ".");
+            }
+        }
+
+        protected void update(Clock clock) {}
+
+        protected double getSwitchRatioValue() {
+            refNode.sample_split_ratio_profile();
+            refNode.sample_split_controller();
+            Double[][][] splitratio = refNode.getSplitRatio().clone();
+
+            if( Double.isNaN(splitratio[refInLinkIndex][refOutLinkIndex][refVehTypeIndex]))
+                splitratio = refNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio, 0);
+
+            return splitratio[refInLinkIndex][refOutLinkIndex][refVehTypeIndex];
+        }
+    }
+
+
+
     @Override
     public boolean register() {
         return myActuator.register();
@@ -119,14 +220,14 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
     @Override
     protected void validate() {
         super.validate();
-        for( BeatsTimeProfileDouble src : switchRatioContent)
+        for( switchRatioAbstract src : switchRatios)
             src.validate();
     }
 
     @Override
     protected void reset()  {
         super.reset();
-        for( BeatsTimeProfileDouble src : switchRatioContent)
+        for( switchRatioAbstract src : switchRatios)
             src.reset();
 
         try {
@@ -139,27 +240,20 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
     public void update() {
         Clock clock = myScenario.get.clock();
 
-        for( BeatsTimeProfileDouble series : switchRatioContent)
-            series.sample(false, clock);
+        for( switchRatioAbstract sr : switchRatios)
+            sr.update(clock);
 
         deploy();
     }
 
     public void deploy() {
-        for( int i=0;i<switchRatioContent.size();i++) {
-            myActuator.set_switch_ratio(getVehTypesIn().get(i), getVehTypesOut().get(i),
-                    switchRatioContent.get(i).getCurrentSample());
+        for( int i=0;i<switchRatios.size();i++) {
+            myActuator.set_switch_ratio(
+                    switchRatios.get(i).getVehTypeIn(), switchRatios.get(i).getVehTypeOut(),
+                    switchRatios.get(i).getSwitchRatioValue());
         }
 
         myActuator.deploy(myScenario.get.currentTimeInSeconds());
-    }
-
-    public List<Long> getVehTypesIn() {
-        return VehTypesIn;
-    }
-
-    public List<Long> getVehTypesOut() {
-        return VehTypesOut;
     }
 
     public ActuatorVehType getMyActuator() {
@@ -168,5 +262,9 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
 
     public Link getMyLink() {
         return myLink;
+    }
+
+    public List<switchRatioAbstract> getSwitchRatios() {
+        return switchRatios;
     }
 }

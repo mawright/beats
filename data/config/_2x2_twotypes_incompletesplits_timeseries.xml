@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="0" name="null" schemaVersion="2.0.2">
+  <settings>
+    <units>SI</units>
+  </settings>
+  
+   <VehicleTypeSet project_id="-1" id="-1">
+		<vehicleType id="0" name="lov" size_factor="1.0"/>
+		<vehicleType id="1" name="hov" size_factor="1.0"/>
+   </VehicleTypeSet>  
+   
+  <SplitRatioSet project_id="-1" id="-1">
+    <splitRatioProfile id="-1" dt="300" node_id="-5">
+      <splitratio vehicle_type_id="0" link_in="1" link_out="3">1.000000,-1,1.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="1" link_out="4">0.000000,-1,0.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="2" link_out="3">1.000000,-1,1.000000</splitratio>
+      <splitratio vehicle_type_id="0" link_in="2" link_out="4">0.000000,-1,0.000000</splitratio>
+    </splitRatioProfile>
+  </SplitRatioSet>
+
+  <InitialDensitySet project_id="-1" id="-1" >
+    <density id="-1" vehicle_type_id="0" link_id="1">500</density>
+    <density id="-1" vehicle_type_id="1" link_id="1">100</density>
+    <density id="-1" vehicle_type_id="0" link_id="2">0</density>
+    <density id="-1" vehicle_type_id="1" link_id="2">50</density>
+  </InitialDensitySet>
+
+  <DemandSet id="-1" project_id="-1">
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="1">
+      <demand vehicle_type_id="0">0,50</demand>
+      <demand vehicle_type_id="1">0,10</demand>
+   </demandProfile>
+   <demandProfile dt="300" id="-1" knob="1" link_id_org="2">
+      <demand vehicle_type_id="0">0,0</demand>
+      <demand vehicle_type_id="1">0,50</demand>
+   </demandProfile>
+  </DemandSet>
+  
+  <FundamentalDiagramSet project_id="-1" id="-1">
+    <fundamentalDiagramProfile id="-1" link_id="1">
+      <fundamentalDiagram id="-1" capacity="1800" capacity_drop="0" congestion_speed="2500" jam_density="150000" free_flow_speed="1"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="2">
+      <fundamentalDiagram id="-1" capacity="1800" capacity_drop="0" congestion_speed="2500" jam_density="150000" free_flow_speed="1"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="3">
+      <fundamentalDiagram id="-1" capacity="600" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100"/>
+    </fundamentalDiagramProfile>
+    <fundamentalDiagramProfile id="-1" link_id="4">
+      <fundamentalDiagram id="-1" capacity="200" capacity_drop="0" congestion_speed="100" jam_density="150000" free_flow_speed="100"/>
+    </fundamentalDiagramProfile>
+  </FundamentalDiagramSet>
+  
+  <NetworkSet project_id="-1" id="-1">
+    <network id="-1" name="New Network">
+      <description>Created by Network Editor version xsd-1.0.19-3-g692e428</description>
+      <position>
+        <point lat="37.857985471963" lng="-122.300827883184"/>
+      </position>
+      <NodeList>
+        <node id="-1" >
+          <roadway_markers>
+            <marker id="0" name="1"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="-1"/>
+          </outputs>
+          <inputs/>
+          <position>
+            <point lat="37.8399873791942" lng="-122.296725511551"/>
+          </position>
+        </node>
+        <node id="-2">
+          <roadway_markers>
+            <marker id="0" name="2"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="2"/>
+          </outputs>
+          <inputs/>
+          <position>
+            <point lat="37.8437831193107" lng="-122.297605276108"/>
+          </position>
+        </node>
+        <node id="-3">
+          <roadway_markers>
+            <marker id="0" name="3"/>
+          </roadway_markers>
+          <outputs>
+          </outputs>
+          <inputs>
+            <input link_id="-3"/>
+          </inputs>
+          <position>
+            <point lat="37.8524075346173" lng="-122.299579381943"/>
+          </position>
+        </node>
+        <node id="-4">
+          <roadway_markers>
+            <marker id="0" name="4"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="-4"/>
+          </outputs>
+          <inputs>
+          </inputs>
+          <position>
+            <point lat="37.8639002449351" lng="-122.302840411663"/>
+          </position>
+        </node>
+        <node id="-5">
+          <roadway_markers>
+            <marker id="0" name="5"/>
+          </roadway_markers>
+          <outputs>
+            <output link_id="3"/>
+	    <output link_id="4"/>
+          </outputs>
+          <inputs>
+            <input link_id="1"/>
+	    <input link_id="2"/>
+          </inputs>
+          <position>
+            <point lat="37.8713302695572" lng="-122.305008172989"/>
+          </position>
+	</node>
+      </NodeList>
+      <LinkList>
+        <link id="1" lanes="1" length="1" priority=".75" >
+          <link_type id="-2" name="source"/>
+          <roads>
+            <road id="0" name="I-80 E"/>
+          </roads>
+          <begin node_id="-1"/>
+          <end node_id="-5"/>
+          <dynamics type="CTM"/>
+        </link>
+        <link id="2" lanes="1" length="1" priority=".25" >
+          <link_type id="-2" name="source"/>
+          <roads>
+            <road id="0" name="I-80 E"/>
+          </roads>
+          <begin node_id="-2"/>
+          <end node_id="-5"/>
+          <dynamics type="CTM"/>
+        </link>
+        <link id="3" lanes="1" length="100" >
+          <link_type id="-1" name="freeway"/>
+          <roads>
+            <road id="0" name="I-80 E"/>
+          </roads>
+          <begin node_id="-5"/>
+          <end node_id="-3"/>
+          <dynamics type="CTM"/>
+        </link>
+        <link id="4" lanes="1" length="100" >
+          <link_type id="-1" name="freeway"/>
+          <roads>
+            <road id="0" name="I-80 E"/>
+          </roads>
+          <begin node_id="-5"/>
+          <end node_id="-4"/>
+          <dynamics type="CTM"/>
+        </link>
+      </LinkList>
+    </network>
+  </NetworkSet>
+
+</scenario>
