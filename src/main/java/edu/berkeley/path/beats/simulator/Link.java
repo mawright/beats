@@ -429,8 +429,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
     // generic method to check permissibility of entrance for vType
     // to be expanded for more cases as needed (including querying controllers)
     public boolean canVTypeEnter(String vType){
-        if(isHov() && vType.compareToIgnoreCase("hov")!=0)
-            return false;
+//        if(isHov() && vType.compareToIgnoreCase("hov")!=0)
+//            return false;
         return true;
     }
 
