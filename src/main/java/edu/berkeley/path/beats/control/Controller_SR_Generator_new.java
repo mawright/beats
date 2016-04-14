@@ -267,16 +267,33 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
         }
 
         public void deploy(double current_time_in_seconds){
-            int i,j;
-            for(i=0;i<myNode.nIn;i++){
-                Link inlink = myNode.input_link[i];
-                if(is_feed.get(i)){
-                    for(j=0;j<myNode.nOut;j++){
-                        Link outlink = myNode.output_link[j];
-                        if(is_measured.get(j)) // measured gets beta
-                            cms.set_split(inlink.getId(),outlink.getId(),beta);
-                        else    // not measured scaled to 1-beta
-                            cms.set_split(inlink.getId(), outlink.getId(), myNode.getSplitRatio(i, j)*(1d-beta));
+            int i,j,c;
+            myNode.sample_split_ratio_profile();
+            double total_non_measured_split = 1d - beta;
+            Double[][][] nominal_splitratio = myNode.getSplitRatio();
+
+            double initial_total_nonmeasured_split;
+            for(i=0;i<myNode.nIn;i++) {
+                Link inlink = myNode.getInput_link()[i];
+                if(is_feed.get(i)) {
+                    initial_total_nonmeasured_split = 0d; // need to find how much split to redistribute
+                    for(j=0;j<myNode.nOut;j++) {
+                        if(!is_measured.get(j))
+                            initial_total_nonmeasured_split += nominal_splitratio[i][j][0];
+                    }
+                    // now assign the splits to the controller
+                    for(j=0;j<myNode.nOut;j++) {
+                        Link outlink = myNode.getOutput_link()[j];
+                        if(is_measured.get(j)) {
+                            cms.set_split(inlink.getId(), outlink.getId(), beta);
+                        }
+                        else {
+                            double newsplit = BeatsMath.equals(initial_total_nonmeasured_split, 0d) ? Double.NaN :
+                                    (nominal_splitratio[i][j][0] * total_non_measured_split) / initial_total_nonmeasured_split;
+                            // if initial_total_nonmeasured_split is 0, this will be set to NaN, so it will be filled in
+                            // during the call to the SR solver later in Node.update_flows()
+                            cms.set_split(inlink.getId(), outlink.getId(), newsplit);
+                        }
                     }
                 }
             }
