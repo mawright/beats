@@ -207,6 +207,8 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
             int i,j;
             int e = 0;
 
+            myNode.sample_split_ratio_profile();
+
             if(measured_flow_profile_veh.sample(false,clock))
                 measured_flow_veh = measured_flow_profile_veh.getCurrentSample()*knob;
 
@@ -248,7 +250,11 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
                     double output_dem_non_feed = 0d; // demand on j from non-feeding links
 
                     for(i=0;i<myNode.nIn;i++) {
-                        double Sij = myNode.getSplitRatio(i,j)*input_demand[i];
+                        double[] Sij_per_c = new double[myScenario.get.numVehicleTypes()];
+                        for(int c=0;c<Sij_per_c.length;c++) {
+                            Sij_per_c[c] = myNode.getSplitRatioProfileValue(i, j, c) * myNode.input_link[i].get_out_demand_in_veh(e)[c];
+                        }
+                        double Sij = BeatsMath.sum(Sij_per_c);
                         if (is_feed.get(i))
                             output_dem_feed += Sij;
                         else
@@ -267,8 +273,7 @@ public class Controller_SR_Generator_new extends Controller implements Serializa
         }
 
         public void deploy(double current_time_in_seconds){
-            int i,j,c;
-            myNode.sample_split_ratio_profile();
+            int i,j;
             double total_non_measured_split = 1d - beta;
             Double[][][] nominal_splitratio = myNode.getSplitRatio();
 
