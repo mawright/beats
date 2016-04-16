@@ -59,7 +59,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 
   		@Override
   		public void update(Clock clock) {
-			int i,j;
+			int i;
 			int e = 0;
 
 			double bHigh, bLow, bTest;
