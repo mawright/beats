@@ -48,8 +48,8 @@
 		<splitRatioProfile id="4" dt="300" node_id="4">
 			<splitratio vehicle_type_id="0" link_in="3" link_out="4">1</splitratio>
 			<splitratio vehicle_type_id="0" link_in="3" link_out="44">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="33" link_out="4">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="33" link_out="44">1</splitratio>
+			<splitratio vehicle_type_id="0" link_in="33" link_out="4">1</splitratio>
+			<splitratio vehicle_type_id="0" link_in="33" link_out="44">0</splitratio>
 			<splitratio vehicle_type_id="1" link_in="3" link_out="4"></splitratio>
 			<splitratio vehicle_type_id="1" link_in="3" link_out="44"></splitratio>
 			<splitratio vehicle_type_id="1" link_in="33" link_out="4"></splitratio>
@@ -62,13 +62,15 @@
 		<splitRatioProfile id="5" dt="300" node_id="5">
 			<splitratio vehicle_type_id="0" link_in="4" link_out="5"></splitratio>
 			<splitratio vehicle_type_id="0" link_in="4" link_out="55">0</splitratio>
+			<splitratio vehicle_type_id="0" link_in="4" link_out="7"></splitratio>
 			<splitratio vehicle_type_id="0" link_in="44" link_out="5">0</splitratio>
-			<splitratio vehicle_type_id="0" link_in="44" link_out="55"></splitratio>
+			<splitratio vehicle_type_id="0" link_in="44" link_out="55">1</splitratio>
 			<splitratio vehicle_type_id="0" link_in="44" link_out="7">0</splitratio>
 			<splitratio vehicle_type_id="1" link_in="4" link_out="5"></splitratio>
 			<splitratio vehicle_type_id="1" link_in="4" link_out="55">0</splitratio>
+			<splitratio vehicle_type_id="1" link_in="4" link_out="7"></splitratio>
 			<splitratio vehicle_type_id="1" link_in="44" link_out="5">0</splitratio>
-			<splitratio vehicle_type_id="1" link_in="44" link_out="55"></splitratio>
+			<splitratio vehicle_type_id="1" link_in="44" link_out="55">1</splitratio>
 			<splitratio vehicle_type_id="1" link_in="44" link_out="7">0</splitratio>
 			<splitratio vehicle_type_id="2" link_in="4" link_out="5">0</splitratio>
 			<splitratio vehicle_type_id="2" link_in="4" link_out="55">0</splitratio>
@@ -127,14 +129,14 @@
 				<point lat="0" lng="0"/>
 			</position>
 			<NodeList>
-				<node id="1" >
+				<node id="1" has_managed_lane_barrier="true">
 					<outputs>
 						<output link_id="1"/>
 						<output link_id="11"/>
 					</outputs>
 					<inputs/>
 				</node>
-				<node id="2">
+				<node id="2" has_managed_lane_barrier="true">
 					<outputs>
 						<output link_id="2"/>
 						<output link_id="22"/>
@@ -144,7 +146,7 @@
 						<input link_id="11"/>
 					</inputs>
 				</node>
-				<node id="3">
+				<node id="3" has_managed_lane_barrier="true">
 					<outputs>
 						<output link_id="3"/>
 						<output link_id="33"/>
@@ -155,7 +157,7 @@
 						<input link_id="6"/>
 					</inputs>
 				</node>
-				<node id="4">
+				<node id="4" has_managed_lane_barrier="false">
 					<outputs>
 						<output link_id="4"/>
 						<output link_id="44"/>
@@ -165,7 +167,7 @@
 						<input link_id="33"/>
 					</inputs>
 				</node>
-				<node id="5">
+				<node id="5" has_managed_lane_barrier="true">
 					<outputs>
 						<output link_id="5"/>
 						<output link_id="55"/>
@@ -176,7 +178,7 @@
 						<input link_id="44"/>
 					</inputs>
 				</node>
-				<node id="6">
+				<node id="6" >
 					<outputs/>
 					<inputs>
 						<input link_id="5"/>
