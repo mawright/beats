@@ -85,7 +85,7 @@ public class HOVSplitRatioGeneralFRTest {
 		double SOVofframpFlow = offramp_link.getInflowInVeh(0, sov_id);
 
 		assertEquals(HOVofframpFlow, SOVofframpFlow, 1e-6);
-		assertEquals(HOVofframpFlow, 25d*5d / 3600d / 2d, 1e-6); // requested flow: 25 veh per sec, split evenly between hov and sov
+		assertEquals(HOVofframpFlow, 25d*5d / 3600d / 2d, .01d); // requested flow: 25 veh per sec, split evenly between hov and sov
 
 		double HOVSR = node.getSplitRatio( node.getInputLinkIndex(upstream_hov_id), node.getOutputLinkIndex(offramp_link_id), hov_id);
 		double SOVSR = node.getSplitRatio( node.getInputLinkIndex(upstream_freeway_id), node.getOutputLinkIndex(offramp_link_id), sov_id);
@@ -206,6 +206,6 @@ public class HOVSplitRatioGeneralFRTest {
 
 		double totalOfframpFlow = offramp_link.getTotalInflowInVeh(0);
 
-		assertEquals(50d * 5d / 3600d, totalOfframpFlow, 1e-6);
+		assertEquals(50d * 5d / 3600d, totalOfframpFlow, .01d);
 	}
 }

@@ -6,6 +6,7 @@ import edu.berkeley.path.beats.jaxb.SwitchRatio;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.BeatsTimeProfileDouble;
 
 import java.io.Serializable;
@@ -201,7 +202,7 @@ public class Controller_VehType_Swapper extends Controller implements Serializab
         protected double getSwitchRatioValue() {
             refNode.sample_split_ratio_profile();
             refNode.sample_split_controller();
-            Double[][][] splitratio = refNode.getSplitRatio().clone();
+            Double[][][] splitratio = BeatsMath.copy(refNode.getSplitRatio());
 
             if( Double.isNaN(splitratio[refInLinkIndex][refOutLinkIndex][refVehTypeIndex]))
                 splitratio = refNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio, 0);

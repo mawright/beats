@@ -41,7 +41,7 @@ public class Node_SplitRatioSolver_Greedy extends Node_SplitRatioSolver implemen
             return BeatsMath.ones(nIn,nOut,numVehicleTypes);
 
         String [] vTypes = myNode.getMyNetwork().getMyScenario().get.vehicleTypeNames();
-        Double [][][] splitratio_new = splitratio_selected.clone();
+        Double [][][] splitratio_new = BeatsMath.copy(splitratio_selected);
 
     	double remainingSplit;
     	double num;

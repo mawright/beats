@@ -127,7 +127,7 @@ public class SplitRatioPerturber implements Serializable {
         int nVt = nOut>0 ? split[0][0].length : 0;
 
         // clone it
-        Double [][][] splitPerturbed = split.clone();
+        Double [][][] splitPerturbed = BeatsMath.copy(split);
 
         if(nIn!=1 && nOut!=2) // return non-perturbed if non 1 to 2 split given
             return splitPerturbed;

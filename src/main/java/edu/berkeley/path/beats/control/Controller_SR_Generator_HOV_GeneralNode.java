@@ -68,7 +68,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 
 			// make node sample its split ratio
 			myNode.sample_split_ratio_profile();
-			Double[][][] splitratio = myNode.getSplitRatio().clone();
+			Double[][][] splitratio = BeatsMath.copy(myNode.getSplitRatio());
 
 			if(measured_flow_profile_veh.sample(false,clock))
 				measured_flow_veh = measured_flow_profile_veh.getCurrentSample()*knob; // hat{f}_222^in
@@ -102,7 +102,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 
 			initial_total_nonmeasured_split = compute_initial_total_nonmeasured_split(splitratio);
 
-			bTest = bLow;
+			bTest = (bLow + bHigh) / 2;
 			boolean solved = false;
 			do {
 				splitratio_filled = complete_splitratio_matrix(splitratio, initial_total_nonmeasured_split, bTest, e);
@@ -112,7 +112,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 				if (BeatsMath.equals( difference, 0d, measured_flow_veh*.01 )) {
 					solved = true;
 				}
-				else if (BeatsMath.equals(bLow, bHigh, (bLow+bHigh)/2 * .001)) {
+				else if (BeatsMath.equals(bLow, bHigh, .001d)) {
 					solved = true;
 				}
 				else if (difference < 0) {
@@ -154,7 +154,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 														int ensemble_index) {
 			int i,j,c;
 			double newsplit;
-			Double[][][] splitratio_filled;
+			Double[][][] splitratio_filled = BeatsMath.copy(splitratio);
 
 			double total_non_measured_split = 1d - bTest;
 			for (c=0; c<myScenario.get.numVehicleTypes(); c++) {
@@ -163,12 +163,12 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 						if (is_feed.get(i)) {
 							for (j = 0; j < myNode.nOut; j++) {
 								if (is_measured.get(j)) {
-									splitratio[i][j][c] = bTest; // beta we are searching for
+									splitratio_filled[i][j][c] = bTest; // beta we are searching for
 								} else {
 									newsplit = BeatsMath.equals(initial_total_nonmeasured_split[i][c], 0d) ? Double.NaN :
 											(myNode.getSplitRatio(i, j, c) * total_non_measured_split)
 													/ initial_total_nonmeasured_split[i][c];
-									splitratio[i][j][c] = newsplit;
+									splitratio_filled[i][j][c] = newsplit;
 								}
 							}
 						}
@@ -177,7 +177,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 			}
 
 			// invoke the SRsolver to fill in any undefined parts
-			splitratio_filled = myNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio, ensemble_index);
+			splitratio_filled = myNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_filled, ensemble_index);
 			return splitratio_filled;
 
 		}
