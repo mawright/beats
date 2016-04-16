@@ -131,14 +131,18 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 	private void assignZeroDemandSplits() {
 		for (int i=0;i<myNode.nIn;i++){
 			for (int c=0;c<nVType;c++){
-				if (demands[i][c] < zeroThreshold) { // splits may be assigned arbitrarily - assign 1 to first j
-					computed_splitratio[i][0][c] = 1d;
-					splitRemaining[i][c] = 0d;
-					splitKnown[i][0][c] = true;
+				if (demands[i][c] < zeroThreshold) {
 
+					if (!splitKnown[i][0][c]) {	// splits may be assigned arbitrarily - assign 1 to first j
+						computed_splitratio[i][0][c] = splitRemaining[i][c];
+						splitRemaining[i][c] = 0d;
+						splitKnown[i][0][c] = true;
+					}
 					for(int j=1;j<myNode.nOut;j++){
-						computed_splitratio[i][j][c] = 0d;
-						splitKnown[i][j][c] = true;
+						if (!splitKnown[i][j][c]) {
+							computed_splitratio[i][j][c] = 0d;
+							splitKnown[i][j][c] = true;
+						}
 					}
 				}
 			}
