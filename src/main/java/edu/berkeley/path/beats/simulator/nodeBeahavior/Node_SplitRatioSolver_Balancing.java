@@ -338,15 +338,20 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 			denominator = oriented_priority[i][min_demanded_output_link] *
 					myNode.getOutput_link()[min_demanded_output_link].get_available_space_supply_in_veh(e);
 			fraction = sum_of_priorities_Uj * numerator / denominator;
-			if( fraction < min_fraction + zeroThreshold)
+			if( fraction < min_fraction) {
+				set_of_input_links_with_min_oriented_dsratio.clear();
 				set_of_input_links_with_min_oriented_dsratio.add(i);
+				min_fraction = fraction;
+			} else if (BeatsMath.equals(fraction,min_fraction)) {
+				set_of_input_links_with_min_oriented_dsratio.add(i);
+			}
 		}
 		double min_remaining_allocated_demand = Double.POSITIVE_INFINITY;
 		min_oriented_DSratio_c = 0;
 		min_oriented_DSratio_i = 0;
 		for(int i : set_of_input_links_with_min_oriented_dsratio) {
 			for(int c=0;c<nVType;c++) {
-				if( unallocated_demand[i][c] < min_remaining_allocated_demand && splitRemaining[i][c] > 0) {
+				if( unallocated_demand[i][c] < min_remaining_allocated_demand && splitRemaining[i][c] > zeroThreshold) {
 					min_oriented_DSratio_i = i;
 					min_oriented_DSratio_c = c;
 					min_remaining_allocated_demand = unallocated_demand[i][c];
