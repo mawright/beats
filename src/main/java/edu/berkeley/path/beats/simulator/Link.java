@@ -227,7 +227,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
                     flowDifference[vehTypeOutIndex] += inflow[e][vehTypeInIndex] * value;
                 }
                 for (int i = 0; i < inflow[e].length; i++) {
-                    inflow[e][i] += flowDifference[i];
+					double temp = inflow[e][i] + flowDifference[i];
+					inflow[e][i] = Math.max(temp, 0d);
                 }
             }
         }
