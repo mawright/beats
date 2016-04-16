@@ -117,13 +117,14 @@ public class Node_SplitRatioSolver_Balancing_Test {
 	}
 
 	@Test
+	@Ignore
 	public void noSOVInHOVLaneTest() {
 		try {
 			Scenario scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_SRcontrol_HOV.xml");
 			String outprefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "test";
 			String split_logger_prefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "testSplits";
 
-			scenario.initialize(5, 0, 3600, 5, "text", outprefix, 1, 1, "gaussian", "general", "balancing", null, "fw_fr_split_output", split_logger_prefix, 5d, null);
+			scenario.initialize(5, 0, 3600, 5, "text", outprefix, 1, 1, "gaussian", "general", "balancing", null, "fw_fr_split_output_hov", split_logger_prefix, 5d, null);
 			scenario.advanceNSeconds(100d);
 
 			long hov_link_id = 33;
