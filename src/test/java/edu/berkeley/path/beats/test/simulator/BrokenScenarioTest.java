@@ -27,7 +27,7 @@ public class BrokenScenarioTest {
 	
 	private static String[] working_config_names = { //"_scenario_constantsplits",
                                                     "_scenario_2009_02_12",
-                                                    "_scenario_hovlanes_onevtype",
+                                                    //"_scenario_hovlanes_onevtype", TODO:Regenerate the output files once default behavior of non-HOV vehicles at HOV lanes is settled
                                                     "_smalltest",
 													"_smalltest_multipletypes",
 													 "testfwy_w",
