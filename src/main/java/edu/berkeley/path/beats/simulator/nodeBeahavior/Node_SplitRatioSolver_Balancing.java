@@ -292,7 +292,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
 					largest_oriented_dsratio = dsratio[i][j];
 				}
-				else if( dsratio[i][j] < smallest_oriented_dsratio) {
+				if( dsratio[i][j] < smallest_oriented_dsratio) {
 					min_dsratio_index[0] = i; min_dsratio_index[1] = j;
 					smallest_oriented_dsratio = dsratio[i][j];
 				}
@@ -366,12 +366,10 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 		if( Math.abs(largest_oriented_dsratio- smallest_oriented_dsratio) < zeroThreshold) {
 			denominator = 0;
 			for( int j : V_ic[min_oriented_DSratio_i][min_oriented_DSratio_c]) {
-				denominator += oriented_priority[min_oriented_DSratio_i][j] *
-						myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
+				denominator += myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
 			}
 			for( int j : V_ic[min_oriented_DSratio_i][min_oriented_DSratio_c]) {
-				numerator = oriented_priority[min_oriented_DSratio_i][j] *
-						myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
+				numerator = myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
 				computed_splitratio[min_oriented_DSratio_i][j][min_oriented_DSratio_c] +=
 						splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] * numerator / denominator;
 			}

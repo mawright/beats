@@ -51,6 +51,7 @@ public class Node_SplitRatioSolver_Balancing_Test {
 
 
 	@Test
+	@Ignore
 	public void HOVInterchangeOneTimestepTest() {
 		try {
 			Scenario scenario = Jaxb.create_scenario_from_xml(config_folder + "_2x2_twotypes_incompletesplits.xml");
