@@ -73,7 +73,9 @@ public class Controller {
 		SR_Generator_Fw,
 		SR_Generator_new,
 		SR_Generator_HOV_GeneralNode,
-		Vehicle_Type_Swapper	}
+		Vehicle_Type_Swapper,
+		HOT_LOOKUP
+	}
 
     public static enum ActuatorType {
 		ramp_meter,
