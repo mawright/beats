@@ -420,6 +420,11 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
         return link_type==Type.hov;
     }
 
+	public boolean isManagedLane(){
+//		return isHov() || isHot() || isTollLane();
+		return isHov();
+	}
+
     public double computeTotalDelayInVeh(int e){
         double val=0d;
         for(int v=0;v<myScenario.get.numVehicleTypes();v++)
