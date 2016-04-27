@@ -109,7 +109,12 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 
 				for(int j=0;j<myNode.nOut;j++) {
 
-					if (!myNode.getOutput_link()[j].canVTypeEnter(c)) {
+					if (myNode.isHasManagedLaneBarrier() && myNode.getOutput_link()[j].isManagedLane()
+							&& myNode.getInput_link()[i].isFreeway()) {
+						splitKnown[i][j][c] = true;
+						computed_splitratio[i][j][c] = 0d;
+					}
+					else if (!myNode.getOutput_link()[j].canVTypeEnter(c)) {
 						// if this vtype is disallowed from this link (eg an sov vtype and hov link)
 						splitKnown[i][j][c] = true;
 						computed_splitratio[i][j][c] = 0d;
