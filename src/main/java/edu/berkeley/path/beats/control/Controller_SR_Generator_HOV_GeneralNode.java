@@ -48,7 +48,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 
 			if(myNode.isHasManagedLaneBarrier()) {
 				for (int i=0; i<myNode.nIn; i++) {
-					if(myNode.getInput_link()[i].isHov())
+					if(myNode.getInput_link()[i].isManagedLane())
 						is_feed.set(i,false);
 				}
 			}
@@ -95,7 +95,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 			}
 
 			bHigh = 1d;
-			bLow = measured_flow_veh / BeatsMath.sum(S);
+			bLow = 0d;
 
 			// begin bisection method
 			Double[][][] splitratio_filled;
