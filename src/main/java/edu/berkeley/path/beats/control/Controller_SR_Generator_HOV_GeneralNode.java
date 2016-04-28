@@ -95,7 +95,7 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 			}
 
 			bHigh = 1d;
-			bLow = measured_flow_veh / BeatsMath.sum(S);
+			bLow = 0d;
 
 			// begin bisection method
 			Double[][][] splitratio_filled;

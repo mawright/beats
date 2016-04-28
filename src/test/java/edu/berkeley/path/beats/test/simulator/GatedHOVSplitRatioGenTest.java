@@ -83,7 +83,7 @@ public class GatedHOVSplitRatioGenTest {
 		assertTrue(switchedVehicles > 0d);
 
 		double totalOfframpFlow = offramp_link.getTotalInflowInVeh(0);
-//		assertEquals(25d * 5d / 3600d, totalOfframpFlow, 1e-3);
+		assertEquals(25d * 5d / 3600d, totalOfframpFlow, 1e-3);
 
 	}
 }
