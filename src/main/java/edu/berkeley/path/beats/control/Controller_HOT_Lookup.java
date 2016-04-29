@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.simulator.utils.Table;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ public class Controller_HOT_Lookup extends Controller {
 
 	public Controller_HOT_Lookup(Scenario scenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(scenario, c, Algorithm.HOT_LOOKUP);
-		// the default constructor prepares the tables
+		// the superclass constructor prepares the tables
 		// column names for the tables: HOT lane flow, HOT lane speed, ML speed
 		// properties for the tables: 	GP Link, HOT Link, FF Price Coefficient, FF Intercept, VehTypeIn, VehTypeOut,
 		// 								Congested Price Coefficient, Congested GP Density Coefficient, Congested Intercept,
@@ -88,8 +89,9 @@ public class Controller_HOT_Lookup extends Controller {
 		protected List<Double> Cong_GP_density_coeff;
 		protected List<Double> Cong_intercept;
 
-		private Table currentTable;
-		private double currentPrice;
+		private List<Boolean> isActive;
+		private List<Table> currentTables;
+		private List<List<Double>> currentPrices; // vehtype x ensemble index
 
 		public LinkData(Link link, Table T, Controller parent) {
 
@@ -107,6 +109,13 @@ public class Controller_HOT_Lookup extends Controller {
 			Cong_price_coeff = new ArrayList<Double>();
 			Cong_GP_density_coeff = new ArrayList<Double>();
 			Cong_intercept = new ArrayList<Double>();
+			isActive = new ArrayList<Boolean>();
+
+			currentTables = new ArrayList<Table>();
+
+
+			for(int e=0;e<myScenario.get.numEnsemble(); e++)
+				currentPrices.add(new ArrayList<Double>());
 
 			addTable(T);
 
@@ -139,16 +148,55 @@ public class Controller_HOT_Lookup extends Controller {
 				Cong_price_coeff.add(Double.valueOf(T.getParameters().get("Congested Price Coefficient")));
 				Cong_GP_density_coeff.add(Double.valueOf(T.getParameters().get("Congested GP Density Coefficient")));
 				Cong_intercept.add(Double.valueOf(T.getParameters().get("Congested Intercept")));
+				isActive.add(false);
 
+				double t = myScenario.get.currentTimeInSeconds();
+				if ((startTimes.get(startTimes.size()-1) >= t)	&& (stopTimes.get(stopTimes.size()-1) <= t) ) {
+					if (currentTables.isEmpty() || isTableActivatable(T))
+						activateTable(T);
+				}
 			}
 		}
 
+		private boolean isTableActivatable(Table table) {
+			for (int i=0; i<isActive.size(); i++) {
+				if(isActive.get(i) && (vehTypeIn.get(i).equals( vehTypeIn.get( tables.indexOf(table) ) )))
+					return false;
+			}
+			return true;
+		}
+
+		private void activateTable(Table table) {
+			currentTables.add(table);
+			isActive.set( tables.indexOf(table), true );
+		}
 
 
 		private void update(Clock clock) {
-			double t = clock.getT();
+			updateTables(clock);
+			updatePrices(clock);
+		}
 
+		private void updateTables(Clock clock) {
+			Table table;
+			Iterator<Table> i = currentTables.iterator();
+			while (i.hasNext()) {
+				table = i.next();
+				if( clock.getT() > stopTimes.get( tables.indexOf(table) ) ) {
+					currentVehTypesIn.remove( tables.indexOf(table) );
+					for (int e=0; e<currentPrices.size(); e++ ) {
+						currentPrices.get(e)
+					}
+					i.remove();
+				}
+			}
+		}
 
+		private void updatePrices(Clock clock) {
+
+		}
+		private double computeCurrentPrice(Table table, Clock clock, int ensembleIndex) {
+			if(myGPLink.getDensityCriticalInVeh())
 		}
 
 	}
