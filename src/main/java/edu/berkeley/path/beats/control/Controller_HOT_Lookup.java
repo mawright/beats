@@ -3,11 +3,12 @@ package edu.berkeley.path.beats.control;
 import edu.berkeley.path.beats.actuator.ActuatorVehType;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class Controller_HOT_Lookup extends Controller {
 	public Controller_HOT_Lookup(Scenario scenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(scenario, c, Algorithm.HOT_LOOKUP);
 		// the superclass constructor prepares the tables
-		// column names for the tables: HOT lane flow, HOT lane speed, ML speed
+		// column names for the tables: HOT lane flow, HOT lane speed, ML speed, price
 		// properties for the tables: 	GP Link, HOT Link, FF Price Coefficient, FF Intercept, VehTypeIn, VehTypeOut,
 		// 								Congested Price Coefficient, Congested GP Density Coefficient, Congested Intercept,
 		//								Start time, Stop time
@@ -78,19 +79,23 @@ public class Controller_HOT_Lookup extends Controller {
 		protected ActuatorVehType myActuator;
 		protected Link myHOTLink;
 
-		protected List<Table> tables;
-		protected List<Double> startTimes;
-		protected List<Double> stopTimes;
-		protected List<Integer> vehTypeIn;
-		protected List<Integer> vehTypeOut;
-		protected List<Double> FF_intercept;
-		protected List<Double> FF_price_coeff;
-		protected List<Double> Cong_price_coeff;
-		protected List<Double> Cong_GP_density_coeff;
-		protected List<Double> Cong_intercept;
+		protected List<TableData> tableData;
+		protected TableData[] currentTableForVehtypes;
 
-		private List<Boolean> isActive;
-		private List<Table> currentTables;
+		protected List<Table> allTables;
+//		protected List<Double> startTimes;
+//		protected List<Double> stopTimes;
+//		protected List<Integer> vehTypeIn;
+//		protected List<Integer> vehTypeOut;
+//		protected List<Double> FF_intercept;
+//		protected List<Double> FF_price_coeff;
+//		protected List<Double> Cong_price_coeff;
+//		protected List<Double> Cong_GP_density_coeff;
+//		protected List<Double> Cong_intercept;
+
+//		private List<Boolean> isActive;
+//		private List<Table> currentTables;
+//		private boolean[] vehTypeControlled;
 		private List<List<Double>> currentPrices; // vehtype x ensemble index
 
 		public LinkData(Link link, Table T, Controller parent) {
@@ -98,21 +103,25 @@ public class Controller_HOT_Lookup extends Controller {
 			this.myGPLink = link;
 
 			Long HOTLinkId = Long.valueOf(T.getParameters().get("HOT Link"));
-			this.myHOTLink = myScenario.get.linkWithId(HOTLinkId);
+			myHOTLink = myScenario.get.linkWithId(HOTLinkId);
 
-			startTimes = new ArrayList<Double>();
-			stopTimes = new ArrayList<Double>();
-			vehTypeIn = new ArrayList<Integer>();
-			vehTypeOut = new ArrayList<Integer>();
-			FF_intercept = new ArrayList<Double>();
-			FF_price_coeff = new ArrayList<Double>();
-			Cong_price_coeff = new ArrayList<Double>();
-			Cong_GP_density_coeff = new ArrayList<Double>();
-			Cong_intercept = new ArrayList<Double>();
-			isActive = new ArrayList<Boolean>();
+			allTables = new ArrayList<Table>();
+			tableData = new ArrayList<TableData>();
+			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
 
-			currentTables = new ArrayList<Table>();
-
+//			startTimes = new ArrayList<Double>();
+//			stopTimes = new ArrayList<Double>();
+//			vehTypeIn = new ArrayList<Integer>();
+//			vehTypeOut = new ArrayList<Integer>();
+//			FF_intercept = new ArrayList<Double>();
+//			FF_price_coeff = new ArrayList<Double>();
+//			Cong_price_coeff = new ArrayList<Double>();
+//			Cong_GP_density_coeff = new ArrayList<Double>();
+//			Cong_intercept = new ArrayList<Double>();
+//			isActive = new ArrayList<Boolean>();
+//
+//			currentTables = new ArrayList<Table>();
+//			vehTypeControlled = new boolean[myScenario.get.numVehicleTypes()];
 
 			for(int e=0;e<myScenario.get.numEnsemble(); e++)
 				currentPrices.add(new ArrayList<Double>());
@@ -136,41 +145,52 @@ public class Controller_HOT_Lookup extends Controller {
 		}
 
 		private void addTable(Table T) {
-			if(!tables.contains(T)) {
-				tables.add(T);
+			if(!allTables.contains(T)) {
+				allTables.add(T);
 
-				startTimes.add( Double.valueOf(T.getParameters().get("Start Time")));
-				stopTimes.add( Double.valueOf(T.getParameters().get("Stop Time")));
-				vehTypeIn.add( Integer.valueOf(T.getParameters().get("VehTypeIn")));
-				vehTypeOut.add( Integer.valueOf(T.getParameters().get("VehTypeOut")));
-				FF_intercept.add( Double.valueOf(T.getParameters().get("FF Intercept")));
-				FF_price_coeff.add( Double.valueOf(T.getParameters().get("FF Price Coefficient")));
-				Cong_price_coeff.add(Double.valueOf(T.getParameters().get("Congested Price Coefficient")));
-				Cong_GP_density_coeff.add(Double.valueOf(T.getParameters().get("Congested GP Density Coefficient")));
-				Cong_intercept.add(Double.valueOf(T.getParameters().get("Congested Intercept")));
-				isActive.add(false);
+				double startTime = Double.valueOf(T.getParameters().get("Start Time"));
+				double stopTime = Double.valueOf(T.getParameters().get("Stop Time"));
+				int vehTypeIn = Integer.valueOf(T.getParameters().get("VehTypeIn"));
+				int vehTypeOut = Integer.valueOf(T.getParameters().get("VehTypeOut"));
+				double FF_intercept = Double.valueOf(T.getParameters().get("FF Intercept"));
+				double FF_price_coeff = Double.valueOf(T.getParameters().get("FF Price Coefficient"));
+				double Cong_price_coeff = Double.valueOf(T.getParameters().get("Congested Price Coefficient"));
+				double Cong_GP_density_coeff = Double.valueOf(T.getParameters().get("Congested GP Density Coefficient"));
+				double Cong_intercept = Double.valueOf(T.getParameters().get("Congested Intercept"));
+
+//				startTimes.add( Double.valueOf(T.getParameters().get("Start Time")));
+//				stopTimes.add( Double.valueOf(T.getParameters().get("Stop Time")));
+//				vehTypeIn.add( Integer.valueOf(T.getParameters().get("VehTypeIn")));
+//				vehTypeOut.add( Integer.valueOf(T.getParameters().get("VehTypeOut")));
+//				FF_intercept.add( Double.valueOf(T.getParameters().get("FF Intercept")));
+//				FF_price_coeff.add( Double.valueOf(T.getParameters().get("FF Price Coefficient")));
+//				Cong_price_coeff.add(Double.valueOf(T.getParameters().get("Congested Price Coefficient")));
+//				Cong_GP_density_coeff.add(Double.valueOf(T.getParameters().get("Congested GP Density Coefficient")));
+//				Cong_intercept.add(Double.valueOf(T.getParameters().get("Congested Intercept")));
+//				isActive.add(false);
+
+				TableData td = new TableData(T, startTime, stopTime, vehTypeIn, vehTypeOut, FF_intercept, FF_price_coeff,
+						Cong_price_coeff, Cong_GP_density_coeff, Cong_intercept);
+
+				tableData.add(td);
 
 				double t = myScenario.get.currentTimeInSeconds();
-				if ((startTimes.get(startTimes.size()-1) >= t)	&& (stopTimes.get(stopTimes.size()-1) <= t) ) {
-					if (currentTables.isEmpty() || isTableActivatable(T))
-						activateTable(T);
+				if ((td.startTime >= t)	&& (td.stopTime <= t) ) {
+					if (isTableActivatable(td, myScenario.get.clock()))
+						activateTable(td);
 				}
 			}
 		}
 
-		private boolean isTableActivatable(Table table) {
-			for (int i=0; i<isActive.size(); i++) {
-				if(isActive.get(i) && (vehTypeIn.get(i).equals( vehTypeIn.get( tables.indexOf(table) ) )))
-					return false;
-			}
-			return true;
+		private boolean isTableActivatable(TableData td, Clock clock) {
+			return ( (currentTableForVehtypes[td.vehTypeIn] == null) // true if no table active for this vtype
+					&& (td.startTime >= clock.getT()) && (td.stopTime < clock.getT()));
 		}
 
-		private void activateTable(Table table) {
-			currentTables.add(table);
-			isActive.set( tables.indexOf(table), true );
+		private void activateTable(TableData td) {
+			currentTableForVehtypes[td.vehTypeIn] = td;
+			td.isActive = true;
 		}
-
 
 		private void update(Clock clock) {
 			updateTables(clock);
@@ -178,27 +198,115 @@ public class Controller_HOT_Lookup extends Controller {
 		}
 
 		private void updateTables(Clock clock) {
-			Table table;
-			Iterator<Table> i = currentTables.iterator();
-			while (i.hasNext()) {
-				table = i.next();
-				if( clock.getT() > stopTimes.get( tables.indexOf(table) ) ) {
-					currentVehTypesIn.remove( tables.indexOf(table) );
-					for (int e=0; e<currentPrices.size(); e++ ) {
-						currentPrices.get(e)
+			deactivateExpiredTables(clock);
+			scanAndActivateTables(clock);
+		}
+
+		private void deactivateExpiredTables(Clock clock) {
+			for (int i=0; i<currentTableForVehtypes.length; i++) {
+				if (currentTableForVehtypes[i] != null) {
+					TableData td = currentTableForVehtypes[i];
+					if( clock.getT() > td.stopTime) {
+						td.isActive = false;
+						currentTableForVehtypes[i] = null;
 					}
-					i.remove();
 				}
 			}
 		}
 
+		private void scanAndActivateTables(Clock clock) {
+			for(int i = 0; i<tableData.size(); i++) {
+				TableData td = tableData.get(i);
+				if(!td.isActive && (isTableActivatable(td, clock)))
+					activateTable(td);
+			}
+		}
+
 		private void updatePrices(Clock clock) {
+			for ( int i=0;i<currentTables.size(); i++ ) {
+				Link GPLink =
+			}
 
 		}
-		private double computeCurrentPrice(Table table, Clock clock, int ensembleIndex) {
-			if(myGPLink.getDensityCriticalInVeh())
+		private double findCurrentPrice(TableData td, Clock clock, int ensembleIndex) {
+			if(myGPLink.getTotalDensityInVeh(ensembleIndex) >= myGPLink.getDensityCriticalInVeh(ensembleIndex)) {
+				return td.table.get
+			}
 		}
 
+	}
+
+	private class TableData {
+
+		public final Table table;
+		public final double startTime, stopTime;
+		public final int vehTypeIn, vehTypeOut;
+		public final double FF_intercept, FF_price_coeff, Cong_price_coeff, Cong_GP_density_coeff, Cong_intercept;
+		protected boolean isActive = false;
+
+		private List<TableRow> rows;
+
+		TableData(Table t, double start, double stop, int vtin, int vtout, double FF_int, double FF_p_c,
+				  double Cong_pr_coeff, double Cong_GP_d_c, double Cong_int) {
+			table = t;
+			startTime = start;
+			stopTime = stop;
+			vehTypeIn = vtin;
+			vehTypeOut = vtout;
+			FF_intercept = FF_int;
+			FF_price_coeff = FF_p_c;
+			Cong_price_coeff = Cong_pr_coeff;
+			Cong_GP_density_coeff = Cong_GP_d_c;
+			Cong_intercept = Cong_int;
+
+			ArrayList<Table.Row> rawRows = table.getRows();
+
+			rows = new ArrayList<TableRow>(rawRows.size());
+
+			for (Table.Row rawRow : rawRows) {
+				double hot_flow = Double.valueOf(rawRow.get_value_for_column_name("HOT Lane Flow"));
+				double hot_speed = Double.valueOf(rawRow.get_value_for_column_name("HOT Lane Speed"));
+				double ml_speed = Double.valueOf(rawRow.get_value_for_column_name("GP Lane Speed"));
+				double price = Double.valueOf(rawRow.get_value_for_column_name("Price"));
+				rows.add(new TableRow(hot_flow, hot_speed, ml_speed, price));
+			}
+		}
+
+		private double getPriceFromClosestRow1Norm(double current_hot_flow, double current_hot_speed,
+												   double current_gp_speed) {
+
+			// quick check - if only one row, just give that price
+			if (rows.size()==1)
+				return rows.get(0).price;
+
+			int i;
+			List<Double> distances = new ArrayList<Double>(rows.size());
+			for (i=0; i<rows.size(); i++) {
+				distances.set(i, rows.get(i).computeDistance1Norm(current_hot_flow, current_hot_speed, current_gp_speed));
+			}
+			int min_index = 0;
+			for (i=1; i<distances.size(); i++) {
+				if (distances.get(i) < distances.get(min_index))
+					min_index = i;
+			}
+			return rows.get(min_index).price;
+		}
+	}
+
+	private class TableRow {
+		public final double hot_flow, hot_speed, ml_speed, price;
+
+		TableRow(double hot_flow, double hot_speed, double ml_speed, double price) {
+			this.hot_flow = hot_flow;
+			this.hot_speed = hot_speed;
+			this.ml_speed = ml_speed;
+			this.price = price;
+		}
+
+		public double computeDistance1Norm(double compare_hot_flow, double compare_hot_speed, double compare_ml_speed) {
+			return Math.abs(compare_hot_flow - hot_flow) + Math.abs(compare_hot_speed - hot_speed) +
+					Math.abs(compare_ml_speed - ml_speed);
+		}
 	}
 
 }
