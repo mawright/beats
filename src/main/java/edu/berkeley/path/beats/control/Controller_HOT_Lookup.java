@@ -83,19 +83,6 @@ public class Controller_HOT_Lookup extends Controller {
 		protected TableData[] currentTableForVehtypes;
 
 		protected List<Table> allTables;
-//		protected List<Double> startTimes;
-//		protected List<Double> stopTimes;
-//		protected List<Integer> vehTypeIn;
-//		protected List<Integer> vehTypeOut;
-//		protected List<Double> FF_intercept;
-//		protected List<Double> FF_price_coeff;
-//		protected List<Double> Cong_price_coeff;
-//		protected List<Double> Cong_GP_density_coeff;
-//		protected List<Double> Cong_intercept;
-
-//		private List<Boolean> isActive;
-//		private List<Table> currentTables;
-//		private boolean[] vehTypeControlled;
 		private List<List<Double>> currentPrices; // vehtype x ensemble index
 
 		public LinkData(Link link, Table T, Controller parent) {
@@ -108,20 +95,6 @@ public class Controller_HOT_Lookup extends Controller {
 			allTables = new ArrayList<Table>();
 			tableData = new ArrayList<TableData>();
 			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
-
-//			startTimes = new ArrayList<Double>();
-//			stopTimes = new ArrayList<Double>();
-//			vehTypeIn = new ArrayList<Integer>();
-//			vehTypeOut = new ArrayList<Integer>();
-//			FF_intercept = new ArrayList<Double>();
-//			FF_price_coeff = new ArrayList<Double>();
-//			Cong_price_coeff = new ArrayList<Double>();
-//			Cong_GP_density_coeff = new ArrayList<Double>();
-//			Cong_intercept = new ArrayList<Double>();
-//			isActive = new ArrayList<Boolean>();
-//
-//			currentTables = new ArrayList<Table>();
-//			vehTypeControlled = new boolean[myScenario.get.numVehicleTypes()];
 
 			for(int e=0;e<myScenario.get.numEnsemble(); e++)
 				currentPrices.add(new ArrayList<Double>());
@@ -158,17 +131,6 @@ public class Controller_HOT_Lookup extends Controller {
 				double Cong_GP_density_coeff = Double.valueOf(T.getParameters().get("Congested GP Density Coefficient"));
 				double Cong_intercept = Double.valueOf(T.getParameters().get("Congested Intercept"));
 
-//				startTimes.add( Double.valueOf(T.getParameters().get("Start Time")));
-//				stopTimes.add( Double.valueOf(T.getParameters().get("Stop Time")));
-//				vehTypeIn.add( Integer.valueOf(T.getParameters().get("VehTypeIn")));
-//				vehTypeOut.add( Integer.valueOf(T.getParameters().get("VehTypeOut")));
-//				FF_intercept.add( Double.valueOf(T.getParameters().get("FF Intercept")));
-//				FF_price_coeff.add( Double.valueOf(T.getParameters().get("FF Price Coefficient")));
-//				Cong_price_coeff.add(Double.valueOf(T.getParameters().get("Congested Price Coefficient")));
-//				Cong_GP_density_coeff.add(Double.valueOf(T.getParameters().get("Congested GP Density Coefficient")));
-//				Cong_intercept.add(Double.valueOf(T.getParameters().get("Congested Intercept")));
-//				isActive.add(false);
-
 				TableData td = new TableData(T, startTime, stopTime, vehTypeIn, vehTypeOut, FF_intercept, FF_price_coeff,
 						Cong_price_coeff, Cong_GP_density_coeff, Cong_intercept);
 
@@ -194,7 +156,7 @@ public class Controller_HOT_Lookup extends Controller {
 
 		private void update(Clock clock) {
 			updateTables(clock);
-			updatePrices(clock);
+			updatePrices();
 		}
 
 		private void updateTables(Clock clock) {
@@ -222,16 +184,19 @@ public class Controller_HOT_Lookup extends Controller {
 			}
 		}
 
-		private void updatePrices(Clock clock) {
-			for ( int i=0;i<currentTables.size(); i++ ) {
-				Link GPLink =
+		private void updatePrices() {
+			for ( int v=0;v<currentTableForVehtypes.length; v++ ) {
+				if( currentTableForVehtypes[v] != null ) {
+					for (int e = 0; e < myScenario.get.numEnsemble(); e++) {
+						currentPrices.get(v).set(e, findCurrentPrice(currentTableForVehtypes[v], e));
+					}
+				}
 			}
-
 		}
-		private double findCurrentPrice(TableData td, Clock clock, int ensembleIndex) {
-			if(myGPLink.getTotalDensityInVeh(ensembleIndex) >= myGPLink.getDensityCriticalInVeh(ensembleIndex)) {
-				return td.table.get
-			}
+
+		private double findCurrentPrice(TableData td, int ensembleIndex) {
+			return td.getPriceFromClosestRow1Norm(myHOTLink.getTotalOutflowInVeh(ensembleIndex),
+					myHOTLink.computeSpeedInMPS(ensembleIndex), myGPLink.computeSpeedInMPS(ensembleIndex));
 		}
 
 	}
