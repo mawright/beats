@@ -2,6 +2,7 @@ package edu.berkeley.path.beats.control;
 
 import edu.berkeley.path.beats.actuator.ActuatorVehType;
 import edu.berkeley.path.beats.simulator.*;
+import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Table;
@@ -199,6 +200,27 @@ public class Controller_HOT_Lookup extends Controller {
 					myHOTLink.computeSpeedInMPS(ensembleIndex), myGPLink.computeSpeedInMPS(ensembleIndex));
 		}
 
+		private void validate() {
+			if (myHOTLink == null)
+				BeatsErrorLog.addError("HOT Controller has invalid HOT link id: " + allTables.get(0).getParameters().get("HOT Link"));
+
+			if (allTables.isEmpty())
+				BeatsErrorLog.addError("HOT Controller for link id=" + myHOTLink.getId() +" has no price tables");
+
+			for (TableData td : tableData)
+				td.validate(this);
+
+			myActuator.validate();
+		}
+
+		private void reset() {
+			update(myScenario.get.clock()); // clock has already been reset
+			try {
+				myActuator.reset();
+			} catch (BeatsException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	private class TableData {
@@ -255,6 +277,11 @@ public class Controller_HOT_Lookup extends Controller {
 					min_index = i;
 			}
 			return rows.get(min_index).price;
+		}
+
+		private void validate(LinkData myParent) {
+			if (rows.size()==0)
+				BeatsErrorLog.addError("A table for link id=" + myParent.myHOTLink.getId() +" has no rows.");
 		}
 	}
 
