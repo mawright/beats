@@ -56,6 +56,9 @@ public class Controller_HOT_Lookup extends Controller {
 	protected void validate() {
 		super.validate();
 
+		if (myScenario.get.numEnsemble() > 1)
+			BeatsErrorLog.addError("HOT Lookup Controller does not support ensembles size > 1 yet.");
+
 		for (LinkData ld : linkData.values())
 			ld.validate();
 	}
@@ -67,10 +70,14 @@ public class Controller_HOT_Lookup extends Controller {
 			ld.reset();
 	}
 
-	protected void update(Clock clock) throws BeatsException {
+	@Override
+	protected void update() throws BeatsException {
+		Clock clock = myScenario.get.clock();
 
-		for (LinkData ld : linkData.values())
+		for (LinkData ld : linkData.values()) {
 			ld.update(clock);
+			ld.deploy(myScenario.get.currentTimeInSeconds());
+		}
 
 	}
 
@@ -84,7 +91,8 @@ public class Controller_HOT_Lookup extends Controller {
 		protected TableData[] currentTableForVehtypes;
 
 		protected List<Table> allTables;
-		private List<List<Double>> currentPrices; // vehtype x ensemble index
+		private double[][] prices; // vehtype index x ensemble index
+		private double[][] switchingPortion; // vehtype index x ensemble index
 
 		public LinkData(Link link, Table T, Controller parent) {
 
@@ -97,8 +105,8 @@ public class Controller_HOT_Lookup extends Controller {
 			tableData = new ArrayList<TableData>();
 			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
 
-			for(int e=0;e<myScenario.get.numEnsemble(); e++)
-				currentPrices.add(new ArrayList<Double>());
+			prices = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
+			switchingPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
 
 			addTable(T);
 
@@ -158,6 +166,17 @@ public class Controller_HOT_Lookup extends Controller {
 		private void update(Clock clock) {
 			updateTables(clock);
 			updatePrices();
+			updateSwitchingPortions();
+		}
+
+		private void deploy(double current_time_in_seconds) {
+			for (int v=0; v<currentTableForVehtypes.length; v++) {
+				if (currentTableForVehtypes!= null)
+					myActuator.set_switch_ratio( myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeIn),
+							myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeOut),
+							switchingPortion[v][0]);
+			}
+			myActuator.deploy(current_time_in_seconds);
 		}
 
 		private void updateTables(Clock clock) {
@@ -170,11 +189,22 @@ public class Controller_HOT_Lookup extends Controller {
 				if (currentTableForVehtypes[i] != null) {
 					TableData td = currentTableForVehtypes[i];
 					if( clock.getT() > td.stopTime) {
-						td.isActive = false;
-						currentTableForVehtypes[i] = null;
+						deactivateTable(i);
 					}
 				}
 			}
+		}
+
+		private void deactivateTable(int vehtype_index) {
+			if (currentTableForVehtypes[vehtype_index] == null)
+				return;
+
+			myActuator.set_switch_ratio( myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[vehtype_index].vehTypeIn),
+					myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[vehtype_index].vehTypeOut),
+					0);
+
+			currentTableForVehtypes[vehtype_index].isActive = false;
+			currentTableForVehtypes[vehtype_index] = null;
 		}
 
 		private void scanAndActivateTables(Clock clock) {
@@ -189,7 +219,7 @@ public class Controller_HOT_Lookup extends Controller {
 			for ( int v=0;v<currentTableForVehtypes.length; v++ ) {
 				if( currentTableForVehtypes[v] != null ) {
 					for (int e = 0; e < myScenario.get.numEnsemble(); e++) {
-						currentPrices.get(v).set(e, findCurrentPrice(currentTableForVehtypes[v], e));
+						prices[v][e] = findCurrentPrice(currentTableForVehtypes[v], e);
 					}
 				}
 			}
@@ -198,6 +228,23 @@ public class Controller_HOT_Lookup extends Controller {
 		private double findCurrentPrice(TableData td, int ensembleIndex) {
 			return td.getPriceFromClosestRow1Norm(myHOTLink.getTotalOutflowInVeh(ensembleIndex),
 					myHOTLink.computeSpeedInMPS(ensembleIndex), myGPLink.computeSpeedInMPS(ensembleIndex));
+		}
+
+		private void updateSwitchingPortions() {
+			for ( int v=0; v<currentTableForVehtypes.length; v++) {
+				if ( currentTableForVehtypes[v] != null) {
+					for (int e = 0; e < myScenario.get.numEnsemble(); e++)
+						switchingPortion[v][e] = computeSwitchingPortionTwoPhase(currentTableForVehtypes[v],e);
+				}
+			}
+		}
+
+		private double computeSwitchingPortionTwoPhase(TableData td, int ensembleIndex) {
+			if (myGPLink.getTotalDensityInVeh(ensembleIndex) < myGPLink.getDensityCriticalInVeh(ensembleIndex))
+				return td.FF_intercept + td.FF_price_coeff * prices[td.vehTypeIn][ensembleIndex]; // freeflow
+			else
+				return td.Cong_intercept + td.Cong_price_coeff * prices[td.vehTypeIn][ensembleIndex] // congestion
+						+ td.Cong_GP_density_coeff * myGPLink.getTotalDensityInVeh(ensembleIndex);
 		}
 
 		private void validate() {
@@ -214,6 +261,14 @@ public class Controller_HOT_Lookup extends Controller {
 		}
 
 		private void reset() {
+			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
+
+			prices = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
+			switchingPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
+
+			for (int v=0; v<currentTableForVehtypes.length; v++)
+				deactivateTable(v);
+
 			update(myScenario.get.clock()); // clock has already been reset
 			try {
 				myActuator.reset();
