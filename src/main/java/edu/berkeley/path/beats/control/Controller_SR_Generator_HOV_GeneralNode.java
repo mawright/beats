@@ -24,7 +24,9 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 		for(int v=0;v<myScenario.get.numVehicleTypes();v++) {
 			if( myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("hov") == 0 ||
 					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("sov") == 0 ||
-					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("lov") == 0) {
+					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("lov") == 0 ||
+					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("rtp") == 0 ||
+					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("ready to pay") == 0) {
 				variable_vtype[v] = true;
 			}
 			else {
