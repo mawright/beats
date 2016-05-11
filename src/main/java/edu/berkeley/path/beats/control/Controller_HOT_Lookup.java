@@ -4,6 +4,7 @@ import edu.berkeley.path.beats.actuator.ActuatorVehType;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public class Controller_HOT_Lookup extends Controller {
 
-	private HashMap<Long, LinkData> linkData;
+	private final HashMap<Long, LinkData> linkData;
 
 	public Controller_HOT_Lookup(Scenario scenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(scenario, c, Algorithm.HOT_Lookup);
@@ -33,21 +34,23 @@ public class Controller_HOT_Lookup extends Controller {
 
 		// create the LinkData objects
 		for (Table table : tables.values()) {
-			Long linkid = Long.valueOf(table.getParameters().get("GP Link"));
-			if (linkData.containsKey(linkid))
-				linkData.get(linkid).addTable(table);
-			else {
-				Link link = myScenario.get.linkWithId(linkid);
-				linkData.put(linkid, new LinkData(link, table, this));
+			Long hotlinkid = Long.valueOf(table.getParameters().get("HOT Link"));
+			if (!linkData.containsKey(hotlinkid)) {
+				Link hotlink = myScenario.get.linkWithId(hotlinkid);
+				linkData.put(hotlinkid, new LinkData(hotlink, table, this));
+			} else {
+				linkData.get(hotlinkid).addTable(table);
 			}
+
 		}
 	}
 
 	@Override
 	public boolean register() {
 		for(LinkData ld : linkData.values())
-			if(!ld.myActuator.register())
-				return false;
+			for( ActuatorVehType actuator : ld.myActuators)
+				if(!actuator.register())
+					return false;
 		return true;
 	}
 
@@ -81,23 +84,29 @@ public class Controller_HOT_Lookup extends Controller {
 
 	class LinkData {
 
-		protected Link myGPLink;
-		protected ActuatorVehType myActuator;
-		protected Link myHOTLink;
+		private final List<Link> myEnteringLinks;
+		private final List<ActuatorVehType> myActuators;
+		private final Link myHOTLink;
+		private final Link myGPLink;
 
-		protected List<TableData> tableData;
-		protected TableData[] currentTableForVehtypes;
+		private List<TableData> tableData;
+		private TableData[] currentTableForVehtypes;
 
-		protected List<Table> allTables;
+		private List<Table> allTables;
 		private double[][] prices; // vehtype index x ensemble index
 		private double[][] readyToPayPortion; // vehtype index x ensemble index
 
 		public LinkData(Link link, Table T, Controller parent) {
 
-			this.myGPLink = link;
+			myHOTLink = link;
+			Long GPLinkId = Long.valueOf(T.getParameters().get("GP Link"));
+			myGPLink = myScenario.get.linkWithId(GPLinkId);
 
-			Long HOTLinkId = Long.valueOf(T.getParameters().get("HOT Link"));
-			myHOTLink = myScenario.get.linkWithId(HOTLinkId);
+			myEnteringLinks = new ArrayList<Link>();
+			Double[] enteringLinksArray = BeatsFormatter.readCSVstring_nonnegative(T.getParameters().get("Entering Links"), ",");
+			for (Double linkid : enteringLinksArray) {
+				myEnteringLinks.add(myScenario.get.linkWithId((long) linkid.doubleValue()));
+			}
 
 			allTables = new ArrayList<Table>();
 			tableData = new ArrayList<TableData>();
@@ -108,20 +117,24 @@ public class Controller_HOT_Lookup extends Controller {
 
 			addTable(T);
 
-			// make actuator
-			edu.berkeley.path.beats.jaxb.Actuator jaxbA = new edu.berkeley.path.beats.jaxb.Actuator();
-			edu.berkeley.path.beats.jaxb.ScenarioElement se = new edu.berkeley.path.beats.jaxb.ScenarioElement();
-			edu.berkeley.path.beats.jaxb.ActuatorType at = new edu.berkeley.path.beats.jaxb.ActuatorType();
-			se.setId(myGPLink.getId());
-			se.setType("link");
-			at.setId(-1);
-			at.setName("vehtype_changer");
-			jaxbA.setId(-1);
-			jaxbA.setScenarioElement(se);
-			jaxbA.setActuatorType(at);
-			myActuator = new ActuatorVehType(myScenario,jaxbA,new BeatsActuatorImplementation(jaxbA,myScenario));
-			myActuator.populate(null,null);
-			myActuator.setMyController(parent);
+			// make actuators
+			myActuators = new ArrayList<ActuatorVehType>();
+			for (Link enteringLink : myEnteringLinks) {
+				edu.berkeley.path.beats.jaxb.Actuator jaxbA = new edu.berkeley.path.beats.jaxb.Actuator();
+				edu.berkeley.path.beats.jaxb.ScenarioElement se = new edu.berkeley.path.beats.jaxb.ScenarioElement();
+				edu.berkeley.path.beats.jaxb.ActuatorType at = new edu.berkeley.path.beats.jaxb.ActuatorType();
+				se.setId(enteringLink.getId());
+				se.setType("link");
+				at.setId(-1);
+				at.setName("vehtype_changer");
+				jaxbA.setId(-1);
+				jaxbA.setScenarioElement(se);
+				jaxbA.setActuatorType(at);
+				ActuatorVehType actuator = new ActuatorVehType(myScenario, jaxbA, new BeatsActuatorImplementation(jaxbA, myScenario));
+				actuator.populate(null, null);
+				actuator.setMyController(parent);
+				myActuators.add(actuator);
+			}
 		}
 
 		private void addTable(Table T) {
@@ -168,13 +181,30 @@ public class Controller_HOT_Lookup extends Controller {
 		}
 
 		private void deploy(double current_time_in_seconds) {
+			int ensemble_index = 0;
+			double alreadyReadyToPay, notAlreadyReadyToPay, portionToSwitch;
+
 			for (int v=0; v<currentTableForVehtypes.length; v++) {
-				if (currentTableForVehtypes!= null)
-					myActuator.set_switch_ratio( myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeIn),
-							myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeOut),
-							readyToPayPortion[v][0]);
+				if (currentTableForVehtypes!= null) {
+					alreadyReadyToPay = 0d;
+					notAlreadyReadyToPay = 0d;
+					for ( Link link : myHOTLink.getBegin_node().getInput_link()) {
+						alreadyReadyToPay = alreadyReadyToPay +
+								link.getDensityInVeh(ensemble_index, currentTableForVehtypes[v].vehTypeOut);
+						notAlreadyReadyToPay = notAlreadyReadyToPay +
+								link.getDensityInVeh(ensemble_index, currentTableForVehtypes[v].vehTypeIn);
+					}
+					portionToSwitch = (readyToPayPortion[v][0] * (alreadyReadyToPay + notAlreadyReadyToPay) - alreadyReadyToPay)
+							/ notAlreadyReadyToPay;
+					for (ActuatorVehType actuator : myActuators) {
+						actuator.set_switch_ratio(myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeIn),
+								myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeOut),
+								portionToSwitch);
+					}
+				}
 			}
-			myActuator.deploy(current_time_in_seconds);
+			for (ActuatorVehType actuator : myActuators)
+				actuator.deploy(current_time_in_seconds);
 		}
 
 		private void updateTables(Clock clock) {
@@ -197,17 +227,17 @@ public class Controller_HOT_Lookup extends Controller {
 			if (currentTableForVehtypes[vehtype_index] == null)
 				return;
 
-			myActuator.set_switch_ratio( myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[vehtype_index].vehTypeIn),
-					myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[vehtype_index].vehTypeOut),
-					0);
+			for (ActuatorVehType actuator : myActuators)
+				actuator.set_switch_ratio( myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[vehtype_index].vehTypeIn),
+						myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[vehtype_index].vehTypeOut),
+						0);
 
 			currentTableForVehtypes[vehtype_index].isActive = false;
 			currentTableForVehtypes[vehtype_index] = null;
 		}
 
 		private void scanAndActivateTables(Clock clock) {
-			for(int i = 0; i<tableData.size(); i++) {
-				TableData td = tableData.get(i);
+			for(TableData td : tableData) {
 				if(!td.isActive && (isTableActivatable(td, clock)))
 					activateTable(td);
 			}
@@ -252,13 +282,20 @@ public class Controller_HOT_Lookup extends Controller {
 			if (myHOTLink == null)
 				BeatsErrorLog.addError("HOT Controller has invalid HOT link id: " + allTables.get(0).getParameters().get("HOT Link"));
 
+			if (myGPLink == null)
+				BeatsErrorLog.addError("HOT Controller has invalid GP link id: " + allTables.get(0).getParameters().get("GP Link"));
+
+			if (myEnteringLinks.contains(null))
+				BeatsErrorLog.addError("HOT Controller for HOT link id " + myHOTLink.getId() + " has one or more invalid entering link IDs");
+
 			if (allTables.isEmpty())
 				BeatsErrorLog.addError("HOT Controller for link id=" + myHOTLink.getId() +" has no price tables");
 
 			for (TableData td : tableData)
 				td.validate(this);
 
-			myActuator.validate();
+			for (ActuatorVehType actuator : myActuators)
+				actuator.validate();
 		}
 
 		private void reset() {
@@ -272,7 +309,8 @@ public class Controller_HOT_Lookup extends Controller {
 
 			update(myScenario.get.clock()); // clock has already been reset
 			try {
-				myActuator.reset();
+				for (ActuatorVehType actuator : myActuators)
+					actuator.reset();
 			} catch (BeatsException ex) {
 				ex.printStackTrace();
 			}
@@ -287,7 +325,7 @@ public class Controller_HOT_Lookup extends Controller {
 		public final double FF_intercept, FF_price_coeff, Cong_price_coeff, Cong_density_coeff, Cong_intercept;
 		protected boolean isActive = false;
 
-		private List<TableRow> rows;
+		private final List<TableRow> rows;
 
 		TableData(Table t, double start, double stop, int vtin, int vtout, double FF_int, double FF_p_c,
 				  double Cong_pr_coeff, double Cong_d_c, double Cong_int) {
