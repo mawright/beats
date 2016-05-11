@@ -18,12 +18,13 @@ public class Controller_HOT_Lookup extends Controller {
 	private HashMap<Long, LinkData> linkData;
 
 	public Controller_HOT_Lookup(Scenario scenario, edu.berkeley.path.beats.jaxb.Controller c) {
-		super(scenario, c, Algorithm.HOT_LOOKUP);
+		super(scenario, c, Algorithm.HOT_Lookup);
 		// the superclass constructor prepares the tables
 		// column names for the tables: HOT lane flow, HOT lane speed, ML speed, price
 		// properties for the tables: 	GP Link, HOT Link, FF Price Coefficient, FF Intercept, VehTypeIn, VehTypeOut,
 		// 								Congested Price Coefficient, Congested GP Density Coefficient, Congested Intercept,
 		//								Start time, Stop time
+		linkData = new HashMap<Long, LinkData>();
 	}
 
 	@Override
