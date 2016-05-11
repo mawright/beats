@@ -4,11 +4,9 @@ import edu.berkeley.path.beats.actuator.ActuatorVehType;
 import edu.berkeley.path.beats.simulator.*;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
-import edu.berkeley.path.beats.simulator.utils.BeatsMath;
 import edu.berkeley.path.beats.simulator.utils.Table;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,7 +63,6 @@ public class Controller_HOT_Lookup extends Controller {
 
 	@Override
 	protected void reset() {
-
 		for (LinkData ld : linkData.values())
 			ld.reset();
 	}
@@ -92,7 +89,7 @@ public class Controller_HOT_Lookup extends Controller {
 
 		protected List<Table> allTables;
 		private double[][] prices; // vehtype index x ensemble index
-		private double[][] switchingPortion; // vehtype index x ensemble index
+		private double[][] readyToPayPortion; // vehtype index x ensemble index
 
 		public LinkData(Link link, Table T, Controller parent) {
 
@@ -106,7 +103,7 @@ public class Controller_HOT_Lookup extends Controller {
 			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
 
 			prices = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
-			switchingPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
+			readyToPayPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
 
 			addTable(T);
 
@@ -137,11 +134,11 @@ public class Controller_HOT_Lookup extends Controller {
 				double FF_intercept = Double.valueOf(T.getParameters().get("FF Intercept"));
 				double FF_price_coeff = Double.valueOf(T.getParameters().get("FF Price Coefficient"));
 				double Cong_price_coeff = Double.valueOf(T.getParameters().get("Congested Price Coefficient"));
-				double Cong_GP_density_coeff = Double.valueOf(T.getParameters().get("Congested GP Density Coefficient"));
+				double Cong_density_coeff = Double.valueOf(T.getParameters().get("Congested Density Coefficient"));
 				double Cong_intercept = Double.valueOf(T.getParameters().get("Congested Intercept"));
 
 				TableData td = new TableData(T, startTime, stopTime, vehTypeIn, vehTypeOut, FF_intercept, FF_price_coeff,
-						Cong_price_coeff, Cong_GP_density_coeff, Cong_intercept);
+						Cong_price_coeff, Cong_density_coeff, Cong_intercept);
 
 				tableData.add(td);
 
@@ -166,7 +163,7 @@ public class Controller_HOT_Lookup extends Controller {
 		private void update(Clock clock) {
 			updateTables(clock);
 			updatePrices();
-			updateSwitchingPortions();
+			updateReadyToPayPortion();
 		}
 
 		private void deploy(double current_time_in_seconds) {
@@ -174,7 +171,7 @@ public class Controller_HOT_Lookup extends Controller {
 				if (currentTableForVehtypes!= null)
 					myActuator.set_switch_ratio( myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeIn),
 							myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeOut),
-							switchingPortion[v][0]);
+							readyToPayPortion[v][0]);
 			}
 			myActuator.deploy(current_time_in_seconds);
 		}
@@ -230,21 +227,24 @@ public class Controller_HOT_Lookup extends Controller {
 					myHOTLink.computeSpeedInMPS(ensembleIndex), myGPLink.computeSpeedInMPS(ensembleIndex));
 		}
 
-		private void updateSwitchingPortions() {
+		private void updateReadyToPayPortion() {
 			for ( int v=0; v<currentTableForVehtypes.length; v++) {
 				if ( currentTableForVehtypes[v] != null) {
 					for (int e = 0; e < myScenario.get.numEnsemble(); e++)
-						switchingPortion[v][e] = computeSwitchingPortionTwoPhase(currentTableForVehtypes[v],e);
+						readyToPayPortion[v][e] = computeReadyToPayPortionTwoPhase(currentTableForVehtypes[v],e);
 				}
 			}
 		}
 
-		private double computeSwitchingPortionTwoPhase(TableData td, int ensembleIndex) {
+		private double computeReadyToPayPortionTwoPhase(TableData td, int ensembleIndex) {
+			double value;
 			if (myGPLink.getTotalDensityInVeh(ensembleIndex) < myGPLink.getDensityCriticalInVeh(ensembleIndex))
-				return td.FF_intercept + td.FF_price_coeff * prices[td.vehTypeIn][ensembleIndex]; // freeflow
+				value = td.FF_intercept + td.FF_price_coeff * prices[td.vehTypeIn][ensembleIndex]; // freeflow
 			else
-				return td.Cong_intercept + td.Cong_price_coeff * prices[td.vehTypeIn][ensembleIndex] // congestion
-						+ td.Cong_GP_density_coeff * myGPLink.getTotalDensityInVeh(ensembleIndex);
+				value =  td.Cong_intercept + td.Cong_price_coeff * prices[td.vehTypeIn][ensembleIndex] // congestion
+						+ td.Cong_density_coeff
+						* ( myGPLink.getTotalDensityInVeh(ensembleIndex) - myHOTLink.getTotalDensityInVeh(ensembleIndex));
+			return 1d / (1d + Math.exp(-value)); // logistic regression
 		}
 
 		private void validate() {
@@ -264,7 +264,7 @@ public class Controller_HOT_Lookup extends Controller {
 			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
 
 			prices = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
-			switchingPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
+			readyToPayPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
 
 			for (int v=0; v<currentTableForVehtypes.length; v++)
 				deactivateTable(v);
@@ -283,13 +283,13 @@ public class Controller_HOT_Lookup extends Controller {
 		public final Table table;
 		public final double startTime, stopTime;
 		public final int vehTypeIn, vehTypeOut;
-		public final double FF_intercept, FF_price_coeff, Cong_price_coeff, Cong_GP_density_coeff, Cong_intercept;
+		public final double FF_intercept, FF_price_coeff, Cong_price_coeff, Cong_density_coeff, Cong_intercept;
 		protected boolean isActive = false;
 
 		private List<TableRow> rows;
 
 		TableData(Table t, double start, double stop, int vtin, int vtout, double FF_int, double FF_p_c,
-				  double Cong_pr_coeff, double Cong_GP_d_c, double Cong_int) {
+				  double Cong_pr_coeff, double Cong_d_c, double Cong_int) {
 			table = t;
 			startTime = start;
 			stopTime = stop;
@@ -298,7 +298,7 @@ public class Controller_HOT_Lookup extends Controller {
 			FF_intercept = FF_int;
 			FF_price_coeff = FF_p_c;
 			Cong_price_coeff = Cong_pr_coeff;
-			Cong_GP_density_coeff = Cong_GP_d_c;
+			Cong_density_coeff = Cong_d_c;
 			Cong_intercept = Cong_int;
 
 			ArrayList<Table.Row> rawRows = table.getRows();
