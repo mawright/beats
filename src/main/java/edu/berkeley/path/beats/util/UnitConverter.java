@@ -334,7 +334,7 @@ public class UnitConverter implements Serializable {
 			converter = fconv;
 		else if (name.equals("free_flow_speed") || name.equals("congestion_speed") || name.startsWith("gain"))
 			converter = sconv;
-		else if (name.equals("jam_density") || name.equals("targetDensity"))
+		else if (name.equals("jam_density") || name.equals("targetDensity") || name.endsWith("Density Coefficient"))
 			converter = dconv;
 		// TODO check if all the parameters are processed correctly
 		if (null != converter)
@@ -356,9 +356,11 @@ public class UnitConverter implements Serializable {
 				String value = c.getContent();
 				String colname = column_id_to_name.get(c.getId());
 				String newvalue;
-				if (colname.equals("MeteringRates") || colname.equals("FlowThresholds"))
+				if (colname.equals("MeteringRates") || colname.equals("FlowThresholds") ||
+						colname.equalsIgnoreCase("HOT Lane Flow"))
 					newvalue = convert(new BigDecimal(value), fconv).toPlainString();
-				else if (colname.equals("SpeedThresholds"))
+				else if (colname.equals("SpeedThresholds") || colname.equalsIgnoreCase("HOT Lane Speed") ||
+						colname.equalsIgnoreCase("GP Lane Speed"))
 					newvalue = convert(new BigDecimal(value), sconv).toPlainString();
 				else
 					newvalue = value;

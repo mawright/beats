@@ -22,8 +22,8 @@ public class Controller_HOT_Lookup extends Controller {
 		super(scenario, c, Algorithm.HOT_Lookup);
 		// the superclass constructor prepares the tables
 		// column names for the tables: HOT lane flow, HOT lane speed, ML speed, price
-		// properties for the tables: 	GP Link, HOT Link, FF Price Coefficient, FF Intercept, VehTypeIn, VehTypeOut,
-		// 								Congested Price Coefficient, Congested GP Density Coefficient, Congested Intercept,
+		// properties for the tables: 	GP Link, HOT Link, Entering Links, FF Price Coefficient, FF Intercept, VehTypeIn, VehTypeOut,
+		// 								Congested Price Coefficient, Congested Density Coefficient, Congested Intercept,
 		//								Start time, Stop time
 		linkData = new HashMap<Long, LinkData>();
 	}
@@ -156,17 +156,15 @@ public class Controller_HOT_Lookup extends Controller {
 
 				tableData.add(td);
 
-				double t = myScenario.get.currentTimeInSeconds();
-				if ((td.startTime >= t)	&& (td.stopTime <= t) ) {
+				if (myScenario.get.clock() != null)
 					if (isTableActivatable(td, myScenario.get.clock()))
 						activateTable(td);
-				}
 			}
 		}
 
 		private boolean isTableActivatable(TableData td, Clock clock) {
 			return ( (currentTableForVehtypes[td.vehTypeIn] == null) // true if no table active for this vtype
-					&& (td.startTime >= clock.getT()) && (td.stopTime < clock.getT()));
+					&& (td.startTime <= clock.getT()) && (td.stopTime > clock.getT()));
 		}
 
 		private void activateTable(TableData td) {
@@ -299,13 +297,11 @@ public class Controller_HOT_Lookup extends Controller {
 		}
 
 		private void reset() {
-			currentTableForVehtypes = new TableData[myScenario.get.numVehicleTypes()];
+			for (int v=0; v<currentTableForVehtypes.length; v++)
+				deactivateTable(v);
 
 			prices = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
 			readyToPayPortion = new double[myScenario.get.numVehicleTypes()][myScenario.get.numEnsemble()];
-
-			for (int v=0; v<currentTableForVehtypes.length; v++)
-				deactivateTable(v);
 
 			update(myScenario.get.clock()); // clock has already been reset
 			try {
@@ -363,7 +359,7 @@ public class Controller_HOT_Lookup extends Controller {
 			int i;
 			List<Double> distances = new ArrayList<Double>(rows.size());
 			for (i=0; i<rows.size(); i++) {
-				distances.set(i, rows.get(i).computeDistance1Norm(current_hot_flow, current_hot_speed, current_gp_speed));
+				distances.add(i, rows.get(i).computeDistance1Norm(current_hot_flow, current_hot_speed, current_gp_speed));
 			}
 			int min_index = 0;
 			for (i=1; i<distances.size(); i++) {
@@ -394,5 +390,15 @@ public class Controller_HOT_Lookup extends Controller {
 					Math.abs(compare_ml_speed - ml_speed);
 		}
 	}
+
+	public double getPriceAtLinkForVehtype(long linkid, long vehType) {
+		if (!linkData.containsKey(linkid))
+			return 0d;
+
+		LinkData ld = linkData.get(linkid);
+		return ld.prices[ myScenario.get.vehicleTypeIndexForId(vehType)][0];
+	}
+
+	public HashMap<Long, LinkData> getLinkData() {return linkData;}
 
 }
