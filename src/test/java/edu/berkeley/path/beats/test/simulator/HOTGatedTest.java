@@ -7,6 +7,7 @@ import edu.berkeley.path.beats.simulator.Link;
 import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
+import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -15,6 +16,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by matt on 5/11/16.
@@ -42,7 +44,8 @@ public class HOTGatedTest {
 		try {
 			scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_gated_HOT.xml");
 
-			scenario.initialize(5, 0, 3600, 1, "gaussian", "general", "balancing");
+			scenario.initialize(5, 0, 1000, 100, "text", outprefix, 1, 1, "gaussian", "general", "balancing", "", "normal",
+					"", Double.NaN, null, false);
 
 			onramp_link = scenario.get.linkWithId(onramp_id);
 			downstream_hot_link = scenario.get.linkWithId(downstream_hot_id);
@@ -116,5 +119,20 @@ public class HOTGatedTest {
 		}
 
 		assertTrue( 0.25d < controller.getPriceAtLinkForVehtype(downstream_hot_id, scenario.get.vehicleTypeIdForIndex(sov_index)) );
+	}
+
+	@Test
+	public void testOutput() {
+		try {
+			scenario.run();
+		} catch (BeatsException ex) {
+			ex.printStackTrace();
+		}
+		String filename = outprefix + "_price_" + controller.getId() +".txt";
+		ArrayList<ArrayList<Double>> A = BeatsFormatter.readCSV(filename,"\t");
+
+		assertNotNull(A);
+		ArrayList<Double> inner_for_sov_vtype_last_timestep = A.get( A.size()-3 );
+		assertEquals( 1.25d, inner_for_sov_vtype_last_timestep.get(inner_for_sov_vtype_last_timestep.size()-1), 1e-1);
 	}
 }

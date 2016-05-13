@@ -17,6 +17,8 @@ import java.util.List;
 public class Controller_HOT_Lookup extends Controller {
 
 	private final HashMap<Long, LinkData> linkData;
+	private final List<Long> linkIds;
+	private PriceLogger logger;
 
 	public Controller_HOT_Lookup(Scenario scenario, edu.berkeley.path.beats.jaxb.Controller c) {
 		super(scenario, c, Algorithm.HOT_Lookup);
@@ -26,6 +28,7 @@ public class Controller_HOT_Lookup extends Controller {
 		// 								Congested Price Coefficient, Congested Density Coefficient, Congested Intercept,
 		//								Start time, Stop time
 		linkData = new HashMap<Long, LinkData>();
+		linkIds = new ArrayList<Long>();
 	}
 
 	@Override
@@ -41,8 +44,10 @@ public class Controller_HOT_Lookup extends Controller {
 			} else {
 				linkData.get(hotlinkid).addTable(table);
 			}
+			linkIds.add(hotlinkid);
 
 		}
+		logger = new PriceLogger(this);
 	}
 
 	@Override
@@ -81,6 +86,13 @@ public class Controller_HOT_Lookup extends Controller {
 			ld.deploy(myScenario.get.currentTimeInSeconds());
 		}
 
+		if (logger!=null)
+			logger.write();
+	}
+
+	@Override
+	protected void closeLogger() {
+		logger.close();
 	}
 
 	class LinkData {
@@ -404,6 +416,6 @@ public class Controller_HOT_Lookup extends Controller {
 		return ld.prices[ myScenario.get.vehicleTypeIndexForId(vehType)][0];
 	}
 
-	public HashMap<Long, LinkData> getLinkData() {return linkData;}
+	public List<Long> getLinkIds() {return linkIds;}
 
 }

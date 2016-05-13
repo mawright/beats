@@ -169,10 +169,10 @@
 					<parameter name="GP Link" value="3"/>
 					<parameter name="HOT Link" value="33"/>
 					<parameter name="Entering Links" value="2,222"/>
-					<parameter name="FF Price Coefficient" value="10"/>
+					<parameter name="FF Price Coefficient" value="-1"/>
 					<parameter name="FF Intercept" value="0"/>
-					<parameter name="Congested Price Coefficient" value="10"/>
-					<parameter name="Congested Density Coefficient" value="5"/>
+					<parameter name="Congested Price Coefficient" value="-0.4"/>
+					<parameter name="Congested Density Coefficient" value="0"/>
 					<parameter name="Congested Intercept" value="0"/>
 					<parameter name="VehTypeIn" value="0"/>
 					<parameter name="VehTypeOut" value="2"/>
