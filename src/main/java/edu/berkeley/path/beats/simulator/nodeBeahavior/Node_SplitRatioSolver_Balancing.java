@@ -297,15 +297,19 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
 					largest_oriented_dsratio = dsratio[i][j];
 				}
-				if( dsratio[i][j] < smallest_oriented_dsratio) {
-					min_dsratio_index[0] = i; min_dsratio_index[1] = j;
-					smallest_oriented_dsratio = dsratio[i][j];
-				}
 			}
 		}
 	}
 
 	private void findMinimumDemandedOutputLink(int e) {
+		smallest_oriented_dsratio = Double.POSITIVE_INFINITY;
+		for(int j : V_tilde) {
+			for(int i : U_j_tilde[j]) {
+				if( dsratio[i][j] < smallest_oriented_dsratio)
+					smallest_oriented_dsratio = dsratio[i][j];
+			}
+		}
+
 		ArrayList<Integer> set_of_output_links_with_min_dsratio = new ArrayList<Integer>(myNode.nOut);
 		for(int j : V_tilde) {
 			for(int i : U_j_tilde[j]) {
