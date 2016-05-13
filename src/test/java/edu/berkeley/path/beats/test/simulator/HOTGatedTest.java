@@ -46,6 +46,10 @@ public class HOTGatedTest {
 
 			onramp_link = scenario.get.linkWithId(onramp_id);
 			downstream_hot_link = scenario.get.linkWithId(downstream_hot_id);
+			onramp_link = scenario.get.linkWithId(onramp_id);
+			upstream_hot_link = scenario.get.linkWithId(upstream_gp_id);
+			upstream_gp_link = scenario.get.linkWithId(upstream_gp_id);
+			downstream_gp_link = scenario.get.linkWithId(downstream_gp_id);
 
 			controller = (Controller_HOT_Lookup) scenario.get.controllerWithId(0L);
 		}
@@ -98,6 +102,8 @@ public class HOTGatedTest {
 			ex.printStackTrace();
 		}
 
-		Double[] downstream_hot_density = downstream_hot_link.getDensityInVeh(0);
+		assertTrue( downstream_hot_link.getDensityInVeh(0, rtp_index) > 0d);
+		assertTrue( upstream_gp_link.getDensityInVeh(0, rtp_index) > 0d );
+		assertTrue( onramp_link.getDensityInVeh(0, rtp_index) > 0d);
 	}
 }

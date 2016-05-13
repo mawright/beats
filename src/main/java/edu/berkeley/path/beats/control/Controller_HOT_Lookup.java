@@ -67,6 +67,7 @@ public class Controller_HOT_Lookup extends Controller {
 
 	@Override
 	protected void reset() {
+		super.reset();
 		for (LinkData ld : linkData.values())
 			ld.reset();
 	}
@@ -183,7 +184,7 @@ public class Controller_HOT_Lookup extends Controller {
 			double alreadyReadyToPay, notAlreadyReadyToPay, portionToSwitch;
 
 			for (int v=0; v<currentTableForVehtypes.length; v++) {
-				if (currentTableForVehtypes!= null) {
+				if (currentTableForVehtypes[v] != null) {
 					alreadyReadyToPay = 0d;
 					notAlreadyReadyToPay = 0d;
 					for ( Link link : myHOTLink.getBegin_node().getInput_link()) {
@@ -192,8 +193,12 @@ public class Controller_HOT_Lookup extends Controller {
 						notAlreadyReadyToPay = notAlreadyReadyToPay +
 								link.getDensityInVeh(ensemble_index, currentTableForVehtypes[v].vehTypeIn);
 					}
-					portionToSwitch = (readyToPayPortion[v][0] * (alreadyReadyToPay + notAlreadyReadyToPay) - alreadyReadyToPay)
+					if (notAlreadyReadyToPay <= 1e-10) // zero vehicles available
+						portionToSwitch = 0d;
+					else
+						portionToSwitch = (readyToPayPortion[v][0] * (alreadyReadyToPay + notAlreadyReadyToPay) - alreadyReadyToPay)
 							/ notAlreadyReadyToPay;
+
 					for (ActuatorVehType actuator : myActuators) {
 						actuator.set_switch_ratio(myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeIn),
 								myScenario.get.vehicleTypeIdForIndex(currentTableForVehtypes[v].vehTypeOut),
