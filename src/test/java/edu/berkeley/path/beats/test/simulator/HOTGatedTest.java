@@ -84,9 +84,9 @@ public class HOTGatedTest {
 	}
 
 	@Test
-	public void testUpdate() {
+	public void testUpdatePrice() {
 		try {
-			scenario.advanceNSeconds(300d);
+			scenario.advanceNSeconds(5d);
 		} catch (BeatsException ex) {
 			ex.printStackTrace();
 		}
@@ -105,5 +105,16 @@ public class HOTGatedTest {
 		assertTrue( downstream_hot_link.getDensityInVeh(0, rtp_index) > 0d);
 		assertTrue( upstream_gp_link.getDensityInVeh(0, rtp_index) > 0d );
 		assertTrue( onramp_link.getDensityInVeh(0, rtp_index) > 0d);
+	}
+
+	@Test
+	public void testStatusInCongestion() {
+		try {
+			scenario.advanceNSeconds(300d);
+		} catch (BeatsException ex) {
+			ex.printStackTrace();
+		}
+
+		assertTrue( 0.25d < controller.getPriceAtLinkForVehtype(downstream_hot_id, scenario.get.vehicleTypeIdForIndex(sov_index)) );
 	}
 }
