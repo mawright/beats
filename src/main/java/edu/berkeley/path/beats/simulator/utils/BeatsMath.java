@@ -404,6 +404,29 @@ public final class BeatsMath implements Serializable {
 		return y;
 	}
 
+	// deep copy a three-dimensional array
+	public static Double[][][] copy(Double[][][] x) {
+		int i,j,k;
+		int n1, n2, n3;
+		if(x==null)
+			return null;
+		if(x.length==0)
+			return null;
+		if(x[0].length==0)
+			return null;
+		if(x[0][0].length==0)
+			return null;
+		n1 = x.length;
+		n2 = x[0].length;
+		n3 = x[0][0].length;
+		Double[][][] y = new Double[n1][n2][n3];
+		for(i=0; i<n1; i++)
+			for(j=0; j<n2; j++)
+				for(k=0; k<n3; k++)
+					y[i][j][k] = x[i][j][k];
+		return y;
+	}
+
 	public static double sampleZeroMeanUniform(double std_dev){
 		return std_dev*Math.sqrt(3)*(2*BeatsMath.random.nextDouble()-1);
 	}

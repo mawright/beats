@@ -227,7 +227,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
                     flowDifference[vehTypeOutIndex] += inflow[e][vehTypeInIndex] * value;
                 }
                 for (int i = 0; i < inflow[e].length; i++) {
-                    inflow[e][i] += flowDifference[i];
+					double temp = inflow[e][i] + flowDifference[i];
+					inflow[e][i] = Math.max(temp, 0d);
                 }
             }
         }
@@ -419,6 +420,11 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
         return link_type==Type.hov;
     }
 
+	public boolean isManagedLane(){
+//		return isHov() || isHot() || isTollLane();
+		return isHov();
+	}
+
     public double computeTotalDelayInVeh(int e){
         double val=0d;
         for(int v=0;v<myScenario.get.numVehicleTypes();v++)
@@ -429,8 +435,8 @@ public class Link extends edu.berkeley.path.beats.jaxb.Link implements Serializa
     // generic method to check permissibility of entrance for vType
     // to be expanded for more cases as needed (including querying controllers)
     public boolean canVTypeEnter(String vType){
-        if(isHov() && vType.compareToIgnoreCase("hov")!=0)
-            return false;
+//        if(isHov() && vType.compareToIgnoreCase("hov")!=0)
+//            return false;
         return true;
     }
 

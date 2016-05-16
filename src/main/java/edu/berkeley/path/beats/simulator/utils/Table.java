@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import edu.berkeley.path.beats.jaxb.ColumnName;
+import edu.berkeley.path.beats.simulator.Parameters;
 import edu.berkeley.path.beats.simulator.utils.BeatsErrorLog;
 
 /** 
@@ -41,6 +42,7 @@ final public class Table implements Serializable {
 	protected ArrayList<Long> column_ids;
 	protected ArrayList<String> column_names;
 	protected ArrayList<Row> rows;
+	protected Parameters parameters;
 
 	/////////////////////////////////////////////////////////////////////
 	// construction
@@ -103,6 +105,7 @@ final public class Table implements Serializable {
 		for(edu.berkeley.path.beats.jaxb.Row row : T.getRow())
 			rows.add(new Row(row));
 
+		this.parameters = (Parameters) T.getParameters();
 	}
 	
 	/////////////////////////////////////////////////////////////////////
@@ -147,6 +150,10 @@ final public class Table implements Serializable {
 	/** Returns the column number corresponding to the given column_name*/ 
 	public int getColumnNo(String cname){		
 		return 	column_names.indexOf(cname);
+	}
+
+	public Parameters getParameters() {
+		return parameters;
 	}
 	
 //	public String getColumnNameForId(Long ID){

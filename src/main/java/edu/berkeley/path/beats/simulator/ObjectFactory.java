@@ -122,6 +122,10 @@ final public class ObjectFactory  implements Serializable {
                 C = new Controller_VehType_Swapper(myScenario,jaxbC);
                 break;
 
+			case HOT_Lookup:
+				C = new Controller_HOT_Lookup(myScenario, jaxbC);
+				break;
+
 			default:
 				C = null;
 				break;

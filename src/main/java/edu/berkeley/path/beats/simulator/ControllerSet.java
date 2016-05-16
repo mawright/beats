@@ -184,6 +184,11 @@ public final class ControllerSet extends edu.berkeley.path.beats.jaxb.Controller
 //
 //	}
 
+	protected void closeLoggers() {
+		for (Controller controller : controllers)
+			controller.closeLogger();
+	}
+
     public void update() throws BeatsException {
 
 //        // turn active controllers on

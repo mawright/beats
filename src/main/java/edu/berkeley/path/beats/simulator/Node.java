@@ -251,7 +251,7 @@ public class Node extends edu.berkeley.path.beats.jaxb.Node implements Serializa
 
 	public void sample_split_ratio_profile() {
 		if (has_profile)
-			splitratio_nominal = my_profile.getCurrentSplitRatio();
+			splitratio_nominal = BeatsMath.copy(my_profile.getCurrentSplitRatio());
 	}
 
 	public void sample_split_controller() {

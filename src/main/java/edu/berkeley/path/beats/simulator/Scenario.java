@@ -311,6 +311,7 @@ public class Scenario extends edu.berkeley.path.beats.jaxb.Scenario implements S
                     throw new BeatsException(e.getMessage());
                 }
         }
+		controllerset.closeLoggers();
         DebugLogger.close_all();
     }
 

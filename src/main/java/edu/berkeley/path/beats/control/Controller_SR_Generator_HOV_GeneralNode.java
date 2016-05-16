@@ -24,7 +24,9 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 		for(int v=0;v<myScenario.get.numVehicleTypes();v++) {
 			if( myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("hov") == 0 ||
 					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("sov") == 0 ||
-					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("lov") == 0) {
+					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("lov") == 0 ||
+					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("rtp") == 0 ||
+					myScenario.get.vehicleTypeNames()[v].compareToIgnoreCase("ready to pay") == 0) {
 				variable_vtype[v] = true;
 			}
 			else {
@@ -40,87 +42,82 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 
 	class NodeData extends Controller_SR_Generator_new.NodeData {
 
-		int gp_in, hov_in, offramp_out;
+		int offramp_out;
+		private Double[][][] controller_split;
 
 		public NodeData(Controller parent, Link profileLink, String demandStr, Double knob, Double dpdt, Double start_time, Scenario scenario) {
 			super(parent, profileLink, demandStr, knob, dpdt, start_time, scenario);
 
-			for (int i = 0; i < is_feed.size(); i++) {
-				if (is_feed.get(i) && myNode.getInput_link()[i].isHov())
-					hov_in = i;
-				else if (is_feed.get(i) && myNode.getInput_link()[i].isFreeway())
-					gp_in = i;
+			if(myNode.isHasManagedLaneBarrier()) {
+				for (int i=0; i<myNode.nIn; i++) {
+					if(myNode.getInput_link()[i].isManagedLane())
+						is_feed.set(i,false);
+				}
 			}
+
 			offramp_out = myNode.getOutputLinkIndex(profileLink.getId());
+			controller_split = BeatsMath.nans(myNode.nIn, myNode.nOut, myScenario.get.numVehicleTypes());
   		}
 
   		@Override
   		public void update(Clock clock) {
-			int i,j;
+			int i;
 			int e = 0;
 
 			double bHigh, bLow, bTest;
+			double[][] initial_total_nonmeasured_split;
 			Node_FlowSolver.IOFlow flow;
 
 			// make node sample its split ratio
 			myNode.sample_split_ratio_profile();
+			Double[][][] splitratio = BeatsMath.copy(myNode.getSplitRatio());
 
 			if(measured_flow_profile_veh.sample(false,clock))
 				measured_flow_veh = measured_flow_profile_veh.getCurrentSample()*knob; // hat{f}_222^in
 
 			if(BeatsMath.equals(measured_flow_veh, 0d)){
 				beta = 0d;
+				initial_total_nonmeasured_split = compute_initial_total_nonmeasured_split(splitratio);
+				controller_split = complete_splitratio_matrix(splitratio, initial_total_nonmeasured_split, beta, e);
 				return;
 			}
 
 			// find demands from GP and HOV lanes
-			double S[] = new double[myNode.getnIn()];
+			Double S[] = BeatsMath.zeros(myNode.nIn);
 			for (i = 0; i < myNode.getnIn(); i++) {
-				S[i] = myNode.getInput_link()[i].get_total_out_demand_in_veh(e);
+				if (is_feed.get(i))
+					S[i] = myNode.getInput_link()[i].get_total_out_demand_in_veh(e);
 			}
 
 			if( BeatsMath.sum(S) <= measured_flow_veh ) { // insufficient demand
 				beta = 1d;
+				initial_total_nonmeasured_split = compute_initial_total_nonmeasured_split(splitratio);
+				controller_split = complete_splitratio_matrix(splitratio, initial_total_nonmeasured_split, beta, e);
 				return;
 			}
 
 			bHigh = 1d;
-			bLow = measured_flow_veh / BeatsMath.sum(S);
+			bLow = 0d;
 
 			// begin bisection method
-			Double[][][] splitratio = myNode.getSplitRatio().clone();
-			bTest = bLow;
-			boolean solved = false;
-			while (!solved) {
-				for (int c=0; c<myScenario.get.numVehicleTypes(); c++)
-				{
-					if(variable_vtype[c]) {
-						splitratio[hov_in][offramp_out][c] = bTest;// beta we are searching for
-						splitratio[gp_in][offramp_out][c] = bTest;
+			Double[][][] splitratio_filled;
 
-						// remaining split
-						for (i = 0; i < myNode.getnIn(); i++) {
-							for (j = 0; j < myNode.getnOut(); j++) {
-								if (!((i == hov_in || i == gp_in) && j == offramp_out)) {
-									splitratio[i][j][c] = (1 - bTest) * myNode.getSplitRatio(i, j, c);
-								}
-							}
-						}
-					}
-				}
-				// invoke the SRsolver to fill in any undefined parts
-				Double[][][] splitratio_filled = myNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio, e);
+			initial_total_nonmeasured_split = compute_initial_total_nonmeasured_split(splitratio);
+
+			bTest = (bLow + bHigh) / 2;
+			boolean solved = false;
+			do {
+				splitratio_filled = complete_splitratio_matrix(splitratio, initial_total_nonmeasured_split, bTest, e);
 
 				flow = myNode.node_behavior.flow_solver.computeLinkFlows(splitratio_filled, e);
-				if (BeatsMath.equals( BeatsMath.sum(flow.getOut(offramp_out)),measured_flow_veh, measured_flow_veh*.01 )) {
-					beta = bTest;
+				double difference = BeatsMath.sum(flow.getOut(offramp_out)) - measured_flow_veh;
+				if (BeatsMath.equals( difference, 0d, measured_flow_veh*.01 )) {
 					solved = true;
 				}
-				else if (BeatsMath.equals(bLow, bHigh, (bLow+bHigh)/2 * .001)) {
-					beta = (bLow+bHigh)/2;
+				else if (BeatsMath.equals(bLow, bHigh, .001d)) {
 					solved = true;
 				}
-				else if (BeatsMath.sum(flow.getOut(offramp_out)) - measured_flow_veh < 0) {
+				else if (difference < 0) {
 					bLow = (bLow + bHigh) / 2;
 					bTest = (bLow + bHigh) / 2;
 				}
@@ -128,37 +125,83 @@ public class Controller_SR_Generator_HOV_GeneralNode extends Controller_SR_Gener
 					bHigh = (bLow + bHigh) / 2;
 					bTest = (bLow + bHigh) / 2;
 				}
-			}
+			} while (!solved);
+			beta = bTest;
+			controller_split = splitratio_filled;
 		}
 
-		@Override
-		public void deploy(double current_time_in_seconds){
+		private double[][] compute_initial_total_nonmeasured_split(Double[][][] splitratio) {
 			int i,j,c;
-			double current_split;
-			for(i=0;i<myNode.nIn;i++){
-				Link inlink = myNode.input_link[i];
-				if( inlink.isHov() || inlink.isFreeway()){
-					for(j=0;j<myNode.nOut;j++){
-						Link outlink = myNode.output_link[j];
-
-						if(j==offramp_out) { // the offramp gets split ratio of beta
-							for(c=0;c<myScenario.get.numVehicleTypes();c++) {
-								if(variable_vtype[c]) {
-									cms.set_split(inlink.getId(), outlink.getId(), myScenario.get.vehicleTypeIdForIndex(c), beta);
-								}
-							}
-						}
-						else {   // not measured scaled to 1-beta
-							for(c=0;c<myScenario.get.numVehicleTypes();c++) { //
-								if(variable_vtype[c]) {
-									current_split = myNode.getSplitRatio(i, j, c);
-									cms.set_split(inlink.getId(), outlink.getId(), myScenario.get.vehicleTypeIdForIndex(c),
-											current_split * (1d - beta)); // split ratios differ across commodities
+			double[][] initial_total_nonmeasured_split = new double[myNode.nIn][myScenario.get.numVehicleTypes()];
+			for (c = 0; c<myScenario.get.numVehicleTypes(); c++) {
+				if (variable_vtype[c]) {
+					for (i = 0; i < myNode.nIn; i++) {
+						if( is_feed.get(i) ) {
+							initial_total_nonmeasured_split[i][c] = 0d;
+							for (j = 0; j < myNode.nOut; j++) {
+								if ( !is_measured.get(j) ) {
+									double temp = Double.isNaN(splitratio[i][j][c]) ? 0d : splitratio[i][j][c];
+									initial_total_nonmeasured_split[i][c] += temp;
 								}
 							}
 						}
 					}
 				}
+			}
+			return initial_total_nonmeasured_split;
+		}
+
+		private Double[][][] complete_splitratio_matrix(Double[][][] splitratio,
+														double[][] initial_total_nonmeasured_split, double bTest,
+														int ensemble_index) {
+			int i,j,c;
+			double newsplit;
+			Double[][][] splitratio_filled = BeatsMath.copy(splitratio);
+
+			double total_non_measured_split = 1d - bTest;
+			for (c=0; c<myScenario.get.numVehicleTypes(); c++) {
+				if (variable_vtype[c]) {
+					for (i = 0; i < myNode.nIn; i++) {
+						if (is_feed.get(i)) {
+							for (j = 0; j < myNode.nOut; j++) {
+								if (is_measured.get(j)) {
+									splitratio_filled[i][j][c] = bTest; // beta we are searching for
+								} else {
+									newsplit = BeatsMath.equals(initial_total_nonmeasured_split[i][c], 0d) ? Double.NaN :
+											(myNode.getSplitRatio(i, j, c) * total_non_measured_split)
+													/ initial_total_nonmeasured_split[i][c];
+									splitratio_filled[i][j][c] = newsplit;
+								}
+							}
+						}
+					}
+				}
+			}
+
+			// invoke the SRsolver to fill in any undefined parts
+			splitratio_filled = myNode.node_behavior.sr_solver.computeAppliedSplitRatio(splitratio_filled, ensemble_index);
+			return splitratio_filled;
+
+		}
+
+		@Override
+		public void deploy(double current_time_in_seconds){
+			int i,j,c;
+
+			for(i=0;i<myNode.nIn;i++) {
+				Link inlink = myNode.input_link[i];
+				if (is_feed.get(i)) {
+					for (c = 0; c < myScenario.get.numVehicleTypes(); c++) {
+						if (variable_vtype[c]) {
+							for (j = 0; j < myNode.nOut; j++) {
+								Link outlink = myNode.output_link[j];
+
+								cms.set_split(inlink.getId(), outlink.getId(), myScenario.get.vehicleTypeIdForIndex(c),
+										controller_split[i][j][c]); // split ratios differ across commodities
+								}
+							}
+						}
+					}
 			}
 			cms.deploy(current_time_in_seconds);
 		}
