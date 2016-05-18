@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario id="0" name="null" schemaVersion="2.0.2">
+	<settings>
+		<units>US</units>
+	</settings>
+
+	<VehicleTypeSet id="1">
+		<vehicleType id="0" name="sov" size_factor="1.0"/>
+	</VehicleTypeSet>
+
+	<DemandSet id="1" >
+		<demandProfile dt="300" id="1" link_id_org="1">
+			<demand vehicle_type_id="0">1800</demand>
+		</demandProfile>
+		<demandProfile dt="300" id="1" link_id_org="22">
+			<demand vehicle_type_id="0">250</demand>
+		</demandProfile>
+	</DemandSet>
+
+	<FundamentalDiagramSet  id="1">
+		<fundamentalDiagramProfile id="1" link_id="1">
+			<fundamentalDiagram id="1" capacity="2000" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="2">
+			<fundamentalDiagram id="1" capacity="2000" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="3">
+			<fundamentalDiagram id="1" capacity="2000" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+		<fundamentalDiagramProfile id="1" link_id="22">
+			<fundamentalDiagram id="1" capacity="1000" congestion_speed="15" free_flow_speed="60"/>
+		</fundamentalDiagramProfile>
+	</FundamentalDiagramSet>
+
+	<NetworkSet  id="1">
+		<network id="1" name="">
+			<description></description>
+			<position>
+				<point lat="0" lng="0"/>
+			</position>
+			<NodeList>
+				<node id="1">
+					<outputs>
+						<output link_id="1"/>
+					</outputs>
+					<inputs/>
+				</node>
+				<node id="2">
+					<outputs>
+						<output link_id="2"/>
+					</outputs>
+					<inputs>
+						<input link_id="1"/>
+					</inputs>
+				</node>
+				<node id="3">
+					<outputs>
+						<output link_id="3"/>
+					</outputs>
+					<inputs>
+						<input link_id="2"/>
+						<input link_id="22"/>
+					</inputs>
+				</node>
+				<node id="4">
+					<inputs>
+						<input link_id="3"/>
+					</inputs>
+				</node>
+				<node id="22">
+					<outputs>
+						<output link_id="22"/>
+					</outputs>
+				</node>
+			</NodeList>
+			<LinkList>
+				<link id="1" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="1"/>
+					<end node_id="2"/>
+				</link>
+				<link id="2" lanes="1" length="0.3" priority="0" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="2"/>
+					<end node_id="3"/>
+				</link>
+				<link id="3" lanes="1" length="0.3" >
+					<link_type id="1" name="freeway"/>
+					<begin node_id="3"/>
+					<end node_id="4"/>
+				</link>
+				<link id="22" lanes="1" length="0.3" priority="1" >
+					<link_type id="1" name="on-ramp"/>
+					<begin node_id="22"/>
+					<end node_id="3"/>
+				</link>
+			</LinkList>
+		</network>
+	</NetworkSet>
+
+	<DownstreamBoundaryCapacitySet id="1" project_id="1">
+		<downstreamBoundaryCapacityProfile link_id="3">2000</downstreamBoundaryCapacityProfile>
+	</DownstreamBoundaryCapacitySet>
+
+</scenario>
