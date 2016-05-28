@@ -1,5 +1,6 @@
 package edu.berkeley.path.beats.simulator;
 
+import edu.berkeley.path.beats.control.ControllerRampMeteringAPI;
 import edu.berkeley.path.beats.control.Controller_SR_Generator_new;
 import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.jaxb.DownstreamBoundaryCapacitySet;
@@ -373,6 +374,16 @@ public class ScenarioSetApi implements Serializable {
 
     public void uncertaintyModel(String uncertaintyModel) {
         scenario.uncertaintyModel = uncertaintyModel==null ? TypeUncertainty.gaussian : TypeUncertainty.valueOf(uncertaintyModel);
+    }
+
+    /* CONTROL ------------------------------------------------------ */
+    public void ramp_metering_rate(int controller_id,int act_id,double rate_in_vph){
+        Controller controller = scenario.controllerset.getControllerWithId(controller_id);
+        if(controller==null)
+            return;
+        if(controller.getMyType()!= Controller.Algorithm.RMAPI)
+            return;
+        ((ControllerRampMeteringAPI)controller).set_metering_rate_in_vph(act_id,rate_in_vph);
     }
 
 }

@@ -74,7 +74,8 @@ public class Controller {
 		SR_Generator_new,
 		SR_Generator_HOV_GeneralNode,
 		Vehicle_Type_Swapper,
-		HOT_Lookup
+		HOT_Lookup ,
+		RMAPI
 	}
 
     public static enum ActuatorType {
@@ -304,7 +305,7 @@ public class Controller {
 	protected void closeLogger() {}
 
 	/////////////////////////////////////////////////////////////////////
-	// public API
+	// public RMAPI
 	/////////////////////////////////////////////////////////////////////
 
    	public Scenario getMyScenario() {
@@ -359,6 +360,13 @@ public class Controller {
 			if(actuator_usage.get(i).compareTo(usage)==0)
 				list.add(actuators.get(i));
 		return list;
+	}
+
+	public Actuator getActuatorWithId(int aid){
+		for(Actuator act : actuators)
+			if(act.getId()==aid)
+				return act;
+		return null;
 	}
 
 	public ArrayList<Sensor> getSensorByUsage(String usage){

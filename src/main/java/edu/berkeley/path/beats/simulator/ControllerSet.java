@@ -248,4 +248,11 @@ public final class ControllerSet extends edu.berkeley.path.beats.jaxb.Controller
                 X.add(C);
         return X;
     }
+
+	public Controller getControllerWithId(int cid){
+		for(Controller c : controllers)
+			if(c.getId()==cid)
+				return c;
+		return null;
+	}
 }

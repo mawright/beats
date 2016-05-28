@@ -126,6 +126,10 @@ final public class ObjectFactory  implements Serializable {
 				C = new Controller_HOT_Lookup(myScenario, jaxbC);
 				break;
 
+			case RMAPI:
+				C = new ControllerRampMeteringAPI(myScenario, jaxbC);
+				break;
+
 			default:
 				C = null;
 				break;
