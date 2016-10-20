@@ -292,7 +292,10 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 					denominator = oriented_priority[i][j] * myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
 					dsratio[i][j] = sum_of_priorities_Uj * numerator / denominator;
 				}
-
+			}
+		}
+		for(int j : V_tilde) {
+			for(int i : U_j_tilde[j]) {
 				if( dsratio[i][j] > largest_oriented_dsratio) {
 					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
 					largest_oriented_dsratio = dsratio[i][j];
@@ -326,7 +329,12 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 			for(int i=0;i<myNode.nIn;i++) {
 				numerator += BeatsMath.sum(oriented_demand[i][jprime]);
 			}
-			fraction = numerator / myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
+			if (numerator < zeroThreshold && myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e) < 0d)
+				fraction = 0d;
+			else {
+				fraction = numerator / myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
+			}
+
 			if( fraction < min_fraction ) {
 				min_demanded_output_link = jprime;
 				min_fraction = fraction;
@@ -355,15 +363,15 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 				set_of_input_links_with_min_oriented_dsratio.add(i);
 			}
 		}
-		double min_remaining_allocated_demand = Double.POSITIVE_INFINITY;
+		double min_remaining_unallocated_demand = Double.POSITIVE_INFINITY;
 		min_oriented_DSratio_c = 0;
 		min_oriented_DSratio_i = 0;
 		for(int i : set_of_input_links_with_min_oriented_dsratio) {
 			for(int c=0;c<nVType;c++) {
-				if( unallocated_demand[i][c] < min_remaining_allocated_demand && splitRemaining[i][c] > zeroThreshold) {
+				if( unallocated_demand[i][c] < min_remaining_unallocated_demand && splitRemaining[i][c] > zeroThreshold) {
 					min_oriented_DSratio_i = i;
 					min_oriented_DSratio_c = c;
-					min_remaining_allocated_demand = unallocated_demand[i][c];
+					min_remaining_unallocated_demand = unallocated_demand[i][c];
 				}
 			}
 		}

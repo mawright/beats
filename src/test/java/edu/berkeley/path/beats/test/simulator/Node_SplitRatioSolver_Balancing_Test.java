@@ -1,10 +1,9 @@
 package edu.berkeley.path.beats.test.simulator;
 
 import edu.berkeley.path.beats.Jaxb;
+import edu.berkeley.path.beats.jaxb.Demand;
 import edu.berkeley.path.beats.simulator.Link;
-import edu.berkeley.path.beats.simulator.Node;
 import edu.berkeley.path.beats.simulator.Scenario;
-import edu.berkeley.path.beats.simulator.SplitRatioSet;
 import edu.berkeley.path.beats.simulator.utils.BeatsException;
 import edu.berkeley.path.beats.simulator.utils.BeatsFormatter;
 import edu.berkeley.path.beats.simulator.utils.BeatsMath;
@@ -16,9 +15,7 @@ import org.junit.Test;
 import java.io.File;
 import java.util.ArrayList;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 /**
  * Created by matt on 10/8/15.
@@ -118,6 +115,61 @@ public class Node_SplitRatioSolver_Balancing_Test {
 	}
 
 	@Test
+	public void HOVonlyTest() {
+		try {
+			Scenario scenario = Jaxb.create_scenario_from_xml("data" + File.separator + "config" + File.separator + "_smalltest_SRcontrol_HOV.xml");
+			String outprefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "test";
+			String split_logger_prefix = "data" + File.separator + "test" + File.separator + "output" + File.separator + "testSplits";
+
+			long sov_veh_id = 0;
+			long hov_veh_id = 1;
+
+			long[] gp_link_ids = {2, 3, 4, 5};
+			long[] hov_link_ids = {22, 33, 44, 55};
+
+			// get rid of all sov demand
+			for (edu.berkeley.path.beats.jaxb.DemandProfile dp : scenario.getDemandSet().getDemandProfile()) {
+				Link link = scenario.get.linkWithId(dp.getLinkIdOrg());
+				if (!link.isSink()) {
+					for (Demand demand : dp.getDemand())
+						if (demand.getVehicleTypeId() == sov_veh_id)
+							demand.setContent("0");
+				}
+			}
+
+			scenario.initialize(5, 0, 3600, 5, "text", outprefix, 1, 1, "gaussian", "general", "balancing", null, "normal", split_logger_prefix, 5d, null);
+
+			// ensure no sovs anywhere
+			for (edu.berkeley.path.beats.jaxb.Link link : scenario.getNetworkSet().getNetwork().get(0).getLinkList().getLink()) {
+				if (((Link) link).getDensityInVeh(0)[0] > 0d)
+					fail();
+			}
+
+			for (int t=0; t < 6; t++) {
+				scenario.advanceNSeconds(100d);
+
+				// there should be equal utilization of both links
+				for (int i = 0; i < gp_link_ids.length; i++) {
+					Link hov_link = scenario.get.linkWithId(hov_link_ids[i]);
+					Link gp_link = scenario.get.linkWithId(gp_link_ids[i]);
+
+					double hov_occ_ratio = hov_link.getDensityInVeh(0, 1) / hov_link.getCapacityInVeh(0);
+					double gp_occ_ratio = gp_link.getDensityInVeh(0, 1) / gp_link.getCapacityInVeh(0);
+
+//				System.out.println("HOV link " + hov_link_ids[i] +" ratio " + hov_occ_ratio + " GP link " + gp_link_ids[i] + " ratio " + gp_occ_ratio);
+//				assertEquals(hov_occ_ratio, gp_occ_ratio, 1e-3);
+				}
+//			Link offramp_link = scenario.get.linkWithId(7);
+//			System.out.println("Offramp link 7 (downstream of 3/33) ratio " + offramp_link.getDensityInVeh(0,1) / offramp_link.getCapacityInVeh(0));
+			}
+
+		}
+		catch (BeatsException ex) {
+			fail(ex.getMessage());
+		}
+	}
+
+	@Test
 	@Ignore
 	public void noSOVInHOVLaneTest() {
 		try {
@@ -137,6 +189,7 @@ public class Node_SplitRatioSolver_Balancing_Test {
 		}
 		catch (BeatsException ex) {
 			ex.printStackTrace();
+			fail();
 		}
 	}
 }
