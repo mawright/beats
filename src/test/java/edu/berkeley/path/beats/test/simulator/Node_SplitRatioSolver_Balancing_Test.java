@@ -169,6 +169,8 @@ public class Node_SplitRatioSolver_Balancing_Test {
 		}
 	}
 
+	/*this test is ignored because there has been a design decision to encode a statement that a certain commodity
+	 is not allowed into a link by explicitly writing it into the sr profile, i.e. in the xml*/
 	@Test
 	@Ignore
 	public void noSOVInHOVLaneTest() {
