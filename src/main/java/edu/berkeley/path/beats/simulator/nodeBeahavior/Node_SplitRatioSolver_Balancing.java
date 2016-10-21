@@ -398,7 +398,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 									myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
 						}
 						for( int jprime : V_ic[i][c] ) {
-							numerator = oriented_priority[i][c] *
+							numerator = oriented_priority[i][jprime] *
 									myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
 							computed_splitratio[i][jprime][c] +=
 									splitRemaining[i][c] * numerator / denominator;
