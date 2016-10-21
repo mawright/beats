@@ -292,10 +292,7 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 					denominator = oriented_priority[i][j] * myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
 					dsratio[i][j] = sum_of_priorities_Uj * numerator / denominator;
 				}
-			}
-		}
-		for(int j : V_tilde) {
-			for(int i : U_j_tilde[j]) {
+
 				if( dsratio[i][j] > largest_oriented_dsratio) {
 					max_dsratio_index[0] = i; max_dsratio_index[1] = j;
 					largest_oriented_dsratio = dsratio[i][j];
@@ -379,23 +376,37 @@ public class Node_SplitRatioSolver_Balancing extends Node_SplitRatioSolver  impl
 	}
 
 	private void distributeSplitRatio(int e) {
-		double numerator,denominator,delta_split;
 		if( Math.abs(largest_oriented_dsratio- smallest_oriented_dsratio) < zeroThreshold) {
-			denominator = 0;
-			for( int j : V_ic[min_oriented_DSratio_i][min_oriented_DSratio_c]) {
-				denominator += myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
-			}
-			for( int j : V_ic[min_oriented_DSratio_i][min_oriented_DSratio_c]) {
-				numerator = myNode.getOutput_link()[j].get_available_space_supply_in_veh(e);
-				computed_splitratio[min_oriented_DSratio_i][j][min_oriented_DSratio_c] +=
-						splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] * numerator / denominator;
-			}
-			splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] = 0d;
+			distributeAllRemainingSplitsProportionally(e);
 		}
 		else {
-			delta_split = compute_delta_split(e);
+			double delta_split = compute_delta_split(e);
 			computed_splitratio[min_oriented_DSratio_i][min_demanded_output_link][min_oriented_DSratio_c] += delta_split;
 			splitRemaining[min_oriented_DSratio_i][min_oriented_DSratio_c] -= delta_split;
+		}
+	}
+
+	private void distributeAllRemainingSplitsProportionally(int e) {
+		double numerator, denominator;
+		for( int j : V_tilde) {
+			for( int i : U_j_tilde[j]) {
+				for (int c=0;c<nVType;c++) {
+					if (splitRemaining[i][c] > zeroThreshold) {
+						denominator = 0;
+						for (int jprime : V_ic[i][c]) {
+							denominator += oriented_priority[i][jprime] *
+									myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
+						}
+						for( int jprime : V_ic[i][c] ) {
+							numerator = oriented_priority[i][c] *
+									myNode.getOutput_link()[jprime].get_available_space_supply_in_veh(e);
+							computed_splitratio[i][jprime][c] +=
+									splitRemaining[i][c] * numerator / denominator;
+						}
+						splitRemaining[i][c] = 0d;
+					}
+				}
+			}
 		}
 	}
 
